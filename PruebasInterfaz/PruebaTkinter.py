@@ -3,6 +3,7 @@
 import tkinter as tk 
 from tkinter import messagebox #para que nos salgan ventanas nuevas al presionar botones
 
+
 # CREACIÓN DE VENTANA INICIAL
 
 # creamos ventana inicial y luego le vamos añadiendo cosas: .Tk 
@@ -30,7 +31,6 @@ etiqueta.pack()
     # etiqueta.pack(fill = tk.BOTH, expand = True)
 
 
-
 # CREACIÓN DE BOTONES Y FUNCIONES PARA INTERACCIÓN CON BOTONES
 
 # función para que aparezca un mensaje en otra ventana al presional el bottón 
@@ -47,7 +47,6 @@ def obtener_datos(nombre_entry, edad_entry, nueva_ventana):
         nueva_ventana.destroy()  # Cierra la ventana de datos después de insertar
     else:
         messagebox.showwarning("Advertencia", "Por favor, completa todos los campos.") 
-
 
 # función que crea una nueva ventana para insertar los datos
 def datos():
