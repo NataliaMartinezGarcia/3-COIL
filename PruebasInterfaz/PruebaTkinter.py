@@ -66,7 +66,7 @@ def obtener_datos():
     edad_entry.pack(pady=5)
 
      # Botón para insertar los datos
-    boton_insertar = tk.Button(nueva_ventana, text="Insertar", command=lambda: obtener_datos(nombre_entry, edad_entry, nueva_ventana))
+    boton_insertar = tk.Button(nueva_ventana, text="Insertar", command=lambda: mostrar_datos(nombre_entry, edad_entry, nueva_ventana))
     boton_insertar.pack(pady=20)
 
 # función para obtener los datos en la nueva ventana
