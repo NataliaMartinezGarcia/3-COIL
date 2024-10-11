@@ -1,0 +1,81 @@
+Manager:
+    Menu : 
+    PantallaDatos :
+
+
+
+
+<Menu>:
+    name : 'Menu'
+
+    FloatLayout:
+
+        GridLayout:
+            cols : 1
+            padding : [100,100]
+            spacing : [50]
+
+            Label:
+                text: 'Prueba Kivy'
+                
+            Button:
+                text : 'Púlsame! ' 
+                size_hint : (0.5,0.3)
+                on_release: root.AbrirVentana()
+            
+            Button:
+                text : 'Introducir datos' 
+                size_hint : (0.5,0.3)
+                on_release : 
+                    app.root.current = 'PantallaDatos'
+                    root.manager.transition.direction = 'left'
+
+
+
+
+
+<PantallaDatos>:
+    name : 'PantallaDatos'
+    nombre : nombre
+    edad : edad
+
+    FloatLayout:
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: 'Introduzca su nombre: '
+
+            TextInput:
+                id: nombre
+                multiline : False
+
+            Label:
+                text: 'Introduzca su edad: '
+
+            TextInput:
+                id: edad
+                multiline : False
+
+
+            Button :
+                text: 'Atrás'
+                size_hint : (0.5,0.5)
+
+                on_release : 
+                    app.root.current = 'Menu'
+                    root.manager.transition.direction = 'right'
+
+
+            Button:
+                text : 'Enviar'
+                size_hint : (0.5,0.5)
+                on_release:
+                    root.AbrirVentana() if nombre.text != '' or edad.text != '' else None
+                    app.root.current = 'Menu' if nombre.text != '' or edad.text != '' else 'PantallaDatos'
+                    root.manager.transition.direction = 'right'
+                    nombre.text = ''
+                    edad.text = ''
+
+
