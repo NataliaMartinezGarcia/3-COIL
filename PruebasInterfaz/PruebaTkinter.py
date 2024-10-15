@@ -2,7 +2,7 @@
 
 import tkinter as tk 
 from tkinter import messagebox #para que nos salgan ventanas nuevas al presionar botones
-
+from tkinter import filedialog
 
 # CREACIÓN DE VENTANA INICIAL
 
@@ -38,6 +38,10 @@ def ventana():
 
     boton2 = tk.Button(ventana, text = "Presiona para insertar datos", command = obtener_datos)
     boton2.pack(pady = 10)
+
+    # Añadimos el botón para buscar archivo
+    boton_buscar = tk.Button(ventana, text="Buscar archivo", command=buscar_archivo)
+    boton_buscar.pack(pady=10)
 
     return ventana
 
@@ -79,6 +83,19 @@ def mostrar_datos(nombre_entry, edad_entry, nueva_ventana):
         nueva_ventana.destroy()  # Cierra la ventana de datos después de insertar
     else:
         messagebox.showwarning("Advertencia", "Por favor, completa todos los campos.") 
+
+# función para abrir el explorador de archivos y filtrar por tipos específicos (csv, sql y excel)
+def buscar_archivo():
+    # Filtramos por archivos de tipo CSV, Excel y SQL
+    archivo = filedialog.askopenfilename(
+        title="Buscar archivo",
+        filetypes=[("Archivos CSV", "*.csv"), ("Archivos Excel", "*.xlsx;*.xls"), ("Archivos SQL", "*.sql")],
+        defaultextension=".csv"
+    )
+    if archivo:  # Si se selecciona un archivo
+        messagebox.showinfo("Archivo seleccionado", f"Has seleccionado: {archivo}")
+    else:
+        messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
 
 
 if __name__ == "__main__":
