@@ -44,4 +44,4 @@ class ScrollTable(ttk.Treeview):
         """Muestra la tabla y los scrollbars en el frame."""
         self._scroll_x.pack(side=tk.TOP, fill=tk.X)  # Barra horizontal en la parte superior
         self._scroll_y.pack(side=tk.RIGHT, fill=tk.Y)  # Barra vertical a la derecha
-        self.pack(side=tk.LEFT, fill=tk.BOTH, expand=False) # Tabla
+        self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) # Tabla
