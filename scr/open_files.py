@@ -2,6 +2,7 @@ import pandas as pd
 import sqlite3
 from sqlalchemy import create_engine
 import os
+from tkinter import messagebox
 
 def open_csv(file_path):
     return pd.read_csv(file_path) # Devuelve un dataframe
@@ -48,29 +49,24 @@ def open_file(file_path):
     # Extrae el dataframe con la función que corresponda
     return EXTENSION_MAP[extension](file_path)
 
-def main():
-    # Interfaz provisional (pendiente si hay que cambiarla al hacer la interfaz gráfica)
-    print("Puede importar una tabla de datos desde un archivo CSV, Excel o base de datos SQLite.")
-    file_path = input("Introduzca la ruta absoluta del archivo que desea importar: ")
+def open_files_interface(file_path):
+    df = None  # Inicializamos df con None por defecto
 
     try: 
         df = open_file(file_path)
 
     except FileNotFoundError as e:
-        print("\n" + str(e))  # Mensaje de error del archivo no encontrado
+        messagebox.showerror("Error", f"No se pudo encontrar el archivo: {str(e)}")
 
     except AssertionError as e:
-        print("\n" + str(e))  # Mensaje de error de formato inválido
-
-    except IOError:
-        print(f"\nEl archivo {file_path} está corrupto o hubo problemas en la lectura.")
+        messagebox.showerror("Error", f"Formato inválido: {str(e)}")
     
+    except Exception as e:
+        messagebox.showerror("Error", f"No se pudo cargar el archivo: {str(e)}")
+            
     else: # Aunque se haya leido correctamente, tenemos que comprobar si el dataframe tiene datos
         if df.empty:
-            print(f"\nEl archivo {file_path} está vacío. La tabla no existe.")
-        else:
-            print("\nArchivo leído correctamente.\n")
-            print(df.head(10)) # Previsualizar las 10 primeras filas
+            messagebox.showwarning("Advertencia", "El archivo no contiene datos. La tabla no existe.")
+            df = None
 
-if __name__ == "__main__":
-    main()
+    return df  # Será None si ha habido algún error y un DataFrame si se ha leido correctamente
