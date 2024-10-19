@@ -7,6 +7,7 @@ class ScrollTable(ttk.Treeview):
     def __init__(self, frame): 
         super().__init__(frame, columns=[], show="headings")
         self._frame = frame
+        self._data = None  # En el momento de crearla, la tabla está vacía
 
         # Crea tabla y scrollbars pero permanecen ocultas hasta que la tabla tenga datos.
 
@@ -32,6 +33,7 @@ class ScrollTable(ttk.Treeview):
     def create_from_df(self, df):
         """Configura las columnas de la tabla según el DataFrame proporcionado.
         Inserta datos en el Treeview desde ese DataFrame."""
+        self._data = df
         self['columns'] = list(df.columns)
         for col in df.columns:
             self.heading(col, text=col)
@@ -45,3 +47,7 @@ class ScrollTable(ttk.Treeview):
         self._scroll_x.pack(side=tk.TOP, fill=tk.X)  # Barra horizontal en la parte superior
         self._scroll_y.pack(side=tk.RIGHT, fill=tk.Y)  # Barra vertical a la derecha
         self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) # Tabla
+
+    def numeric_columns(self):
+        """Devuelve nombres de las columnas con variables numéricas."""
+        return self._data.select_dtypes(include=['number']).columns
