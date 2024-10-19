@@ -89,7 +89,7 @@ def buscar_archivo():
     # Filtramos por archivos de tipo CSV, Excel y SQL
     archivo = filedialog.askopenfilename(
         title="Buscar archivo",
-        filetypes=[("Archivos CSV", "*.csv"), ("Archivos Excel", "*.xlsx;*.xls"), ("Archivos SQL", "*.sql")],
+        filetypes=[("Archivos CSV", "*.csv"), ("Archivos Excel", "*.xlsx;*.xls"), ("Archivos SQL", "*.sqlite;*.db")],
         defaultextension=".csv"
     )
     if archivo:  # Si se selecciona un archivo
