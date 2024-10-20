@@ -73,11 +73,11 @@ class ColumnSelector:
         """Crea una ListBox para elegir una o varias columnas de entrada o features."""
         # Crear el label inicial según el tipo de regresión
         # Label para seleccionar columnas de entrada
-        features_frame = tk.Frame(self._frame, width=170, height=200)
+        features_frame = tk.Frame(self._frame, width=180, height=170)
         features_frame.pack(side='left', padx = 10, pady=5)
 
-        tk.Label(features_frame, textvariable=self._regression_type_label).pack(padx=10, pady=5, anchor='w')
-        
+        # Cambiará dependiendo del tipo de regresión escogido
+        tk.Label(features_frame, textvariable=self._regression_type_label).pack(side='top', pady=5, anchor='w', expand = False)
         self.update_features_label()
         
         # Listbox con Scrollbar para seleccionar múltiples columnas de entrada

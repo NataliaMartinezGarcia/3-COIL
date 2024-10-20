@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog, ttk  
 import open_files 
 from scroll_table import ScrollTable
+from column_selector import ColumnSelector
 
 # Clase principal para gestionar la interfaz gráfica
 class DataExplorerApp:
@@ -9,7 +10,9 @@ class DataExplorerApp:
     def __init__(self, ventana):
         self._ventana = ventana
         self._ventana.title("Data Explorer")
-        self._ventana.geometry("600x600")
+        self._ventana.geometry("900x900")
+
+        self._tabla = None
  
         # Crear frames para la interfaz
         self._frame_inicio = tk.Frame(self._ventana,bg = '#FAF8F9')
@@ -84,6 +87,9 @@ class DataExplorerApp:
                                   cursor="hand2", command=self.reinicio)
         boton_regresar.pack(pady=10)
 
+        # Llamar a la función para crear el selector de columnas debajo del botón de regresar
+        self.desplegables()
+
     def reinicio(self):
          
         self._ventana.destroy()
@@ -92,3 +98,18 @@ class DataExplorerApp:
         root = tk.Tk()
         app = DataExplorerApp(root)
         root.mainloop()
+
+    def desplegables(self):
+        # Columnas numéricas de la tabla
+        numeric = self._tabla.numeric_columns()
+
+        # Crear un frame para el selector de columnas
+        column_selector_frame = tk.Frame(self._frame_datos, width=400, height=400)
+        column_selector_frame.pack(padx=10, pady=10, fill=tk.X)
+
+        # Instanciar el ColumnSelector
+        self._column_selector = ColumnSelector(column_selector_frame, numeric)
+        column_selector_frame.pack(fill='x') 
+
+        # Falta por resolver que los desplegables se muestren antes de pinchar en la zona donde deberian estar
+        # y que el boton de confirmar no se mueva a la derecha al elegir seleccion multiple
