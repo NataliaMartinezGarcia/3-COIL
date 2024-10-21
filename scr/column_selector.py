@@ -123,7 +123,7 @@ class ColumnSelector:
     def create_confirm_button(self):
         # Botón de confirmación
         confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self.confirm_selection)
-        confirm_button.place(relx=0.5, rely=0.95, anchor='center')  # Usar pady mayor para evitar que esté pegado al final
+        confirm_button.place(relx=0.5, rely=0.9, anchor='center')  # Usar pady mayor para evitar que esté pegado al final
 
     def confirm_selection(self):
         """Botón para confirmar las selecciones."""
@@ -134,8 +134,8 @@ class ColumnSelector:
         # nombre_objeto.selected_features y nombre_objeto.selected_target
 
         # Obtener las selecciones de las columnas de entrada
-        selected_features_indices = self._feature_listbox.curselection()
-        self._selected_features = [self._columns[i] for i in selected_features_indices]
+        selected_features_indexes = self._feature_listbox.curselection()
+        self._selected_features = [self._columns[i] for i in selected_features_indexes]
         
         # Obtener la columna de salida
         self._selected_target = self._target_combobox.get()
