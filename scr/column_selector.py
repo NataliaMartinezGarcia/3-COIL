@@ -73,21 +73,22 @@ class ColumnSelector:
         """Crea una ListBox para elegir una o varias columnas de entrada o features."""
         # Crear el label inicial según el tipo de regresión
         # Label para seleccionar columnas de entrada
-        features_frame = tk.Frame(self._frame, width=180, height=170)
+        features_frame = tk.Frame(self._frame, width=280, height=170)
         features_frame.pack(side='left', padx = 10, pady=5)
 
         # Cambiará dependiendo del tipo de regresión escogido
-        tk.Label(features_frame, textvariable=self._regression_type_label).pack(side='top', pady=5, anchor='w', expand = False)
+        label = tk.Label(features_frame, textvariable=self._regression_type_label)
+        label.place(relx=0.5, rely=0.1,relwidth= 1, anchor="center")
         self.update_features_label()
         
         # Listbox con Scrollbar para seleccionar múltiples columnas de entrada
         self._feature_listbox = tk.Listbox(features_frame, selectmode=tk.SINGLE, height=5, exportselection=False) 
-        self._feature_listbox.pack(side='left', fill='y')
+        self._feature_listbox.place(relx=0.1, rely=0.4, relwidth=0.75, anchor="w")
 
         # Scrollbar para el Listbox a la derecha
         scrollbar = tk.Scrollbar(features_frame, orient="vertical")
         scrollbar.config(command=self._feature_listbox.yview)
-        scrollbar.pack(side='left', fill='y')  # Pegada a la Listbox
+        scrollbar.place(relx=0.8, rely=0.4, relheight=0.5, anchor="w")
         self._feature_listbox.config(yscrollcommand=scrollbar.set)
 
         # Agregar columnas al Listbox
@@ -122,7 +123,7 @@ class ColumnSelector:
     def create_confirm_button(self):
         # Botón de confirmación
         confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self.confirm_selection)
-        confirm_button.pack(side='bottom', padx=20, pady=5)  # Usar pady mayor para evitar que esté pegado al final
+        confirm_button.place(relx=0.5, rely=0.95, anchor='center')  # Usar pady mayor para evitar que esté pegado al final
 
     def confirm_selection(self):
         """Botón para confirmar las selecciones."""
