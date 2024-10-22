@@ -2,7 +2,7 @@ import tkinter as tk
 # from tkinter import messagebox, filedialog, ttk  
 # import pandas as pd 
 # import sqlite3 
-from data_explorer_app import DataExplorerApp
+from gui import DataExplorerApp
 
 def main():
     ventana = tk.Tk()  # Ventana principal
