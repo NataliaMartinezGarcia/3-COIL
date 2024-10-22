@@ -100,7 +100,7 @@ class DataExplorerApp:
         column_selector_frame.place(rely = 0.456,relx = 0.5,relwidth= 1,relheight= 0.5,anchor = "n")
 
         # Instanciar el ColumnSelector
-        self._column_selector = ColumnSelector(column_selector_frame, numeric)
+        self._column_selector = ColumnSelector(column_selector_frame, numeric,df)
 
 ########################################################
 # Para probar la estética (ignorad esto)
