@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import pandas as pd
+#import preprocesado 
 
 # Clase que implementa la interfaz para seleccionar columnas de entrada y salida
 class ColumnMenu:
@@ -96,7 +97,6 @@ class ColumnMenu:
         confirm_button.place(relx=0.5, rely=0.58, anchor='center')
 
     def confirm_selection(self):
-
         # Obtiene las features seleccionadas en el listbox
         # Es una lista que tendrá 1 solo elemento si solo se ha elegido 1 (simple)
         # y varios elementos si se ha elegido más de 1 (múltiple)
@@ -113,10 +113,42 @@ class ColumnMenu:
         else:  # Si todo es correcto, muestra las elecciones por pantalla
             f_cols = ', '.join(col for col in self._selected_features)  # Forma bonita de imprimirlos
             t_col = ', '.join(col for col in self._selected_target)
-            # ¡! DUDA: ¿conservar mensaje de éxito?
-            messagebox.showinfo("Éxito", f"Columnas de entrada seleccionadas: {f_cols}\nColumna de salida seleccionada: {t_col}")
+            success_window = messagebox.showinfo("Éxito", f"Feature: {f_cols}\nTarget: {t_col}")
+
+            # Después de que el usuario cierre el cuadro de diálogo de éxito, detecta NaN
+            if success_window == 'ok':  # Si el usuario cierra la ventana de confirmación
+                # Llama a la función para detectar NaN en las columnas seleccionadas
+                missing_info = self._df[self._selected_features + self._selected_target].isnull().sum()
+                missing_columns = missing_info[missing_info > 0]
+
+                # Actualiza la ventana con la información de NaN
+                if not missing_columns.empty:
+                    nan_message = "Valores inexistentes detectados en las siguientes columnas:\n"
+                    for col, count in missing_columns.items():
+                        nan_message += f"- {col}: {count} valores faltantes\n"
+                    messagebox.showinfo("Valores Inexistentes", nan_message)
+                else:
+                    messagebox.showinfo("Valores Inexistentes", "No se detectaron valores inexistentes.")
 
         self.enable_nan_selector() # Habilita el desplegable
+    
+    # añadida función para que salga el número de valores nan en las columnas seleccionadas 
+    def detectar_nan(self):
+        """Detecta y muestra cuántos valores inexistentes hay en el DataFrame."""
+        if self.df.empty:  # Verificación para asegurarse de que hay un archivo cargado
+            messagebox.showwarning("Advertencia", "Debes seleccionar un archivo primero.")  # Muestra advertencia
+            return  # Sale de la función
+
+        missing_info = self.df.isnull().sum()  # Calcula el número de valores inexistentes por columna
+        missing_columns = missing_info[missing_info > 0]  # Filtra columnas con valores inexistentes
+        
+        if not missing_columns.empty:  # Si hay columnas con valores inexistentes
+            message = "Valores inexistentes detectados en las siguientes columnas:\n"
+            for col, count in missing_columns.items():  # Itera sobre las columnas con valores faltantes
+                message += f"- {col}: {count} valores faltantes\n"
+            messagebox.showinfo("Valores Inexistentes", message)  # Muestra mensaje con la información
+        else:
+            messagebox.showinfo("Valores Inexistentes", "No se detectaron valores inexistentes.")  # Mensaje si no hay valores faltantes
 
     def enable_nan_selector(self):
         self._method_dropdown["state"] = "readonly"
@@ -141,31 +173,39 @@ class ColumnMenu:
         # Desplegable para elegir el método de manejo de valores inexistentes
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self.method_var, 
                                             state = "disabled", width=30)
-        # state = "disabled" hace que el desplegable esté desabilidato al momento de crearlo
 
         # Asigna los valores a elegir
         self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
         self._method_dropdown.place(relx=0.5, rely=0.77, relwidth=0.5, anchor="center")
 
-        # Caja para escribir texto
+        # Caja para escribir texto (desaparece al inicio)
         self.valor_entrada_cte = tk.Entry(self._frame, width=20)
         self.valor_entrada_cte.pack(pady=5)
-        self.valor_entrada_cte.pack_forget()  # La oculta
+        self.valor_entrada_cte.pack_forget()
 
         # Evento cuando se elija una opción
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
  
-        # Botón para aplicar la elección
-        apply_button = tk.Button(self._frame, text="Aplicar", command=self.apply_nan_handling)
-        apply_button.place(relx=0.5, rely=0.88, anchor="center")
+        # Botón para aplicar la elección, inicialmente deshabilitado
+        self.apply_button = tk.Button(self._frame, text="Aplicar", command=self.apply_nan_handling, state="disabled")
+        self.apply_button.place(relx=0.5, rely=0.88, anchor="center")
     
     def toggle_cte_entry(self, event):
-        """Muestra u oculta la entrada de valor constante."""
-        # ¡! REVISAR: al usar pack no sale, porque estamos usando place
-        if self.method_var.get() == "Rellenar con Valor Constante":
+        """Muestra u oculta la entrada de valor constante y habilita el botón 'Aplicar'."""
+        selected_method = self.method_var.get()
+        
+        # Si el usuario elige "Rellenar con Valor Constante", mostramos la caja de entrada
+        if selected_method == "Rellenar con Valor Constante":
             self.valor_entrada_cte.pack()
         else:
             self.valor_entrada_cte.pack_forget()
+
+        # Habilitar el botón de aplicar solo si hay un método seleccionado
+        if selected_method:
+            self.apply_button.config(state="normal")  # Habilita el botón
+        else:
+            self.apply_button.config(state="disabled")  # Deshabilita el botón si no hay selección
+
  
     def apply_nan_handling(self):
         """Aplica el método de manejo de NaN seleccionado a las columnas (features y target)."""
@@ -176,7 +216,7 @@ class ColumnMenu:
             return None
 
         # Combina las features y el target en una lista de columnas seleccionadas
-        columns_to_handle = self._selected_features + self._selected_target
+        columns_to_handle = list(set(self._selected_features + self._selected_target))
         print(columns_to_handle)
         
         if method == "Eliminar Filas":
@@ -194,7 +234,7 @@ class ColumnMenu:
                 return
         
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
-        
+
 
 #############################################
 # Prueba
