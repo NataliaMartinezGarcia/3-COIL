@@ -13,8 +13,15 @@ class DataExplorerApp:
         self._window.geometry("700x600")
 
         self._table = None
-        self.file = None
-        self.file_route = tk.StringVar()
+        self._file = None  # Variable para hacer operaciones con el path
+        self._file_path = tk.StringVar()  # Variable para mostrar el path por pantalla
+
+        # DataFrame que nunca se modificará
+        # Solo se sobreescribe cuando se elige un archivo nuevo
+        self._data = None  
+        # DataFrame con los datos preprocesados
+        # Se sobreescribe cuando se elige un método distinto de preprocesado
+        self._processed_data = None  
 
         self._frame = tk.Frame(self._window,bg = '#FAF8F9')
         self.scrollbar = tk.Scrollbar(self._window, orient="vertical")
@@ -33,20 +40,20 @@ class DataExplorerApp:
             filetypes=filetypes) 
 
         if file:
-            self.file = file
-            self.file_route.set(f"Archivo seleccionado: {file}")               
+            self._file = file
+            self._file_path.set(f"Archivo seleccionado: {file}")               
         else:
             messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
 
     def open_file(self):
-        if self.file:  # Verificar si hay un archivo seleccionado
-            df = open_files.open_files_interface(self.file)
-            if df is not None:
+        if self._file:  # Verificar si hay un archivo seleccionado
+            self._data = open_files.open_files_interface(self._file)
+            if self._data is not None:
                 messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
-                self.show_data(df)  # Llamar a show_data con el DataFrame cargado
+                self.show_data(self._data)  # Llamar a show_data con el DataFrame cargado
             else:
                 messagebox.showwarning("Error", "No se pudo cargar el archivo.")
-        else:
+        else:  # Si no hay ningún archivo seleccionado
             messagebox.showwarning("Advertencia", "No hay ningún archivo seleccionado.")
 
     def header(self):
@@ -59,12 +66,12 @@ class DataExplorerApp:
         label.place(relx=0.1,rely = 0.5, relheight=1 , anchor='center') 
 
         # Variable para almacenar la ruta del file seleccionado y botón para seleccionarlo
-        self.file_route.set("Haz click para seleccionar un archivo")
-        route_label = tk.Label(header_frame, textvariable= self.file_route, fg= "#FAF8F9", bg = '#6677B8',
+        self._file_path.set("Haz click para seleccionar un archivo")
+        path_label = tk.Label(header_frame, textvariable= self._file_path, fg= "#FAF8F9", bg = '#6677B8',
                                 font= ("DejaVu Sans Mono", 11), activebackground= "#808ec6",
                                 activeforeground= "#FAF8F9", cursor= "hand2")
-        route_label.bind("<Button-1>", self.search_file)
-        route_label.place(relx = 0.5, rely = 0.45, anchor = 'center')
+        path_label.bind("<Button-1>", self.search_file)
+        path_label.place(relx = 0.5, rely = 0.45, anchor = 'center')
     
         # Botón para abrir el explorador de archivos 
         search_button = tk.Button(header_frame, text="Abrir", font=("Arial", 12,'bold'),
@@ -83,11 +90,11 @@ class DataExplorerApp:
         table_frame = tk.Frame(self._frame)  # Establecer dimensiones
         table_frame.place(rely = 0.254,relx = 0.5,relwidth= 1,relheight= 0.4 ,anchor = "center")
 
-        self._table = ScrollTable(table_frame)  # table donde aparecen los data
+        self._table = ScrollTable(table_frame)  # Tabla con scrollbars donde aparecen los datos
 
-        self._table.empty_table()
-        self._table.create_from_df(df)
-        self._table.show()
+        self._table.empty_table()  # Limpia la tabla por si ya tenía datos
+        self._table.create_from_df(self._data)  # Copia los datos del DataFrame a la tabla
+        self._table.show()  # Muestra la tabla
 
         separator = tk.Frame(self._frame, bg = '#6677B8')
         separator.place(rely = 0.454, relwidth = 1, relheight = 0.004, anchor= 'w')
