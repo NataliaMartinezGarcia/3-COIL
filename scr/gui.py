@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog, ttk  
 import open_files 
 from scroll_table import ScrollTable
-from column_selector import ColumnSelector
+from column_menu import ColumnMenu
 
 # Clase principal para gestionar la interfaz gráfica
 class DataExplorerApp:
@@ -106,8 +106,8 @@ class DataExplorerApp:
         column_selector_frame = tk.Frame(self._frame)
         column_selector_frame.place(rely = 0.456,relx = 0.5,relwidth= 1,relheight= 0.5,anchor = "n")
 
-        # Instanciar el ColumnSelector
-        self._column_selector = ColumnSelector(column_selector_frame, numeric,df)
+        # Instanciar el ColumnMenu
+        self._column_selector = ColumnMenu(column_selector_frame, numeric,df)
 
 ########################################################
 # Para probar la estética (ignorad esto)
