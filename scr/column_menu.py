@@ -48,7 +48,7 @@ class ColumnMenu:
         # otro widget que no sea el botón de confirmar
 
         # Evento que bloquea el desplegable de métodos de preprocesado cada vez que se selecciona una opción
-        self._feature_listbox.bind("<<ListboxSelect>>", self.on_target_select)
+        self._feature_listbox.bind("<<ListboxSelect>>", self.on_column_select)
 
         # Ahora mismo la listbox está vacía
         # Le metemos las columnas que nos han pasado
@@ -78,7 +78,7 @@ class ColumnMenu:
         self._target_listbox.place(relx=0.1, rely=0.46, relwidth=0.75, anchor="w")
         
         # Evento que bloquea el desplegable de métodos de preprocesado cada vez que se selecciona una opción
-        self._target_listbox.bind("<<ListboxSelect>>", self.on_target_select)
+        self._target_listbox.bind("<<ListboxSelect>>", self.on_column_select)
 
         # Barra de desplazamiento vertical para cuando haya muchas columnas
         scrollbar = tk.Scrollbar(target_frame, orient="vertical")
@@ -132,7 +132,7 @@ class ColumnMenu:
 
         self.enable_nan_selector() # Habilita el desplegable
     
-    # añadida función para que salga el número de valores nan en las columnas seleccionadas 
+    # Añadida función para que salga el número de valores nan en las columnas seleccionadas 
     def detectar_nan(self):
         """Detecta y muestra cuántos valores inexistentes hay en el DataFrame."""
         if self.df.empty:  # Verificación para asegurarse de que hay un archivo cargado
@@ -156,12 +156,8 @@ class ColumnMenu:
     def disable_nan_selector(self):
         self._method_dropdown["state"] = "disabled"
 
-    def on_feature_select(self, event):
-        """Deshabilita el selector de método NaN cuando se selecciona un feature."""
-        self.disable_nan_selector()
-
-    def on_target_select(self, event):
-        """Deshabilita el selector de método NaN cuando se selecciona un target."""
+    def on_column_select(self, event):
+        """Deshabilita el selector de método NaN cuando se selecciona una columna."""
         self.disable_nan_selector()
 
     def create_nan_selector(self):
@@ -169,7 +165,6 @@ class ColumnMenu:
         label.place(relx=0.5, rely=0.7, relwidth=0.5, anchor="center")
 
         self.method_var = tk.StringVar()
-
         # Desplegable para elegir el método de manejo de valores inexistentes
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self.method_var, 
                                             state = "disabled", width=30)
@@ -179,34 +174,35 @@ class ColumnMenu:
         self._method_dropdown.place(relx=0.5, rely=0.77, relwidth=0.5, anchor="center")
 
         # Caja para escribir texto (desaparece al inicio)
-        self.valor_entrada_cte = tk.Entry(self._frame, width=20)
-        self.valor_entrada_cte.pack(pady=5)
-        self.valor_entrada_cte.pack_forget()
+        self._valor_entrada_cte = tk.Entry(self._frame, width=20, state="disabled")
+        # Empieza deshabilitada
+        self._valor_entrada_cte.place(relx=0.5, rely=0.83, relwidth=0.5, anchor="center")
 
         # Evento cuando se elija una opción
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
  
         # Botón para aplicar la elección, inicialmente deshabilitado
         self.apply_button = tk.Button(self._frame, text="Aplicar", command=self.apply_nan_handling, state="disabled")
-        self.apply_button.place(relx=0.5, rely=0.88, anchor="center")
-    
+        self.apply_button.place(relx=0.5, rely=0.93, anchor="center")
+
     def toggle_cte_entry(self, event):
         """Muestra u oculta la entrada de valor constante y habilita el botón 'Aplicar'."""
         selected_method = self.method_var.get()
         
         # Si el usuario elige "Rellenar con Valor Constante", mostramos la caja de entrada
         if selected_method == "Rellenar con Valor Constante":
-            self.valor_entrada_cte.pack()
+            self._valor_entrada_cte.config(state="normal")
         else:
-            self.valor_entrada_cte.pack_forget()
-
+            # Limpia la entrada y luego la deshabilita
+            self._valor_entrada_cte.delete(0, "end")  
+            self._valor_entrada_cte.config(state="disabled")
+            
         # Habilitar el botón de aplicar solo si hay un método seleccionado
         if selected_method:
             self.apply_button.config(state="normal")  # Habilita el botón
         else:
             self.apply_button.config(state="disabled")  # Deshabilita el botón si no hay selección
 
- 
     def apply_nan_handling(self):
         """Aplica el método de manejo de NaN seleccionado a las columnas (features y target)."""
         method = self.method_var.get()
@@ -217,7 +213,6 @@ class ColumnMenu:
 
         # Combina las features y el target en una lista de columnas seleccionadas
         columns_to_handle = list(set(self._selected_features + self._selected_target))
-        print(columns_to_handle)
         
         if method == "Eliminar Filas":
             self._df.dropna(subset=columns_to_handle, inplace=True)
