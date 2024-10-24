@@ -222,7 +222,7 @@ class ColumnMenu:
             self._df[columns_to_handle] = self._df[columns_to_handle].fillna(self._df[columns_to_handle].median())
         elif method == "Rellenar con Valor Constante":
             try:
-                constant_value = float(self.valor_entrada_cte.get())
+                constant_value = float(self._valor_entrada_cte.get())
                 self._df[columns_to_handle] = self._df[columns_to_handle].fillna(constant_value)
             except ValueError:
                 messagebox.showerror("Error", "Debes introducir un valor numérico válido.")
