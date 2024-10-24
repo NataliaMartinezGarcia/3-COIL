@@ -104,7 +104,7 @@ class DataExplorerApp:
 
         # Crear un frame para el selector de columnas
         column_selector_frame = tk.Frame(self._frame)
-        column_selector_frame.place(rely = 0.456,relx = 0.5,relwidth= 1,relheight= 0.5,anchor = "n")
+        column_selector_frame.place(rely = 0.457,relx = 0.5,relwidth= 1,relheight= 0.5,anchor = "n")
 
         # Instanciar el ColumnMenu
         self._column_selector = ColumnMenu(column_selector_frame, numeric,df)
