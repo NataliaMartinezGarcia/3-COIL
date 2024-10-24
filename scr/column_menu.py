@@ -127,10 +127,11 @@ class ColumnMenu:
                     for col, count in missing_columns.items():
                         nan_message += f"- {col}: {count} valores faltantes\n"
                     messagebox.showinfo("Valores Inexistentes", nan_message)
+                    self.enable_nan_selector() # Habilita el desplegable
+
                 else:
                     messagebox.showinfo("Valores Inexistentes", "No se detectaron valores inexistentes.")
-
-        self.enable_nan_selector() # Habilita el desplegable
+                    self.diable_nan_selector()
     
     # Añadida función para que salga el número de valores nan en las columnas seleccionadas 
     def detectar_nan(self):
@@ -161,30 +162,43 @@ class ColumnMenu:
         self.disable_nan_selector()
 
     def create_nan_selector(self):
-        label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:")
-        label.place(relx=0.5, rely=0.7, relwidth=0.5, anchor="center")
-
+        """Crea el desplegable de manejo de NaN pero no lo muestra al inicio."""
+        # Inicialmente no se crea el desplegable, se hará cuando se detecten NaN
         self.method_var = tk.StringVar()
-        # Desplegable para elegir el método de manejo de valores inexistentes
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self.method_var, 
-                                            state = "disabled", width=30)
+                                            state="disabled", width=30)
 
         # Asigna los valores a elegir
         self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
-        self._method_dropdown.place(relx=0.5, rely=0.77, relwidth=0.5, anchor="center")
-
+        
         # Caja para escribir texto (desaparece al inicio)
         self._valor_entrada_cte = tk.Entry(self._frame, width=20, state="disabled")
         # Empieza deshabilitada
-        self._valor_entrada_cte.place(relx=0.5, rely=0.83, relwidth=0.5, anchor="center")
 
         # Evento cuando se elija una opción
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
- 
+
         # Botón para aplicar la elección, inicialmente deshabilitado
         self.apply_button = tk.Button(self._frame, text="Aplicar", command=self.apply_nan_handling, state="disabled")
+    
+    def enable_nan_selector(self):
+        """Muestra y habilita el selector de NaN."""
+        # Coloca los widgets cuando se detectan NaN
+        label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:")
+        label.place(relx=0.5, rely=0.7, relwidth=0.5, anchor="center")
+
+        self._method_dropdown.place(relx=0.5, rely=0.77, relwidth=0.5, anchor="center")
+        self._valor_entrada_cte.place(relx=0.5, rely=0.83, relwidth=0.5, anchor="center")
         self.apply_button.place(relx=0.5, rely=0.93, anchor="center")
 
+        self._method_dropdown["state"] = "readonly"
+
+    def disable_nan_selector(self):
+        """Oculta y deshabilita el selector de NaN."""
+        self._method_dropdown["state"] = "disabled"
+        self._valor_entrada_cte.place_forget()  # Oculta la entrada de valor constante
+        self.apply_button.place_forget()  # Oculta el botón de aplicar
+                
     def toggle_cte_entry(self, event):
         """Muestra u oculta la entrada de valor constante y habilita el botón 'Aplicar'."""
         selected_method = self.method_var.get()
