@@ -12,17 +12,21 @@ class ScrollApp:
 
         self._window = window
 
+        # Dimensiones de la ventana en función del tamaño de la pantalla
         self._width = self._window.winfo_screenwidth() //2
         self._height = self._window.winfo_screenheight()  //2
+        # Para que salga centrada en la pantalla
+        self._x = self._width//2
+        self._y = self._height//3
 
         self._window.title("Linear Regression App")
-        self._window.geometry(f"{self._width}x{self._height}")
+        self._window.geometry(f"{self._width}x{self._height}+{self._x}+{self._y}")
 
         # Crear un main frame
         self._main_frame = tk.Frame(self._window)
         self._main_frame.pack(fill="both", expand=True)
 
-        # Llamamos al método para crear los widgets de la window
+        # header está fuera del área de scroll
         self.header()
 
         # Crear un canvas
@@ -38,14 +42,23 @@ class ScrollApp:
         self._my_canvas.bind("<Configure>", lambda e: self._my_canvas.configure(scrollregion = self._my_canvas.bbox("all")))
 
         # Crear otro frame dentro del canvas
+        # En este es donde se añaden el resto de widgets
         self._second_frame = tk.Frame(self._my_canvas)
         
         # Añadir el nuevo frame a la window dentro del canvas
         self._my_canvas.create_window((0, 0), window=self._second_frame, anchor="nw")
+        # Si en window = especificamos width y height, el área de scroll tendrá esas dimensiones
+        # Si no, se adapta a los widgets que tenga dentro
+        # Importante: no tocar width, porque esta va depende del tamaño de la tabla
+        # y ese frame se ajusta solo al redimensionar la ventana
         #, width = self._width-13)
 
+        # Aplicación principal con self._second_frame como frame principal
+        # Pasamos self._my_canvas para ajustar el área de scroll a medida que se añaden widgets
+        # Pasamos self para acceder desde dentro de la clase a las dimensiones de la ventana y ajustar la tabla de datos
         self._app = App(self._second_frame, self._my_canvas, self)
 
+    # Necesitamos acceder a la ventana desde otro objeto para acceder a sus dimensiones
     @property
     def window(self):
         return self._window
@@ -70,9 +83,9 @@ class ScrollApp:
             self._data = open_files_interface(self._file)
             if self._data is not None:
                 messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
-                # actualiza los datos
+                # Actualiza los datos
                 self._app.data = self._data
-                # muestra los datos
+                # Muestra los datos
                 self._app.show_data()  # Llamar a show_data con el DataFrame cargado
             else:
                 messagebox.showwarning("Error", "No se pudo cargar el archivo.")
@@ -134,13 +147,19 @@ class App:
     # HABRÁ QUE HACER EN EL FUTURO GETTERS PARA LOS ATRIBUTOS QUE LO NECESITEN
     def __init__(self, frame, canvas, scroll_window):
 
+        # Frame donde irá la tabla
+        # En realidad se redefine luego, pero hay que inicializarlo antes de añadir el 
+        # evento a la ventana porque si no sale un error diciendo que no existe
+        self._table_frame = tk.Frame()  
+
         self._frame = frame
         self._canvas = canvas
 
         self._scroll_window = scroll_window
+        # Evento cuando se cambia el tamaño de la ventana
         self._scroll_window.window.bind("<Configure>", self.on_window_resize)
-
-        self._table = None # Objeto Tabla
+        
+        self._table = None # Futuro objeto Tabla
 
         self._file = None  # Variable para hacer operaciones con el path
         self._file_path = tk.StringVar()  # Variable para mostrar el path por pantalla
@@ -156,12 +175,15 @@ class App:
     def data(self):
         return self._data
     
+    # Para poder actualizar el DataFrame al leer el archivo desde la clase ScrollApp
     @data.setter
     def data(self, df):
         self._data = df
 
     def show_data(self):  
         
+        # Vacía el frame en el caso de que ya hubiese una tabla anteriormente
+        # (lo que ocurre cuando el usuario cambia de archivo)
         self.clear_frame()
     
         # Creamos un frame para la table de data y las barras de desplazamiento
@@ -178,21 +200,25 @@ class App:
         separator = tk.Frame(self._frame, bg = '#6677B8', height = 3)
         separator.pack(fill = tk.X, side = tk.TOP, anchor = "center")
 
-        self._scroll_window.update()
-
         # Columnas numéricas de la table
         numeric = self._table.numeric_columns()
 
-        """# Crear un frame para el selector de columnas
-        column_selector_frame = tk.Frame(self._frame)
+        # Crear un frame para el selector de columnas
+        column_selector_frame = tk.Frame(self._frame, height = 400, width = self._scroll_window.window.winfo_width() - 15)
         column_selector_frame.pack(fill = tk.BOTH, side = tk.TOP, anchor = "center")
+        column_selector_frame.pack_propagate(False)
+        # Si fijamos el tamaño del frame y hacemos que no pueda reducirse (con propagate = False)
+        # No hace falta cambiar de place a pack en el módulo de column_menu
 
         # Instanciar el MenuManager
         self._menu = MenuManager(column_selector_frame, numeric, self._data)
         self._processed_data = self._menu.new_df  # Actualiza el df procesado
         
-        HAY QUE CAMBIAR TODOS LOS PLACE DE COLUMN_MENU POR PACK!"""
-
+        # Para que se actualice el área de scroll
+        # Hay que llamar a esta función siempre que creemos un widget nuevo
+        # (Habrá que llamarla otra vez después de generar la gráfica)
+        self._scroll_window.update()
+        
     def clear_frame(self):
         for widget in self._frame.winfo_children():
             widget.destroy()
