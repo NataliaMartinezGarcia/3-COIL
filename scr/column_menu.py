@@ -1,233 +1,442 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import pandas as pd
-#import preprocesado 
+from nan_handler import NaNHandler
 
 # Clase que implementa la interfaz para seleccionar columnas de entrada y salida
 class ColumnMenu:
+    """Interfaz gráfica para seleccionar columnas de entrada y salida de un DataFrame.
+    
+    Esta clase permite al usuario seleccionar múltiples columnas de entrada ("features") 
+    y una columna de salida ("target") en una ventana de Tkinter.
+    
+    Attributes
+    ----------
+    _frame : tk.Frame
+        Frame principal de la interfaz gráfica donde se colocarán los widgets.
+    _columns : list
+        Lista de nombres de columnas disponibles para seleccionar.
+    _manager : object
+        Objeto controlador que maneja la lógica de selección y confirmación.
+    _selected_features : list
+        Lista de columnas seleccionadas como features.
+    _selected_target : list
+        Columna seleccionada como target.
+    
+    Methods
+    -------
+    add_scrollbar_to_listbox(listbox, container_frame):
+        Añade una scrollbar a un Listbox dentro de un contenedor específico.
+    create_features_selector():
+        Crea el selector de columnas de entrada con un Listbox y scrollbar.
+    create_target_selector():
+        Crea el selector de columna de salida con un Listbox y scrollbar.
+    create_confirm_button():
+        Crea un botón que confirma la selección de columnas.
+    get_selected_columns():
+        Guarda las columnas seleccionadas de entrada y salida en las variables correspondientes.
+    """
+    def __init__(self, frame, columns, manager):
+        """
+        Inicializa el menú de selección de columnas.
+        
+        :param frame: Frame padre donde se ubicarán los widgets.
+        :param columns: Lista de nombres de columnas del DataFrame.
+        :param manager: Objeto del manager que controla la lógica de selección y confirmación.
+        """
 
-    def __init__(self, frame, columns, df):
-        self._frame = frame  # Frame donde estarán los desplegables
-        self._columns = columns  # Columnas a elegir
-        self._df = df  # DataFrame del que se eligen las columnas
-
-        # Variables para almacenar las selecciones
+        self._frame = frame
+        self._columns = columns
+        self._manager = manager
         self._selected_features = []
         self._selected_target = []
 
-        # Estas funciones son simplemente para que no se ponga todo el código en el init
-        # Como el create_widgets de las otras clases
-        self.create_features_selector()  # Función que crea el selector de features
-        self.create_target_selector()  # Función que crea el selector de target
-        self.create_confirm_button()  # Función que crea el botón de confirmar
-        self.create_nan_selector()
+        self.create_features_selector()
+        self.create_target_selector()
+        self.create_confirm_button()
 
-    # Getter para obtener las features desde fuera de la clase
-    @property    
+    @property
     def selected_features(self):
+        """Obtiene la lista de columnas seleccionadas como features.
+        
+        Returns
+        -------
+        list
+            Lista de nombres de las columnas seleccionadas como features.
+        """
         return self._selected_features
- 
-    # Getter para obtener el target desde fuera de la clase
-    @property    
+
+    @property
     def selected_target(self):
+        """Obtiene la columna seleccionada como target.
+        
+        Returns
+        -------
+        list
+            Lista que contiene el nombre de la columna seleccionada como target.
+        """
         return self._selected_target
-    
+
+    def add_scrollbar_to_listbox(self, listbox, container_frame):
+        """Añade una scrollbar vertical a un Listbox dentro de un contenedor específico.
+        
+        Parameters
+        ----------
+        listbox : tk.Listbox
+            Listbox al que se le añadirá la scrollbar.
+        container_frame : tk.Frame
+            Frame que contiene el Listbox y donde se ubicará la scrollbar.
+        
+        Returns
+        -------
+        None.
+        """
+        # Crear y colocar la scrollbar vertical
+        scrollbar = tk.Scrollbar(container_frame, orient="vertical", command=listbox.yview)
+        scrollbar.pack(side="right", fill="y")
+        listbox.config(yscrollcommand=scrollbar.set)
+
     def create_features_selector(self):
-        """Crea una ListBox para elegir una o varias columnas de entrada o features."""
-        features_frame = tk.Frame(self._frame, width=280, height=170)
+        """Crea el selector de columnas de entrada (features).
+        
+        Incluye un contenedor con una etiqueta descriptiva, un Listbox de selección múltiple 
+        y una scrollbar vertical.
+        
+        Returns
+        -------
+        None.
+        """
+        # Frame principal que contiene la etiqueta y el container_frame con el listbox y scrollbar
+        features_frame = tk.Frame(self._frame, width=290, height=170)
         features_frame.place(relx=0.03, rely=0.4, relwidth=0.5, anchor="w")
- 
-        # Etiqueta que indica si se deben elegir 1 o más columnas
-        label = tk.Label(features_frame, text = "Selecciona una o varias columnas de entrada (features):", wraplength=270)
-        # wraplength=270 para que el texto no se corte con el borde del frame
+
+        # Etiqueta
+        label = tk.Label(features_frame, text="Selecciona una o varias columnas de entrada (features):", wraplength=270)
         label.place(relx=0.5, rely=0.1, relwidth=1, anchor="center")
-       
-        # Listbox donde se elegirán esas columnas
-        self._feature_listbox = tk.Listbox(features_frame, selectmode=tk.MULTIPLE, height=5, exportselection=False)
-        # exportselection=False -> para que las selecciones no se borren al interactuar con
-        # otro widget que no sea el botón de confirmar
+        
+        # Contenedor que mantiene juntos el listbox y la scrollbar
+        container_frame = tk.Frame(features_frame)
+        container_frame.place(relx=0.5, rely=0.5, relwidth=0.75, relheight=0.5, anchor="center")
 
-        # Evento que bloquea el desplegable de métodos de preprocesado cada vez que se selecciona una opción
-        self._feature_listbox.bind("<<ListboxSelect>>", self.on_column_select)
+        # Crear el Listbox y colocarlo en el lado izquierdo del container_frame
+        self._feature_listbox = tk.Listbox(container_frame, selectmode=tk.MULTIPLE, height=5, exportselection=False)
+        self._feature_listbox.pack(side="left", fill="both", expand=True)
+        self._feature_listbox.bind("<<ListboxSelect>>", self._manager.on_column_select)
 
-        # Ahora mismo la listbox está vacía
-        # Le metemos las columnas que nos han pasado
         for column in self._columns:
             self._feature_listbox.insert(tk.END, column)
-        
-        self._feature_listbox.place(relx=0.1, rely=0.46, relwidth=0.75, anchor="w")
- 
-        # Barra de desplazamiento vertical para cuando haya muchas columnas
-        scrollbar = tk.Scrollbar(features_frame, orient="vertical")
-        scrollbar.config(command=self._feature_listbox.yview)
-        scrollbar.place(relx=0.8, rely=0.46, relheight=0.5, anchor="w")
-        self._feature_listbox.config(yscrollcommand=scrollbar.set)
+
+        # Llamar a la función para agregar el scrollbar al Listbox
+        self.add_scrollbar_to_listbox(self._feature_listbox, container_frame)
 
     def create_target_selector(self):
-        """Crea un ListBox para elegir la columna de salida o target."""
+        """Crea el selector de columna de salida (target).
         
+        Incluye un contenedor con una etiqueta descriptiva, un Listbox de selección única 
+        y una scrollbar vertical.
+        
+        Returns
+        -------
+        None.
+        """
         target_frame = tk.Frame(self._frame, width=280, height=170)
         target_frame.place(relx=0.97, rely=0.4, relwidth=0.5, anchor="e")
- 
-        # Etiqueta que indica que se debe elegir 1 columna
+
         label = tk.Label(target_frame, text="Selecciona la columna de salida (target):")
         label.place(relx=0.5, rely=0.1, relwidth=1, anchor="center")
-    
-        # Listbox donde se dan a elegir las columnas
-        self._target_listbox = tk.Listbox(target_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
-        self._target_listbox.place(relx=0.1, rely=0.46, relwidth=0.75, anchor="w")
-        
-        # Evento que bloquea el desplegable de métodos de preprocesado cada vez que se selecciona una opción
-        self._target_listbox.bind("<<ListboxSelect>>", self.on_column_select)
 
-        # Barra de desplazamiento vertical para cuando haya muchas columnas
-        scrollbar = tk.Scrollbar(target_frame, orient="vertical")
-        scrollbar.config(command=self._target_listbox.yview)
-        scrollbar.place(relx=0.8, rely=0.46, relheight=0.5, anchor="w")
-        self._target_listbox.config(yscrollcommand=scrollbar.set)
- 
-        # Ahora mismo la listbox está vacía
-        # Le metemos las columnas que nos han pasado
+        # Contenedor que mantiene juntos el listbox y la scrollbar
+        container_frame = tk.Frame(target_frame)
+        container_frame.place(relx=0.5, rely=0.5, relwidth=0.75, relheight=0.5, anchor="center")
+
+        self._target_listbox = tk.Listbox(container_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
+        self._target_listbox.bind("<<ListboxSelect>>", self._manager.on_column_select)
+        # Usamos pack para que se expanda dentro del frame que lo empaqueta con el scrollbar
+        self._target_listbox.pack(side="left", fill="both", expand=True)
+
         for column in self._columns:
             self._target_listbox.insert(tk.END, column)
-    
+
+        # Llamar a la función para agregar el scrollbar al Listbox
+        self.add_scrollbar_to_listbox(self._target_listbox, container_frame)
+
     def create_confirm_button(self):
-        """Botón para confirmar las selecciones."""
-        confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self.confirm_selection)
+        """Crea un botón que permite confirmar la selección de columnas.
+        
+        El botón activa el método 'confirm_selection' del manager para procesar 
+        las columnas seleccionadas.
+        
+        Returns
+        -------
+        None.
+        """
+        confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self._manager.confirm_selection)
         confirm_button.place(relx=0.5, rely=0.58, anchor='center')
 
-    def confirm_selection(self):
-        # Obtiene las features seleccionadas en el listbox
-        # Es una lista que tendrá 1 solo elemento si solo se ha elegido 1 (simple)
-        # y varios elementos si se ha elegido más de 1 (múltiple)
+    def get_selected_columns(self):
+        """Guarda las columnas seleccionadas en los Listbox de entrada y salida.
+        
+        Almacena las columnas seleccionadas de entrada y salida en las variables 
+        '_selected_features' y '_selected_target', respectivamente.
+        
+        Returns
+        -------
+        None.
+        """
         self._selected_features = [self._feature_listbox.get(i) for i in self._feature_listbox.curselection()]
- 
-        # Obtiene el target seleccionado
         self._selected_target = [self._target_listbox.get(i) for i in self._target_listbox.curselection()]
 
-        # Manejo de errores
-        if len(self._selected_features) == 0:  # Si no ha elegido ningun feature
-            messagebox.showerror("Error", "Debes seleccionar al menos una columna de entrada (feature).")
-        elif len(self._selected_target) == 0:  # Si no ha elegido ningun target
-            messagebox.showerror("Error", "Debes seleccionar una columna de salida (target).")
-        else:  # Si todo es correcto, muestra las elecciones por pantalla
-            f_cols = ', '.join(col for col in self._selected_features)  # Forma bonita de imprimirlos
-            t_col = ', '.join(col for col in self._selected_target)
-            success_window = messagebox.showinfo("Éxito", f"Feature: {f_cols}\nTarget: {t_col}")
 
-            # Después de que el usuario cierre el cuadro de diálogo de éxito, detecta NaN
-            if success_window == 'ok':  # Si el usuario cierra la ventana de confirmación
-                # Llama a la función para detectar NaN en las columnas seleccionadas
-                missing_info = self._df[self._selected_features + self._selected_target].isnull().sum()
-                missing_columns = missing_info[missing_info > 0]
+class MethodMenu:
+    """Clase para manejar la selección de métodos para tratar los valores NaN en datos.
 
-                # Actualiza la ventana con la información de NaN
-                if not missing_columns.empty:
-                    nan_message = "Valores inexistentes detectados en las siguientes columnas:\n"
-                    for col, count in missing_columns.items():
-                        nan_message += f"- {col}: {count} valores faltantes\n"
-                    messagebox.showinfo("Valores Inexistentes", nan_message)
-                else:
-                    messagebox.showinfo("Valores Inexistentes", "No se detectaron valores inexistentes.")
+    Attributes
+    ----------
+    _frame : tk.Frame
+        El marco en el que se colocan los componentes de la interfaz gráfica.
+    _manager : objeto
+        El administrador que gestiona la lógica relacionada con el tratamiento de datos.
+    _method_var : tk.StringVar
+        Variable que contiene el método seleccionado para manejar los NaN.
 
-        self.enable_nan_selector() # Habilita el desplegable
+    Methods
+    -------
+    create_nan_selector():
+        Crea y coloca el selector de métodos en la interfaz gráfica.
+    toggle_cte_entry(event):
+        Habilita o deshabilita el campo de entrada para un valor constante basado en el método seleccionado.
+    create_apply_button():
+        Crea y coloca el botón para aplicar el método seleccionado.
+    enable_selector():
+        Habilita el selector de métodos.
+    disable_selector():
+        Deshabilita el selector de métodos y limpia la selección actual.
+    """
+    # Constante: métodos para tratar los NaN
+    METHODS = ("Eliminar Filas", "Rellenar con Media", 
+                "Rellenar con Mediana", "Rellenar con Valor Constante")
     
-    # Añadida función para que salga el número de valores nan en las columnas seleccionadas 
-    def detectar_nan(self):
-        """Detecta y muestra cuántos valores inexistentes hay en el DataFrame."""
-        if self.df.empty:  # Verificación para asegurarse de que hay un archivo cargado
-            messagebox.showwarning("Advertencia", "Debes seleccionar un archivo primero.")  # Muestra advertencia
-            return  # Sale de la función
+    def __init__(self, frame, manager):
+        """Inicializa la clase MethodMenu.
 
-        missing_info = self.df.isnull().sum()  # Calcula el número de valores inexistentes por columna
-        missing_columns = missing_info[missing_info > 0]  # Filtra columnas con valores inexistentes
-        
-        if not missing_columns.empty:  # Si hay columnas con valores inexistentes
-            message = "Valores inexistentes detectados en las siguientes columnas:\n"
-            for col, count in missing_columns.items():  # Itera sobre las columnas con valores faltantes
-                message += f"- {col}: {count} valores faltantes\n"
-            messagebox.showinfo("Valores Inexistentes", message)  # Muestra mensaje con la información
-        else:
-            messagebox.showinfo("Valores Inexistentes", "No se detectaron valores inexistentes.")  # Mensaje si no hay valores faltantes
+        Parameters
+        ----------
+        frame : tk.Frame
+            El marco en el que se colocarán los componentes de la interfaz gráfica.
+        manager : objeto
+            El administrador que gestiona la lógica relacionada con el tratamiento de datos.
+        Returns
+        -------
+        None.
+        """
+        self._frame = frame
+        self._manager = manager
+        self._method_var = tk.StringVar()
 
-    def enable_nan_selector(self):
-        self._method_dropdown["state"] = "readonly"
+        self.create_nan_selector()
+        self._apply_button = self.create_apply_button()
 
-    def disable_nan_selector(self):
-        self._method_dropdown["state"] = "disabled"
+    @property 
+    def method_var(self):
+        """Devuelve el método seleccionado.
 
-    def on_column_select(self, event):
-        """Deshabilita el selector de método NaN cuando se selecciona una columna."""
-        self.disable_nan_selector()
-
+        Returns
+        -------
+        tk.StringVar
+            Variable que contiene el método seleccionado para manejar NaN.
+        """
+        return self._method_var
+    
+    @property
+    def constant_value_input(self):
+        return self._constant_value_input.get()
+    
     def create_nan_selector(self):
+        """Crea y coloca el selector de métodos en la interfaz gráfica.
+
+        Este método crea una etiqueta y un Combobox para seleccionar el método
+        de manejo de NaN, así como un campo de entrada para un valor constante
+        si es necesario.
+
+        Returns
+        -------
+        None.
+        """
         label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:")
         label.place(relx=0.5, rely=0.7, relwidth=0.5, anchor="center")
 
-        self.method_var = tk.StringVar()
-        # Desplegable para elegir el método de manejo de valores inexistentes
-        self._method_dropdown = ttk.Combobox(self._frame, textvariable=self.method_var, 
-                                            state = "disabled", width=30)
-
-        # Asigna los valores a elegir
+        self._method_dropdown = ttk.Combobox(self._frame, textvariable=self._method_var, state="disabled", width=30)
+        # textvariable=self._method_var: vincula el desplegable a la variable self._method_var
+        # El valor seleccionado se actualiza automáticamente en self._method_var.
+        # Al momento de crearlo está
         self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
         self._method_dropdown.place(relx=0.5, rely=0.77, relwidth=0.5, anchor="center")
-
-        # Caja para escribir texto (desaparece al inicio)
-        self._valor_entrada_cte = tk.Entry(self._frame, width=20, state="disabled")
-        # Empieza deshabilitada
-        self._valor_entrada_cte.place(relx=0.5, rely=0.83, relwidth=0.5, anchor="center")
-
-        # Evento cuando se elija una opción
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
- 
-        # Botón para aplicar la elección, inicialmente deshabilitado
-        self.apply_button = tk.Button(self._frame, text="Aplicar", command=self.apply_nan_handling, state="disabled")
-        self.apply_button.place(relx=0.5, rely=0.93, anchor="center")
+
+        self._constant_value_input = tk.Entry(self._frame, width=20, state="disabled")
+        self._constant_value_input.place(relx=0.5, rely=0.83, relwidth=0.5, anchor="center")
 
     def toggle_cte_entry(self, event):
-        """Muestra u oculta la entrada de valor constante y habilita el botón 'Aplicar'."""
-        selected_method = self.method_var.get()
-        
-        # Si el usuario elige "Rellenar con Valor Constante", mostramos la caja de entrada
+        """Habilita o deshabilita el campo de entrada para un valor constante
+        basado en el método seleccionado.
+
+        Parameters
+        ----------
+        event : Event
+            Evento de selección en el Combobox.
+
+        Returns
+        -------
+        None.
+        """
+        selected_method = self._method_var.get()
         if selected_method == "Rellenar con Valor Constante":
-            self._valor_entrada_cte.config(state="normal")
+            self._constant_value_input.config(state="normal")
         else:
-            # Limpia la entrada y luego la deshabilita
-            self._valor_entrada_cte.delete(0, "end")  
-            self._valor_entrada_cte.config(state="disabled")
-            
-        # Habilitar el botón de aplicar solo si hay un método seleccionado
+            self._constant_value_input.delete(0, "end")
+            self._constant_value_input.config(state="disabled")
+
         if selected_method:
-            self.apply_button.config(state="normal")  # Habilita el botón
+            self._apply_button.config(state="normal")
         else:
-            self.apply_button.config(state="disabled")  # Deshabilita el botón si no hay selección
+            self._apply_button.config(state="disabled")
+
+    def create_apply_button(self):
+        """Crea y coloca el botón para aplicar el método seleccionado.
+
+        Returns
+        -------
+        tk.Button
+            El botón creado para aplicar el manejo de NaN.
+        """
+        apply_button = tk.Button(self._frame, text="Aplicar", command=self._manager.apply_nan_handling, state="disabled")
+        apply_button.place(relx=0.5, rely=0.93, anchor="center")
+        return apply_button
+
+    def enable_selector(self):
+        """Habilita el selector de métodos.
+
+        Returns
+        -------
+        None.
+        """
+        self._method_dropdown["state"] = "readonly"
+
+    def disable_selector(self):
+        """Deshabilita el selector de métodos y limpia la selección actual.
+
+        Returns
+        -------
+        None.
+        """
+        self._method_var.set("")  # Limpia el valor seleccionado
+        self._method_dropdown["state"] = "disabled"
+
+    def display_nan_message(self, message):
+        """Muestra un mensaje sobre los valores inexistentes.
+        
+        Parameters
+        ----------
+        message : str
+            El mensaje a mostrar en el label.
+
+        Returns
+        -------
+        None.
+        """
+        self._message_label.config(text=message)
+
+    def clear_nan_message(self):
+        """Limpia el mensaje sobre valores inexistentes.
+        
+        Returns
+        -------
+        None.
+        """
+        self._message_label.config(text="")
+
+class MenuManager:
+
+    METHOD_NAMES = ("Eliminar Filas", "Rellenar con Media", 
+               "Rellenar con Mediana", "Rellenar con Valor Constante")
+    
+    def __init__(self, frame, columns, df):
+        self._frame = frame
+        self._columns = columns
+        self._df = df
+        self._new_df = None  # DataFrame donde estarán los datos preprocesados
+
+        self._column_menu = ColumnMenu(frame, columns, self)
+        self._method_menu = MethodMenu(frame, self)
+
+        print("df Antes del preprocesado")
+        print(self._df)
+
+        print("new_df Antes del preprocesado")
+        print(self._new_df)
+
+    @property
+    def df(self):
+        return self._df
+    
+    @property
+    def new_df(self):
+        return self._new_df
+    
+    def on_column_select(self, event):
+        self._method_menu.disable_selector()
+
+    def confirm_selection(self):
+        # Actualiza las variables selected_features y selected_target
+        # de ColumnMenu con la selección actual
+        self._column_menu.get_selected_columns()
+
+        # Obtiene las selecciones de ColumnMenu
+        selected_features = self._column_menu.selected_features
+        selected_target = self._column_menu.selected_target
+
+        if len(selected_features) == 0:
+            messagebox.showerror("Error", "Debes seleccionar al menos una columna de entrada (feature).")
+
+        elif len(selected_target) == 0:
+            messagebox.showerror("Error", "Debes seleccionar una columna de salida (target).")
+        
+        else:
+            f_cols = ', '.join(selected_features)
+            t_col = ', '.join(selected_target)
+            success_window = messagebox.showinfo("Éxito", f"Feature: {f_cols}\nTarget: {t_col}")
+            
+            if success_window == 'ok':
+                # Crea una instancia del objeto NaNHandler después de tener seleccionadas las columnas
+                self._nan_handler = NaNHandler(self._df, MenuManager.METHOD_NAMES, 
+                                         selected_features + selected_target)
+                # Comprobar si hay valores nulos en las columnas seleccionadas
+                has_missing, nan_message = self._nan_handler.check_for_nan()
+                
+                messagebox.showinfo("Valores Inexistentes", nan_message)
+                if has_missing:
+                    self._method_menu.enable_selector()  # Habilitar el selector si hay valores nulos
+                else:
+                    self._method_menu.disable_selector()  # Deshabilitar el selector si no hay valores nulos
 
     def apply_nan_handling(self):
-        """Aplica el método de manejo de NaN seleccionado a las columnas (features y target)."""
-        method = self.method_var.get()
-
-        if not method:
-            messagebox.showwarning("Advertencia", "Debes seleccionar un método para manejar los valores inexistentes.")
-            return None
-
-        # Combina las features y el target en una lista de columnas seleccionadas
-        columns_to_handle = list(set(self._selected_features + self._selected_target))
+        method = self._method_menu.method_var.get()
         
-        if method == "Eliminar Filas":
-            self._df.dropna(subset=columns_to_handle, inplace=True)
-        elif method == "Rellenar con Media":
-            self._df[columns_to_handle] = self._df[columns_to_handle].fillna(self._df[columns_to_handle].mean())
-        elif method == "Rellenar con Mediana":
-            self._df[columns_to_handle] = self._df[columns_to_handle].fillna(self._df[columns_to_handle].median())
-        elif method == "Rellenar con Valor Constante":
-            try:
-                constant_value = float(self.valor_entrada_cte.get())
-                self._df[columns_to_handle] = self._df[columns_to_handle].fillna(constant_value)
-            except ValueError:
-                messagebox.showerror("Error", "Debes introducir un valor numérico válido.")
-                return
-        
+        constant_value = self._method_menu.constant_value_input
+        # Estará vacío si no ha introducido nada (porque ha elegido otro método o porque no lo ha introducido cuando toca.)
+        if constant_value is None or constant_value.strip() == "":
+            constant_value = None # Nos aseguramos de que es None si no ha introducido nada 
+        else:
+            float(constant_value)
+
+        self._new_df = self._nan_handler.preprocess(method, constant_value)
+
+        print("\ndf Despues del preprocesado")
+        print(self._df)
+
+        print("\nnew_df Despues del preprocesado")
+        print(self._new_df)
+
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
 
 
@@ -237,27 +446,25 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.title("Selector de Columnas")
     root.geometry("600x400")
- 
-    # Crear un DataFrame de ejemplo
-    # Crear un DataFrame de ejemplo
+
+        # Cargar datos en un DataFrame de ejemplo
     data = {
         "Columna1": [1, 2, None, 4],
         "Columna2": [None, 1, 2, 3],
         "Columna3": [1, None, None, 4],
         "Columna4": [5, 6, 7, 8],
         "Columna5": [5, 6, 7, 8],
-        "Columna6": [5, 6, 7, 8],
-        "Columna7": [5, 6, None, 8],
-        "Columna8": [5, 6, 7, 8],
-        "Columna9": [5, 6, 7, 8],
-        "Columna10": [5, 6, 7, 8]
+        "Columna6": [5, 6, 7, 8]
     }
     df = pd.DataFrame(data)
-    dataset_columns = df.columns.tolist()
- 
-    main_frame = tk.Frame(root)
-    main_frame.pack(expand=True, fill='both')
- 
-    column_selector = ColumnMenu(main_frame, dataset_columns, df)
- 
+    columns = df.columns.tolist()  # Lista de nombres de columnas
+
+    # Crear un marco para contener los menús
+    frame = tk.Frame(root)
+    frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+    # Instanciar el gestor de menús, pasando el marco, columnas y el DataFrame
+    menu_manager = MenuManager(frame, columns, df)
+
+    # Ejecutar la aplicación
     root.mainloop()
