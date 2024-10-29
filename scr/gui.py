@@ -74,24 +74,18 @@ class ScrollApp:
 
         if self._file:
             text = self.shorten_route_text(self._file)
-            self._file_path.set(f"Archivo seleccionado: {text}")        
-        else:
-            messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
-
-    def open_file(self):
-        if self._file:  # Verificar si hay un archivo seleccionado
+            self._file_path.set(f"Archivo seleccionado: {text}")
             self._data = open_files_interface(self._file)
+
             if self._data is not None:
                 messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
                 # Actualiza los datos
                 self._app.data = self._data
                 # Muestra los datos
-                self._app.show_data()  # Llamar a show_data con el DataFrame cargado
-            else:
-                messagebox.showwarning("Error", "No se pudo cargar el archivo.")
-        else:  # Si no hay ningún archivo seleccionado
-            messagebox.showwarning("Advertencia", "No hay ningún archivo seleccionado.")
-    
+                self._app.show_data()  # Llamar a show_data con el DataFrame cargado 
+        else:
+            messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
+
     def shorten_route_text(self, text):
         """Recorta el texto de la ruta si excede el número máximo de caracteres."""
         max_chars = 50
@@ -111,23 +105,27 @@ class ScrollApp:
         header_frame.pack_propagate(False)
     
         # Label de path
-        label = tk.Label(header_frame, text = "Path", fg="#6677B8",bg = '#d0d7f2', font=("Arial", 14,'bold'))
-        label.pack(side='left', padx=(10,20), pady=5 ) 
+        #label = tk.Label(header_frame, text = "Path", fg="#6677B8",bg = '#d0d7f2', font=("Arial", 14,'bold'))
+        #label.pack(side='left', padx=(10,20), pady=5 ) 
 
         # Variable para almacenar la ruta del file seleccionado y botón para seleccionarlo
-        self._file_path.set("Haz click para seleccionar un archivo")
+        self._file_path.set("Abre un archivo con 'Abrir' o un modelo con 'Cargar'")
         path_label = tk.Label(header_frame, textvariable= self._file_path, fg= "#FAF8F9", bg = '#6677B8',
-                                font= ("DejaVu Sans Mono", 11), activebackground= "#808ec6",
-                                activeforeground= "#FAF8F9", cursor= "hand2",width = 55)
-        path_label.bind("<Button-1>", self.search_file)
-        path_label.pack(side='left', pady=5)
+                                font= ("DejaVu Sans Mono", 11),width = 55)
+        path_label.pack(side='left',padx=(10,20), pady=5)
+
+        # Botón para abrir modelos creados anteriormente (falta ponerle el command)
+        load_button = tk.Button(header_frame, text="Cargar", font=("Arial", 12,'bold'),
+                                  fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
+                                  cursor="hand2" , padx=20, pady=10, width = 5)
+        load_button.pack(side='right', padx=10, pady=5) 
 
         # Botón para abrir el explorador de archivos 
         search_button = tk.Button(header_frame, text="Abrir", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
-                                  cursor="hand2", command= self.open_file , padx=20, pady=10)
-        search_button.pack(side='right', padx=10, pady=5) 
-        
+                                  cursor="hand2", command= self.search_file , padx=20, pady=10,width = 5)
+        search_button.pack(side='right', padx=20, pady=5) 
+
         # Una línea de separador por estética
         separator = tk.Frame(self._main_frame, bg = '#6677B8', height=3)
         separator.pack(fill = tk.X, side='top', pady=(0, 10) )
