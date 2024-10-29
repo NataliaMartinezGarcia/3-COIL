@@ -170,7 +170,10 @@ class ColumnMenu:
         -------
         None.
         """
-        confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self._manager.confirm_selection)
+        confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self._manager.confirm_selection,
+                                   font=("Arial", 12,'bold'), fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",
+                                   activeforeground="#FAF8F9",cursor="hand2" )
+        
         confirm_button.place(relx=0.5, rely=0.58, anchor='center')
 
     def get_selected_columns(self):
@@ -309,7 +312,9 @@ class MethodMenu:
         tk.Button
             El botón creado para aplicar el manejo de NaN.
         """
-        apply_button = tk.Button(self._frame, text="Aplicar", command=self._manager.apply_nan_handling, state="disabled")
+        apply_button = tk.Button(self._frame, text="Aplicar", command=self._manager.apply_nan_handling, state="disabled",
+                                 font=("Arial", 12,'bold'), fg="#FAF8F9", bg = '#6677B8' , activebackground="#808ec6",
+                                 activeforeground="#FAF8F9", cursor="hand2" )
         apply_button.place(relx=0.5, rely=0.93, anchor="center")
         return apply_button
 
