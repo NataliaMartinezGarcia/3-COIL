@@ -457,23 +457,20 @@ class MenuManager:
                                        activeforeground="#FAF8F9", cursor="hand2")
         regression_button.place(relx=0.5, rely=0.95, anchor='center')
     
+    def create_regression_button(self):
+        """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
+        regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
+                                    command=self.create_linear_model,
+                                    font=("Arial", 12, 'bold'), fg="#FAF8F9", 
+                                    bg='#6677B8', activebackground="#808ec6",
+                                    activeforeground="#FAF8F9", cursor="hand2")
+        regression_button.place(relx=0.5, rely=0.95, anchor='center')
+
     def create_linear_model(self):
         """Crea el modelo de regresión lineal utilizando las columnas seleccionadas."""
         if len(self._column_menu.selected_features) == 0 or len(self._column_menu.selected_target) == 0:
             messagebox.showerror("Error", "Debes seleccionar columnas de entrada y salida antes de crear el modelo.")
             return
-
-        # Crear nueva ventana para el modelo de regresión
-        regression_window = tk.Toplevel()
-        regression_window.title("Resultados del Modelo de Regresión Lineal")
-        regression_window.geometry("500x200")
-
-        # Crear etiquetas para mostrar resultados
-        output_labels = []
-        for i in range(3):
-            label = tk.Label(regression_window, text="", wraplength=400)
-            label.pack(pady=5)
-            output_labels.append(label)
 
         # Usar el DataFrame procesado si existe, si no, usar el original
         df_to_use = self._new_df if self._new_df is not None else self._df
@@ -482,9 +479,31 @@ class MenuManager:
         feature = df_to_use[self._column_menu.selected_features[0]]
         target = df_to_use[self._column_menu.selected_target[0]]
 
-        # Crear el modelo de regresión
-        LinearRegression(feature, target, output_labels)
+        # Verificar si hay suficientes datos para crear el modelo
+        if len(feature) < 2 or len(target) < 2:
+            messagebox.showerror("Error", "No hay suficientes datos para crear el modelo de regresión.")
+            return
+
+        # Mostrar mensaje de éxito y esperar confirmación
+        success = messagebox.showinfo("Éxito", "El modelo de regresión lineal se creará correctamente.\nPresione Aceptar para ver los resultados.")
         
+        if success == 'ok':
+            # Crear nueva ventana para el modelo de regresión
+            regression_window = tk.Toplevel()
+            regression_window.title("Resultados del Modelo de Regresión Lineal")
+            regression_window.geometry("500x200")
+
+            # Crear etiquetas para mostrar resultados
+            output_labels = []
+            for i in range(3):
+                label = tk.Label(regression_window, text="", wraplength=400)
+                label.pack(pady=5)
+                output_labels.append(label)
+
+            # Crear el modelo de regresión
+            LinearRegression(feature, target, output_labels)
+
+                
 #############################################
 # Prueba
 if __name__ == "__main__":
