@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import pandas as pd
 from nan_handler import NaNHandler
+from linear_regression import LinearRegression
 
 # Clase que implementa la interfaz para seleccionar columnas de entrada y salida
 class ColumnMenu:
@@ -189,7 +190,6 @@ class ColumnMenu:
         self._selected_features = [self._feature_listbox.get(i) for i in self._feature_listbox.curselection()]
         self._selected_target = [self._target_listbox.get(i) for i in self._target_listbox.curselection()]
 
-
 class MethodMenu:
     """Clase para manejar la selección de métodos para tratar los valores NaN en datos.
 
@@ -374,6 +374,9 @@ class MenuManager:
         self._column_menu = ColumnMenu(frame, columns, self)
         self._method_menu = MethodMenu(frame, self)
 
+        # Botón para crear modelo de regresión lineal
+        self.create_regression_button()
+
         print("df Antes del preprocesado")
         print(self._df)
 
@@ -445,6 +448,43 @@ class MenuManager:
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
 
 
+    def create_regression_button(self):
+        """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
+        regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
+                                       command=self.create_linear_model,
+                                       font=("Arial", 12, 'bold'), fg="#FAF8F9", 
+                                       bg='#6677B8', activebackground="#808ec6",
+                                       activeforeground="#FAF8F9", cursor="hand2")
+        regression_button.place(relx=0.5, rely=0.95, anchor='center')
+    
+    def create_linear_model(self):
+        """Crea el modelo de regresión lineal utilizando las columnas seleccionadas."""
+        if len(self._column_menu.selected_features) == 0 or len(self._column_menu.selected_target) == 0:
+            messagebox.showerror("Error", "Debes seleccionar columnas de entrada y salida antes de crear el modelo.")
+            return
+
+        # Crear nueva ventana para el modelo de regresión
+        regression_window = tk.Toplevel()
+        regression_window.title("Resultados del Modelo de Regresión Lineal")
+        regression_window.geometry("500x200")
+
+        # Crear etiquetas para mostrar resultados
+        output_labels = []
+        for i in range(3):
+            label = tk.Label(regression_window, text="", wraplength=400)
+            label.pack(pady=5)
+            output_labels.append(label)
+
+        # Usar el DataFrame procesado si existe, si no, usar el original
+        df_to_use = self._new_df if self._new_df is not None else self._df
+
+        # Obtener la primera feature seleccionada (para regresión simple)
+        feature = df_to_use[self._column_menu.selected_features[0]]
+        target = df_to_use[self._column_menu.selected_target[0]]
+
+        # Crear el modelo de regresión
+        LinearRegression(feature, target, output_labels)
+        
 #############################################
 # Prueba
 if __name__ == "__main__":
