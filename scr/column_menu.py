@@ -120,7 +120,7 @@ class ColumnMenu:
         container_frame.place(relx=0.5, rely=0.5, relwidth=0.75, relheight=0.5, anchor="center")
 
         # Crear el Listbox y colocarlo en el lado izquierdo del container_frame
-        self._feature_listbox = tk.Listbox(container_frame, selectmode=tk.MULTIPLE, height=5, exportselection=False)
+        self._feature_listbox = tk.Listbox(container_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
         self._feature_listbox.pack(side="left", fill="both", expand=True)
         self._feature_listbox.bind("<<ListboxSelect>>", self._manager.on_column_select)
 
