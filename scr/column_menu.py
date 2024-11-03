@@ -435,7 +435,11 @@ class MenuManager:
         if constant_value is None or constant_value.strip() == "":
             constant_value = None # Nos aseguramos de que es None si no ha introducido nada 
         else:
-            float(constant_value)
+            try:
+                constant_value = float(constant_value)  # Convertir a float
+            except ValueError:
+                messagebox.showerror("Error", "El valor constante debe ser un número.")
+                return
 
         self._new_df = self._nan_handler.preprocess(method, constant_value)
 
@@ -444,6 +448,15 @@ class MenuManager:
 
         print("\nnew_df Despues del preprocesado")
         print(self._new_df)
+
+        for col in self._new_df.columns:
+            if self._new_df[col].dtype == 'object':
+                try:
+                    self._new_df[col] = pd.to_numeric(self._new_df[col])
+                except ValueError:
+                    messagebox.showerror("Error", f"La columna {col} contiene valores no numéricos.")
+                    return
+
 
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
 
