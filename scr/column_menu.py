@@ -112,7 +112,7 @@ class ColumnMenu:
         features_frame.place(relx=0.03, rely=0.4, relwidth=0.5, anchor="w")
 
         # Etiqueta
-        label = tk.Label(features_frame, text="Selecciona una o varias columnas de entrada (features):", wraplength=270)
+        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", wraplength=270)
         label.place(relx=0.5, rely=0.1, relwidth=1, anchor="center")
         
         # Contenedor que mantiene juntos el listbox y la scrollbar
