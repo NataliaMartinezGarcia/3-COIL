@@ -112,7 +112,7 @@ class ColumnMenu:
         features_frame.place(relx=0.03, rely=0.4, relwidth=0.5, anchor="w")
 
         # Etiqueta
-        label = tk.Label(features_frame, text="Selecciona una o varias columnas de entrada (features):", wraplength=270)
+        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", wraplength=270)
         label.place(relx=0.5, rely=0.1, relwidth=1, anchor="center")
         
         # Contenedor que mantiene juntos el listbox y la scrollbar
@@ -438,7 +438,11 @@ class MenuManager:
         if constant_value is None or constant_value.strip() == "":
             constant_value = None # Nos aseguramos de que es None si no ha introducido nada 
         else:
-            float(constant_value)
+            try:
+                constant_value = float(constant_value)  # Convertir a float
+            except ValueError:
+                messagebox.showerror("Error", "El valor constante debe ser un número.")
+                return
 
         self._new_df = self._nan_handler.preprocess(method, constant_value)
 
@@ -447,6 +451,15 @@ class MenuManager:
 
         print("\nnew_df Despues del preprocesado")
         print(self._new_df)
+
+        for col in self._new_df.columns:
+            if self._new_df[col].dtype == 'object':
+                try:
+                    self._new_df[col] = pd.to_numeric(self._new_df[col])
+                except ValueError:
+                    messagebox.showerror("Error", f"La columna {col} contiene valores no numéricos.")
+                    return
+
 
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
 
