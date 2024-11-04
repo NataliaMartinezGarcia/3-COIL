@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import pandas as pd
 from nan_handler import NaNHandler
-from linear_regression import LinearRegression
+from linear_regression_interface import LinearRegressionInterface
 
 # Clase que implementa la interfaz para seleccionar columnas de entrada y salida
 class ColumnMenu:
@@ -365,17 +365,19 @@ class MenuManager:
     METHOD_NAMES = ("Eliminar Filas", "Rellenar con Media", 
                "Rellenar con Mediana", "Rellenar con Valor Constante")
     
-    def __init__(self, frame, columns, df):
+    def __init__(self, app, frame, columns, df, chart_frame):
+        self._app = app  # Solo lo usamos para actualizar la zona de scroll
+
         self._frame = frame
         self._columns = columns
         self._df = df
         self._new_df = None  # DataFrame donde estarán los datos preprocesados
 
-        self._column_menu = ColumnMenu(frame, columns, self)
-        self._method_menu = MethodMenu(frame, self)
+        self._chart_frame = chart_frame  # Frame donde estará la gráfica
 
-        # Botón para crear modelo de regresión lineal
-        self.create_regression_button()
+        self._column_menu = ColumnMenu(self._frame, columns, self)
+        self._method_menu = MethodMenu(self._frame, self)
+        self._app.scroll_window.update()  #########
 
         print("df Antes del preprocesado")
         print(self._df)
@@ -425,7 +427,8 @@ class MenuManager:
                 if has_missing:
                     self._method_menu.enable_selector()  # Habilitar el selector si hay valores nulos
                 else:
-                    self._method_menu.disable_selector()  # Deshabilitar el selector si no hay valores nulos
+                    self._method_menu.disable_selector() # Deshabilitar el selector si no hay valores nulos
+                    self.create_linear_model()  
 
     def apply_nan_handling(self):
         method = self._method_menu.method_var.get()
@@ -447,30 +450,12 @@ class MenuManager:
 
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
 
-
-    def create_regression_button(self):
-        """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
-        regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
-                                       command=self.create_linear_model,
-                                       font=("Arial", 12, 'bold'), fg="#FAF8F9", 
-                                       bg='#6677B8', activebackground="#808ec6",
-                                       activeforeground="#FAF8F9", cursor="hand2")
-        regression_button.place(relx=0.5, rely=0.95, anchor='center')
-    
-    def create_regression_button(self):
-        """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
-        regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
-                                    command=self.create_linear_model,
-                                    font=("Arial", 12, 'bold'), fg="#FAF8F9", 
-                                    bg='#6677B8', activebackground="#808ec6",
-                                    activeforeground="#FAF8F9", cursor="hand2")
-        regression_button.place(relx=0.5, rely=0.95, anchor='center')
+        self.create_linear_model()  # En cuanto confirma selección, se crea el modelo
 
     def create_linear_model(self):
         """Crea el modelo de regresión lineal utilizando las columnas seleccionadas."""
         if len(self._column_menu.selected_features) == 0 or len(self._column_menu.selected_target) == 0:
             messagebox.showerror("Error", "Debes seleccionar columnas de entrada y salida antes de crear el modelo.")
-            return
 
         # Usar el DataFrame procesado si existe, si no, usar el original
         df_to_use = self._new_df if self._new_df is not None else self._df
@@ -482,28 +467,21 @@ class MenuManager:
         # Verificar si hay suficientes datos para crear el modelo
         if len(feature) < 2 or len(target) < 2:
             messagebox.showerror("Error", "No hay suficientes datos para crear el modelo de regresión.")
-            return
 
         # Mostrar mensaje de éxito y esperar confirmación
         success = messagebox.showinfo("Éxito", "El modelo de regresión lineal se creará correctamente.\nPresione Aceptar para ver los resultados.")
         
         if success == 'ok':
-            # Crear nueva ventana para el modelo de regresión
-            regression_window = tk.Toplevel()
-            regression_window.title("Resultados del Modelo de Regresión Lineal")
-            regression_window.geometry("500x200")
-
-            # Crear etiquetas para mostrar resultados
-            output_labels = []
-            for i in range(3):
-                label = tk.Label(regression_window, text="", wraplength=400)
-                label.pack(pady=5)
-                output_labels.append(label)
+            self.clear_frame(self._chart_frame)  # Lo vaciamos si hay algo
 
             # Crear el modelo de regresión
-            LinearRegression(feature, target, output_labels)
+            LinearRegressionInterface(self._chart_frame, feature, target)
+            self._app.scroll_window.update()  #########
+    
+    def clear_frame(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
 
-                
 #############################################
 # Prueba
 if __name__ == "__main__":
@@ -524,11 +502,15 @@ if __name__ == "__main__":
     columns = df.columns.tolist()  # Lista de nombres de columnas
 
     # Crear un marco para contener los menús
-    frame = tk.Frame(root)
-    frame.pack(fill="both", expand=True, padx=20, pady=20)
+    frame = tk.Frame(root, height = 400, width = 600)
+    frame.pack(fill="both", padx=20, pady=20)
+    frame.pack_propagate(False)
+
+    c_frame = tk.Frame(root)
+    c_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
     # Instanciar el gestor de menús, pasando el marco, columnas y el DataFrame
-    menu_manager = MenuManager(frame, columns, df)
+    menu_manager = MenuManager(frame, columns, df, c_frame)
 
     # Ejecutar la aplicación
     root.mainloop()

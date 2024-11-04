@@ -168,7 +168,7 @@ class App:
         # DataFrame con los datos preprocesados
         # Se sobreescribe cuando se elige un método distinto de preprocesado
         self._processed_data = None 
-
+    
     @property
     def data(self):
         return self._data
@@ -178,6 +178,10 @@ class App:
     def data(self, df):
         self._data = df
 
+    @property
+    def scroll_window(self):
+        return self._scroll_window
+    
     def show_data(self):  
         
         # Vacía el frame en el caso de que ya hubiese una tabla anteriormente
@@ -208,14 +212,17 @@ class App:
         # Si fijamos el tamaño del frame y hacemos que no pueda reducirse (con propagate = False)
         # No hace falta cambiar de place a pack en el módulo de column_menu
 
+        chart_frame = tk.Frame(self._frame)
+        chart_frame.pack(fill = tk.BOTH, side = tk.TOP, anchor = "center")        
+       
         # Instanciar el MenuManager
-        self._menu = MenuManager(column_selector_frame, numeric, self._data)
+        self._menu = MenuManager(self, column_selector_frame, numeric, self._data, chart_frame)
         self._processed_data = self._menu.new_df  # Actualiza el df procesado
         
         # Para que se actualice el área de scroll
         # Hay que llamar a esta función siempre que creemos un widget nuevo
         # (Habrá que llamarla otra vez después de generar la gráfica)
-        self._scroll_window.update()
+        # self._scroll_window.update()
         
     def clear_frame(self):
         for widget in self._frame.winfo_children():
