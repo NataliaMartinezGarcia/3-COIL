@@ -9,8 +9,10 @@ class ScrollApp:
 
         self._file = None  # Variable para hacer operaciones con el path
         self._file_path = tk.StringVar()  # Variable para mostrar el path por pantalla
-
         self._window = window
+        
+        # Configurar el protocolo de cierre para detener mainloop completamente
+        self._window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Dimensiones de la ventana en función del tamaño de la pantalla
         self._width = self._window.winfo_screenwidth() //2
@@ -137,6 +139,11 @@ class ScrollApp:
         self._second_frame.update_idletasks()
         # Actualizar el scroll region después de añadir nuevos botones
         self._my_canvas.configure(scrollregion=self._my_canvas.bbox("all"))
+
+    def on_closing(self):
+        """Cierra la ventana y detiene completamente la ejecución del programa."""
+        self._window.quit()  # Detener el mainloop de Tkinter
+        self._window.destroy()  # Cerrar la ventana
 
 ########################################################################################
 
