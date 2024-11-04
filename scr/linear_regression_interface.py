@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from linear_regression import LinearRegression
@@ -9,6 +10,7 @@ class LinearRegressionInterface:
         self._frame = frame  # Frame principal de la interfaz
         self._feature = feature  # Se lo pasaremos a la clase que hace los calculos
         self._target = target
+        self._comment = None
 
         # Crear etiquetas para mostrar los resultados de la regresión
         self._output_labels = []
@@ -40,6 +42,36 @@ class LinearRegressionInterface:
         canvas = FigureCanvasTkAgg(fig, master=self._frame)
         canvas.draw()
         canvas.get_tk_widget().pack()
+        
+        self.comment()
+
+    def comment(self):
+        
+        entry_frame = tk.Frame(self._frame, width=290, height=300)
+
+        label = tk.Label(entry_frame,text = 'Introduce un comentario para el modelo (opcional)',  fg= "#FAF8F9", bg = '#6677B8',
+                        font= ("DejaVu Sans Mono", 11),width = 50)
+        label.pack(side='top', fill='x', padx=(10, 20), pady=5)
+
+        self._comment = tk.Text(entry_frame, width=30, height=8, font=("Arial", 10,'bold'), wrap="word")
+        self._comment.pack(side='top', fill=tk.BOTH, padx=20, pady=5)
+
+        entry_frame.pack(side = 'left', pady = 10)
+
+        save_button = tk.Button(self._frame, text="Descargar", font=("Arial", 12,'bold'),
+                                  fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
+                                  cursor="hand2", command = self.save_description, padx=20, pady=10,width = 5)
+        save_button.pack(side='right', padx=20, pady=5) 
+
+    def save_description(self):
+        text = self._comment.get("1.0", "end-1c")
+
+        # Verificar si el comentario está vacío
+        if not text:
+            # Mostrar un mensaje de advertencia
+            messagebox.showwarning("Advertencia", "El modelo no incluye una descripción")
+        else:
+            messagebox.showwarning("Información", f"Descripción guardada: {text}")
 
 
 # Ejemplo de uso directo de LinearRegressionInterface en una ventana Tkinter
