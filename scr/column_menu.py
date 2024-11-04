@@ -175,7 +175,7 @@ class ColumnMenu:
                                    font=("Arial", 12,'bold'), fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",
                                    activeforeground="#FAF8F9",cursor="hand2" )
         
-        confirm_button.place(relx=0.5, rely=0.58, anchor='center')
+        confirm_button.place(relx=0.5, rely=0.55, anchor='center')
 
     def get_selected_columns(self):
         """Guarda las columnas seleccionadas en los Listbox de entrada y salida.
@@ -266,18 +266,18 @@ class MethodMenu:
         None.
         """
         label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:")
-        label.place(relx=0.5, rely=0.7, relwidth=0.5, anchor="center")
+        label.place(relx=0.5, rely=0.66, relwidth=0.5, anchor="center")
 
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self._method_var, state="disabled", width=30)
         # textvariable=self._method_var: vincula el desplegable a la variable self._method_var
         # El valor seleccionado se actualiza automáticamente en self._method_var.
         # Al momento de crearlo está
         self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
-        self._method_dropdown.place(relx=0.5, rely=0.77, relwidth=0.5, anchor="center")
+        self._method_dropdown.place(relx=0.5, rely=0.73, relwidth=0.5, anchor="center")
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
 
         self._constant_value_input = tk.Entry(self._frame, width=20, state="disabled")
-        self._constant_value_input.place(relx=0.5, rely=0.83, relwidth=0.5, anchor="center")
+        self._constant_value_input.place(relx=0.5, rely=0.79, relwidth=0.5, anchor="center")
 
     def toggle_cte_entry(self, event):
         """Habilita o deshabilita el campo de entrada para un valor constante
@@ -315,7 +315,7 @@ class MethodMenu:
         apply_button = tk.Button(self._frame, text="Aplicar", command=self._manager.apply_nan_handling, state="disabled",
                                  font=("Arial", 12,'bold'), fg="#FAF8F9", bg = '#6677B8' , activebackground="#808ec6",
                                  activeforeground="#FAF8F9", cursor="hand2" )
-        apply_button.place(relx=0.5, rely=0.93, anchor="center")
+        apply_button.place(relx=0.5, rely=0.87, anchor="center")
         return apply_button
 
     def enable_selector(self):
@@ -377,7 +377,12 @@ class MenuManager:
 
         self._column_menu = ColumnMenu(self._frame, columns, self)
         self._method_menu = MethodMenu(self._frame, self)
-        self._app.scroll_window.update()  #########
+        self.create_regression_button()
+
+        # Para que se actualice el área de scroll
+        # Hay que llamar a esta función siempre que creemos un widget nuevo
+        # (Habrá que llamarla otra vez después de generar la gráfica)
+        self._app.scroll_window.update()
 
         print("df Antes del preprocesado")
         print(self._df)
@@ -395,6 +400,34 @@ class MenuManager:
     
     def on_column_select(self, event):
         self._method_menu.disable_selector()
+
+    def create_regression_button(self):
+        """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
+        self._regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
+                                       command=self.create_linear_model,
+                                       state = "disabled",  # Empieza deshabilitado
+                                       font=("Arial", 12, 'bold'), fg="#FAF8F9", 
+                                       bg='#6677B8', activebackground="#808ec6",
+                                       activeforeground="#FAF8F9", cursor="hand2")
+        self._regression_button.place(relx=0.5, rely=0.94, anchor='center')
+
+    def enable_regression_button(self):
+        """Habilita el botón de crear modelo.
+
+        Returns
+        -------
+        None.
+        """
+        self._regression_button.config(state="normal")
+
+    def disable_regression_button(self):
+        """Deshabilita el botón de crear modelo.
+
+        Returns
+        -------
+        None.
+        """
+        self._regression_button.config(state="disabled")
 
     def confirm_selection(self):
         # Actualiza las variables selected_features y selected_target
@@ -428,7 +461,7 @@ class MenuManager:
                     self._method_menu.enable_selector()  # Habilitar el selector si hay valores nulos
                 else:
                     self._method_menu.disable_selector() # Deshabilitar el selector si no hay valores nulos
-                    self.create_linear_model()  
+                    self.enable_regression_button()  # Permite crear el modelo 
 
     def apply_nan_handling(self):
         method = self._method_menu.method_var.get()
@@ -463,7 +496,7 @@ class MenuManager:
 
         messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
 
-        self.create_linear_model()  # En cuanto confirma selección, se crea el modelo
+        self.enable_regression_button() # En cuanto confirma selección, se crea el modelo
 
     def create_linear_model(self):
         """Crea el modelo de regresión lineal utilizando las columnas seleccionadas."""
