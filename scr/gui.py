@@ -3,6 +3,7 @@ from tkinter import messagebox, filedialog, ttk
 from open_files import open_files_interface
 from scroll_table import ScrollTable
 from column_menu import MenuManager
+from open_models import open_models_interface
 
 class ScrollApp:
     def __init__(self, window):
@@ -87,6 +88,29 @@ class ScrollApp:
                 self._app.show_data()  # Llamar a show_data con el DataFrame cargado 
         else:
             messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
+    
+    def search_model(self,event = None):
+        filetypes = (
+            ("Todos los archivos compatibles (pickle, joblib)", 
+            "*.pkl *.joblib"),
+            )
+        self._file = filedialog.askopenfilename(
+            title="Buscar modelo",
+            filetypes=filetypes) 
+
+        if self._file:
+            text = self.shorten_route_text(self._file)
+            self._file_path.set(f"Archivo seleccionado: {text}")
+            self._data = open_models_interface(self._file)
+
+            if self._data is not None:
+                messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
+                # Actualiza los datos
+                self._app.data = self._data
+                # Muestra los datos
+                self._app.show_data()  # Llamar a show_data con el DataFrame cargado 
+        else:
+            messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
 
     def shorten_route_text(self, text):
         """Recorta el texto de la ruta si excede el número máximo de caracteres."""
@@ -112,10 +136,9 @@ class ScrollApp:
                                 font= ("DejaVu Sans Mono", 11),width = 55)
         path_label.pack(side='left',padx=(10,20), pady=5)
 
-        # Botón para abrir modelos creados anteriormente (falta ponerle el command)
         load_button = tk.Button(header_frame, text="Cargar", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
-                                  cursor="hand2" , padx=20, pady=10, width = 5)
+                                  cursor="hand2" , command=self.search_model, padx=20, pady=10, width = 5)
         load_button.pack(side='right', padx=10, pady=5) 
 
         # Botón para abrir el explorador de archivos 
