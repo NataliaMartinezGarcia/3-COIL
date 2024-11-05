@@ -11,7 +11,8 @@ def open_pkl(file_path):
 
 
 def open_joblib(file_path):
-    return pd.read_joblib(file_path) 
+    return joblib.load(file_path)  # Cambiado para usar joblib directamente
+
 
 
 def open_model(file_path):
