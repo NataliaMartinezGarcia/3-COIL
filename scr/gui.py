@@ -16,10 +16,10 @@ class ScrollApp:
 
         # Dimensiones de la ventana en función del tamaño de la pantalla
         self._width = self._window.winfo_screenwidth() //2
-        self._height = self._window.winfo_screenheight()  //2
+        self._height = int(self._window.winfo_screenheight() / 1.5) 
         # Para que salga centrada en la pantalla
-        self._x = self._width//2
-        self._y = self._height//3
+        self._x = (self._window.winfo_screenwidth() - self._width) // 2  # Centrado en ancho
+        self._y = (self._window.winfo_screenheight() - self._height) // 2  # Centrado en altura
 
         self._window.title("Linear Regression App")
         self._window.geometry(f"{self._width}x{self._height}+{self._x}+{self._y}")
@@ -213,7 +213,7 @@ class App:
         numeric = self._table.numeric_columns()
 
         # Crear un frame para el selector de columnas
-        column_selector_frame = tk.Frame(self._frame, height = 400, width = self._scroll_window.window.winfo_width() - 15)
+        column_selector_frame = tk.Frame(self._frame, height = 400, width = self._scroll_window.window.winfo_width() - 15, bg = '#d0d7f2')
         column_selector_frame.pack(fill = tk.BOTH, side = tk.TOP, anchor = "center")
         column_selector_frame.pack_propagate(False)
         # Si fijamos el tamaño del frame y hacemos que no pueda reducirse (con propagate = False)

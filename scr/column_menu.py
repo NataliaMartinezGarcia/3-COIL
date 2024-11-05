@@ -92,6 +92,7 @@ class ColumnMenu:
         -------
         None.
         """
+        
         # Crear y colocar la scrollbar vertical
         scrollbar = tk.Scrollbar(container_frame, orient="vertical", command=listbox.yview)
         scrollbar.pack(side="right", fill="y")
@@ -108,12 +109,13 @@ class ColumnMenu:
         None.
         """
         # Frame principal que contiene la etiqueta y el container_frame con el listbox y scrollbar
-        features_frame = tk.Frame(self._frame, width=290, height=170)
-        features_frame.place(relx=0.03, rely=0.4, relwidth=0.5, anchor="w")
+        features_frame = tk.Frame(self._frame, width=290, height=170,bg = '#d0d7f2')
+        features_frame.place(relx=0.03, rely=0.25, relwidth=0.5, anchor="w")
 
         # Etiqueta
-        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", wraplength=270)
-        label.place(relx=0.5, rely=0.1, relwidth=1, anchor="center")
+        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", fg= "#FAF8F9", bg = '#6677B8',
+                                font= ("DejaVu Sans Mono",10),width = 35)
+        label.place(relx=0.5, rely=0.1, anchor="center")
         
         # Contenedor que mantiene juntos el listbox y la scrollbar
         container_frame = tk.Frame(features_frame)
@@ -140,11 +142,12 @@ class ColumnMenu:
         -------
         None.
         """
-        target_frame = tk.Frame(self._frame, width=280, height=170)
-        target_frame.place(relx=0.97, rely=0.4, relwidth=0.5, anchor="e")
+        target_frame = tk.Frame(self._frame, width=280, height=170, bg = '#d0d7f2')
+        target_frame.place(relx=0.97, rely=0.25, relwidth=0.5, anchor="e")
 
-        label = tk.Label(target_frame, text="Selecciona la columna de salida (target):")
-        label.place(relx=0.5, rely=0.1, relwidth=1, anchor="center")
+        label = tk.Label(target_frame, text="Selecciona la columna de salida (target):", fg= "#FAF8F9", bg = '#6677B8',
+                                font= ("DejaVu Sans Mono",10),width = 35)
+        label.place(relx=0.5, rely=0.1, anchor="center")
 
         # Contenedor que mantiene juntos el listbox y la scrollbar
         container_frame = tk.Frame(target_frame)
@@ -172,10 +175,10 @@ class ColumnMenu:
         None.
         """
         confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self._manager.confirm_selection,
-                                   font=("Arial", 12,'bold'), fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",
+                                   font=("Arial", 11,'bold'), fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",
                                    activeforeground="#FAF8F9",cursor="hand2" )
         
-        confirm_button.place(relx=0.5, rely=0.55, anchor='center')
+        confirm_button.place(relx=0.5, rely=0.45, anchor='center')
 
     def get_selected_columns(self):
         """Guarda las columnas seleccionadas en los Listbox de entrada y salida.
@@ -266,18 +269,18 @@ class MethodMenu:
         None.
         """
         label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:")
-        label.place(relx=0.5, rely=0.66, relwidth=0.5, anchor="center")
+        label.place(relx=0.5, rely=0.59, relwidth=0.5, anchor="center")
 
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self._method_var, state="disabled", width=30)
         # textvariable=self._method_var: vincula el desplegable a la variable self._method_var
         # El valor seleccionado se actualiza automáticamente en self._method_var.
         # Al momento de crearlo está
         self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
-        self._method_dropdown.place(relx=0.5, rely=0.73, relwidth=0.5, anchor="center")
+        self._method_dropdown.place(relx=0.5, rely=0.66, relwidth=0.5, anchor="center")
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
 
         self._constant_value_input = tk.Entry(self._frame, width=20, state="disabled")
-        self._constant_value_input.place(relx=0.5, rely=0.79, relwidth=0.5, anchor="center")
+        self._constant_value_input.place(relx=0.5, rely=0.72, relwidth=0.5, anchor="center")
 
     def toggle_cte_entry(self, event):
         """Habilita o deshabilita el campo de entrada para un valor constante
@@ -313,9 +316,9 @@ class MethodMenu:
             El botón creado para aplicar el manejo de NaN.
         """
         apply_button = tk.Button(self._frame, text="Aplicar", command=self._manager.apply_nan_handling, state="disabled",
-                                 font=("Arial", 12,'bold'), fg="#FAF8F9", bg = '#6677B8' , activebackground="#808ec6",
+                                 font=("Arial", 10,'bold'), fg="#FAF8F9", bg = '#6677B8' , activebackground="#808ec6",
                                  activeforeground="#FAF8F9", cursor="hand2" )
-        apply_button.place(relx=0.5, rely=0.87, anchor="center")
+        apply_button.place(relx=0.5, rely=0.80, anchor="center")
         return apply_button
 
     def enable_selector(self):
@@ -406,10 +409,10 @@ class MenuManager:
         self._regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
                                        command=self.create_linear_model,
                                        state = "disabled",  # Empieza deshabilitado
-                                       font=("Arial", 12, 'bold'), fg="#FAF8F9", 
+                                       font=("Arial", 10, 'bold'), fg="#FAF8F9", 
                                        bg='#6677B8', activebackground="#808ec6",
                                        activeforeground="#FAF8F9", cursor="hand2")
-        self._regression_button.place(relx=0.5, rely=0.94, anchor='center')
+        self._regression_button.place(relx=0.5, rely=0.95, anchor='center')
 
     def enable_regression_button(self):
         """Habilita el botón de crear modelo.
