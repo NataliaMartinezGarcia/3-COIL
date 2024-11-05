@@ -113,7 +113,7 @@ class ColumnMenu:
         features_frame.place(relx=0.03, rely=0.25, relwidth=0.5, anchor="w")
 
         # Etiqueta
-        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", fg= "#FAF8F9", bg = '#6677B8',
+        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", fg= "#FAF8F9", bg = '#808ec6',
                                 font= ("DejaVu Sans Mono",10),width = 35)
         label.place(relx=0.5, rely=0.1, anchor="center")
         
@@ -145,7 +145,7 @@ class ColumnMenu:
         target_frame = tk.Frame(self._frame, width=280, height=170, bg = '#d0d7f2')
         target_frame.place(relx=0.97, rely=0.25, relwidth=0.5, anchor="e")
 
-        label = tk.Label(target_frame, text="Selecciona la columna de salida (target):", fg= "#FAF8F9", bg = '#6677B8',
+        label = tk.Label(target_frame, text="Selecciona la columna de salida (target):", fg= "#FAF8F9", bg = '#808ec6',
                                 font= ("DejaVu Sans Mono",10),width = 35)
         label.place(relx=0.5, rely=0.1, anchor="center")
 
@@ -268,19 +268,26 @@ class MethodMenu:
         -------
         None.
         """
-        label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:")
-        label.place(relx=0.5, rely=0.59, relwidth=0.5, anchor="center")
+        label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:", fg= "#FAF8F9", bg = '#808ec6')
+        label.place(relx=0.5, rely=0.59, anchor="center")
 
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self._method_var, state="disabled", width=30)
         # textvariable=self._method_var: vincula el desplegable a la variable self._method_var
         # El valor seleccionado se actualiza automáticamente en self._method_var.
-        # Al momento de crearlo está
+      
         self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
-        self._method_dropdown.place(relx=0.5, rely=0.66, relwidth=0.5, anchor="center")
+        self._method_dropdown.place(relx=0.5, rely=0.67, relwidth=0.5, anchor="center")
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
+        
+        self._constant_label = tk.Label(self._frame, text="Introduce la constante :", bg = '#d0d7f2')
+        self._constant_value_input = tk.Entry(self._frame, width=10, state="disabled")
 
-        self._constant_value_input = tk.Entry(self._frame, width=20, state="disabled")
-        self._constant_value_input.place(relx=0.5, rely=0.72, relwidth=0.5, anchor="center")
+        self._constant_value_input.place_forget()  # Ocultarlo inicialmente
+        self._constant_label.place_forget()
+
+        separator = tk.Frame(self._frame, bg = '#6677B8', height=3)
+        separator.pack(fill = tk.X, side='bottom' )
+
 
     def toggle_cte_entry(self, event):
         """Habilita o deshabilita el campo de entrada para un valor constante
@@ -296,9 +303,14 @@ class MethodMenu:
         None.
         """
         selected_method = self._method_var.get()
-        if selected_method == "Rellenar con Valor Constante":
+
+        if selected_method == "Rellenar con Valor Constante": 
+            self._constant_label.place(relx=0.45, rely=0.72, anchor="center")
+            self._constant_value_input.place(relx=0.6, rely=0.72, anchor="center")
             self._constant_value_input.config(state="normal")
         else:
+            self._constant_label.place_forget()
+            self._constant_value_input.place_forget()  # Ocultarlo inicialment
             self._constant_value_input.delete(0, "end")
             self._constant_value_input.config(state="disabled")
 
@@ -412,7 +424,7 @@ class MenuManager:
                                        font=("Arial", 10, 'bold'), fg="#FAF8F9", 
                                        bg='#6677B8', activebackground="#808ec6",
                                        activeforeground="#FAF8F9", cursor="hand2")
-        self._regression_button.place(relx=0.5, rely=0.95, anchor='center')
+        self._regression_button.place(relx=0.5, rely=0.93, anchor='center')
 
     def enable_regression_button(self):
         """Habilita el botón de crear modelo.

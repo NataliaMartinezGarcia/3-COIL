@@ -106,10 +106,6 @@ class ScrollApp:
         header_frame.pack(fill = tk.X, side='top')
         header_frame.pack_propagate(False)
     
-        # Label de path
-        #label = tk.Label(header_frame, text = "Path", fg="#6677B8",bg = '#d0d7f2', font=("Arial", 14,'bold'))
-        #label.pack(side='left', padx=(10,20), pady=5 ) 
-
         # Variable para almacenar la ruta del file seleccionado y botón para seleccionarlo
         self._file_path.set("Abre un archivo con 'Abrir' o un modelo con 'Cargar'")
         path_label = tk.Label(header_frame, textvariable= self._file_path, fg= "#FAF8F9", bg = '#6677B8',
@@ -130,7 +126,7 @@ class ScrollApp:
 
         # Una línea de separador por estética
         separator = tk.Frame(self._main_frame, bg = '#6677B8', height=3)
-        separator.pack(fill = tk.X, side='top', pady=(0, 10) )
+        separator.pack(fill = tk.X, side='top')
 
         self._main_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -219,7 +215,7 @@ class App:
         # Si fijamos el tamaño del frame y hacemos que no pueda reducirse (con propagate = False)
         # No hace falta cambiar de place a pack en el módulo de column_menu
 
-        chart_frame = tk.Frame(self._frame)
+        chart_frame = tk.Frame(self._frame,bg = '#d0d7f2')
         chart_frame.pack(fill = tk.BOTH, side = tk.TOP, anchor = "center")        
        
         # Instanciar el MenuManager

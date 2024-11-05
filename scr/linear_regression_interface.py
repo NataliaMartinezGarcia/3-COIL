@@ -15,8 +15,8 @@ class LinearRegressionInterface:
         # Crear etiquetas para mostrar los resultados de la regresión
         self._output_labels = []
         for i in range(3):
-            label = tk.Label(self._frame, text="", wraplength=400)
-            label.pack(pady=5)
+            label = tk.Label(self._frame, text="", wraplength=400, fg= "#FAF8F9", bg = '#808ec6')
+            label.pack(pady=10)
             self._output_labels.append(label)
 
         # Crear el objeto de regresión lineal para cálculos y resultados
@@ -31,8 +31,10 @@ class LinearRegressionInterface:
 
         # Crear la figura de matplotlib
         fig, ax = plt.subplots()
-        ax.scatter(self._feature, self._target, color='blue', label='Datos reales', s=10)  # Puntos de datos reales
-        ax.plot(self._feature, predictions, color='red', label='Línea de regresión', linewidth=2)  # Línea de regresión
+        fig.patch.set_facecolor('#d0d7f2')  # Cambia el color de fondo de toda la figura (azul claro)
+
+        ax.scatter(self._feature, self._target, color='#808ec6', label='Datos reales', s=10)  # Puntos de datos reales
+        ax.plot(self._feature, predictions, color='#bc2716', label='Línea de regresión', linewidth=2)  # Línea de regresión
         ax.set_xlabel(self._linear_regression._feature_name, fontsize=8)
         ax.set_ylabel(self._linear_regression._target_name, fontsize=8)
         ax.tick_params(axis='both', which='major', labelsize=8)  # Tamaño de los números en los ejes
@@ -40,6 +42,7 @@ class LinearRegressionInterface:
 
         # Integrar la figura dentro del frame de tkinter
         canvas = FigureCanvasTkAgg(fig, master=self._frame)
+        canvas.get_tk_widget().config(bg = '#d0d7f2')
         canvas.draw()
         canvas.get_tk_widget().pack()
         
@@ -47,9 +50,9 @@ class LinearRegressionInterface:
 
     def comment(self):
         
-        entry_frame = tk.Frame(self._frame, width=290, height=300)
+        entry_frame = tk.Frame(self._frame, width=290, height=300, bg = '#d0d7f2')
 
-        label = tk.Label(entry_frame,text = 'Introduce un comentario para el modelo (opcional)',  fg= "#FAF8F9", bg = '#6677B8',
+        label = tk.Label(entry_frame,text = 'Introduce un comentario para el modelo (opcional)',  fg= "#FAF8F9", bg = '#808ec6',
                         font= ("DejaVu Sans Mono", 11),width = 50)
         label.pack(side='top', fill='x', padx=(10, 20), pady=5)
 
