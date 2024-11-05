@@ -530,36 +530,3 @@ class MenuManager:
     def clear_frame(self, frame):
         for widget in frame.winfo_children():
             widget.destroy()
-
-#############################################
-# Prueba
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Selector de Columnas")
-    root.geometry("600x400")
-
-        # Cargar datos en un DataFrame de ejemplo
-    data = {
-        "Columna1": [1, 2, None, 4],
-        "Columna2": [None, 1, 2, 3],
-        "Columna3": [1, None, None, 4],
-        "Columna4": [5, 6, 7, 8],
-        "Columna5": [5, 6, 7, 8],
-        "Columna6": [5, 6, 7, 8]
-    }
-    df = pd.DataFrame(data)
-    columns = df.columns.tolist()  # Lista de nombres de columnas
-
-    # Crear un marco para contener los menús
-    frame = tk.Frame(root, height = 400, width = 600)
-    frame.pack(fill="both", padx=20, pady=20)
-    frame.pack_propagate(False)
-
-    c_frame = tk.Frame(root)
-    c_frame.pack(fill="both", expand=True, padx=20, pady=20)
-
-    # Instanciar el gestor de menús, pasando el marco, columnas y el DataFrame
-    menu_manager = MenuManager(frame, columns, df, c_frame)
-
-    # Ejecutar la aplicación
-    root.mainloop()

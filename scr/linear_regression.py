@@ -45,34 +45,3 @@ class LinearRegression:
         self._output_labels[0].config(text=f"Ecuación de la recta predicha: {self._target_name} = {intercept:.2f} + {slope:.2f}*{self._feature_name}")
         self._output_labels[1].config(text=f"Coeficiente de determinación (R²): {r_squared:.4f}")
         self._output_labels[2].config(text=f"Error Cuadrático Medio (ECM): {mse:.4f}")
-        """
-        # Visualizar los datos y la línea de regresión
-        plt.scatter(feature, target, color='blue', label='Datos reales')  # Hace los puntos
-        plt.plot(feature, predictions, color='red', label='Línea de regresión')  # Hace la recta
-        plt.xlabel(self._feature_name)
-        plt.ylabel(self._target_name)
-        plt.legend()
-        plt.show()"""
- 
-# Solo si se ejecuta directamente este archivo
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Modelo de Regresión Lineal")
- 
-    # Datos de ejemplo para pruebas directas del archivo
-    df = pd.DataFrame({
-        "Feature": [2, 5, 0, 2, 1, 9, 8],
-        "Target": [1, 3, 5, 5, 5, 1, 3]
-    })
- 
-    # Crear etiquetas para mostrar resultados
-    output_labels = []
-    for i in range(3):
-        label = tk.Label(root, text="", wraplength=400)
-        label.pack(pady=5)
-        output_labels.append(label)
- 
-    # Prueba directa con datos de ejemplo
-    LinearRegression(df["Feature"], df["Target"], output_labels)
- 
-    root.mainloop()
