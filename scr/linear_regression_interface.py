@@ -74,6 +74,7 @@ class LinearRegressionInterface:
         if not description:
             # Mostrar un mensaje de advertencia
             messagebox.showwarning("Advertencia", "El modelo no incluye una descripción")
+            description = None
 
         model_handler.save_model(self._linear_regression, description)
 

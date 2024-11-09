@@ -260,6 +260,7 @@ class App:
         slope = self.data.get("slope")
         r_squared = self.data.get("r_squared")
         mse = self.data.get("mse")
+        description = self.data.get("description")
 
         # Crear etiquetas para cada valor y mostrarlos
         equation_label = tk.Label(self._frame, text=f"Ecuación de la recta predicha: {target_name} = {intercept:.2f} + {slope:.2f}*{feature_name}",
@@ -273,6 +274,14 @@ class App:
         mse_label = tk.Label(self._frame, text=f"Error Cuadrático Medio (ECM): {mse:.4f}", fg="#FAF8F9", bg="#6677B8",
                                    font=("DejaVu Sans Mono", 11))
         mse_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
+
+        # Si la descripción existe (no es None o vacía), mostrarla en una etiqueta
+        if description and description.strip():
+
+            description_label = tk.Label(self._frame, text=description, fg="#FAF8F9", bg="#6677B8",
+                                         font=("DejaVu Sans Mono", 11), width=55)
+            description_label.pack(side='top', padx=(10, 20), pady=5, anchor='w')
+
 
         self._scroll_window.update()
 
