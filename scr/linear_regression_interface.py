@@ -4,6 +4,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from linear_regression import LinearRegression
 import statsmodels.api as sm
+import model_handler 
 
 class LinearRegressionInterface:
     def __init__(self, frame, feature, target):
@@ -63,18 +64,19 @@ class LinearRegressionInterface:
 
         save_button = tk.Button(self._frame, text="Descargar", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
-                                  cursor="hand2", command = self.save_description, padx=20, pady=10,width = 5)
+                                  cursor="hand2", command = self.save_all, padx=20, pady=10,width = 5)
         save_button.pack(side='right', padx=20, pady=5) 
 
-    def save_description(self):
-        text = self._comment.get("1.0", "end-1c")
+    def save_all(self):
+        description = self._comment.get("1.0", "end-1c")
 
         # Verificar si el comentario está vacío
-        if not text:
+        if not description:
             # Mostrar un mensaje de advertencia
             messagebox.showwarning("Advertencia", "El modelo no incluye una descripción")
-        else:
-            messagebox.showwarning("Información", f"Descripción guardada: {text}")
+            description = None
+
+        model_handler.save_model(self._linear_regression, description)
 
 
 # Ejemplo de uso directo de LinearRegressionInterface en una ventana Tkinter

@@ -1,9 +1,10 @@
 import tkinter as tk  
 from tkinter import messagebox, filedialog, ttk  
+import pandas as pd
 from open_files import open_files_interface
 from scroll_table import ScrollTable
 from column_menu import MenuManager
-from open_models import open_models_interface
+from model_handler import open_models_interface
 
 class ScrollApp:
     def __init__(self, window):
@@ -79,7 +80,7 @@ class ScrollApp:
             text = self.shorten_route_text(self._file)
             self._file_path.set(f"Archivo seleccionado: {text}")
             self._data = open_files_interface(self._file)
-
+            
             if self._data is not None:
                 messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
                 # Actualiza los datos
@@ -104,11 +105,10 @@ class ScrollApp:
             self._data = open_models_interface(self._file)
 
             if self._data is not None:
-                messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
-                # Actualiza los datos
+                messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")               
                 self._app.data = self._data
-                # Muestra los datos
-                self._app.show_data()  # Llamar a show_data con el DataFrame cargado 
+
+                self._app.show_model()
         else:
             messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
 
@@ -249,13 +249,49 @@ class App:
         # Hay que llamar a esta función siempre que creemos un widget nuevo
         # (Habrá que llamarla otra vez después de generar la gráfica)
         # self._scroll_window.update()
-        
+    
+    def show_model(self): # tengo q hacer q si no es valido me salte un error :(
+
+        self.clear_frame()
+
+        feature_name = self.data.get("feature_name")
+        target_name = self.data.get("target_name")
+        intercept = self.data.get("intercept")
+        slope = self.data.get("slope")
+        r_squared = self.data.get("r_squared")
+        mse = self.data.get("mse")
+        description = self.data.get("description")
+
+        # Crear etiquetas para cada valor y mostrarlos
+        equation_label = tk.Label(self._frame, text=f"Ecuación de la recta predicha: {target_name} = {intercept:.2f} + {slope:.2f}*{feature_name}",
+                                   fg="#FAF8F9", bg="#6677B8", font=("DejaVu Sans Mono", 11))
+        equation_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
+
+        rsquared_label = tk.Label(self._frame, text=f"Coeficiente de determinación (R²): {r_squared:.4f}",
+                                    fg="#FAF8F9", bg="#6677B8", font=("DejaVu Sans Mono", 11))
+        rsquared_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
+
+        mse_label = tk.Label(self._frame, text=f"Error Cuadrático Medio (ECM): {mse:.4f}", fg="#FAF8F9", bg="#6677B8",
+                                   font=("DejaVu Sans Mono", 11))
+        mse_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
+
+        # Si la descripción existe (no es None o vacía), mostrarla en una etiqueta
+        if description and description.strip():
+
+            description_label = tk.Label(self._frame, text=description, fg="#FAF8F9", bg="#6677B8",
+                                         font=("DejaVu Sans Mono", 11), width=55)
+            description_label.pack(side='top', padx=(10, 20), pady=5, anchor='w')
+
+
+        self._scroll_window.update()
+
     def clear_frame(self):
         for widget in self._frame.winfo_children():
             widget.destroy()
 
     def on_window_resize(self, event):
-        self._table_frame.config(width= self._scroll_window.window.winfo_width() - 15)
+        if hasattr(self, '_table_frame') and self._table_frame.winfo_exists():  # Comprueba que la tabla existe
+            self._table_frame.config(width= self._scroll_window.window.winfo_width() - 15)
 
 ########################################################################################
 
