@@ -12,10 +12,8 @@
   - [3.3 Loading Data](#33-loading-data)
 - [4. Creating Linear Regression Models](#4-creating-linear-regression-models)
   - [4.1 Creating a Single Model](#41-creating-a-single-model)
-  - [4.2 Creating Multiple Models](#42-creating-multiple-models)
 - [5. Model Visualization](#5-model-visualization)
   - [5.1 Visualizing Simple Models](#51-visualizing-simple-models)
-  - [5.2 Visualizing Multiple Models](#52-visualizing-multiple-models)
 - [6. Making Predictions](#6-making-predictions)
   - [6.1 Using a Model for Predictions](#61-using-a-model-for-predictions)
   - [6.2 Using Data to Create a Prediction](#62-using-data-to-create-a-prediction)
@@ -54,10 +52,8 @@ dependent variable and create the linear regression model.
 ## 3.3 Loading Data
 # 4. Creating Linear Regression Models
 ## 4.1 Creating a Single Model
-## 4.2 Creating Multiple Models
 # 5. Model Visualization
 ## 5.1 Visualizing Simple Models
-## 5.2 Visualizing Multiple Models
 # 6. Making Predictions
 ## 6.1 Using a Model for Predictions
 ## 6.2 Using Data to Create a Prediction
