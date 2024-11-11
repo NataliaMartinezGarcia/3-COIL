@@ -105,7 +105,6 @@ class ScrollApp:
             self._data = open_models_interface(self._file)
 
             if self._data is not None:
-                messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")               
                 self._app.data = self._data
 
                 self._app.show_model()
@@ -250,18 +249,24 @@ class App:
         # (Habrá que llamarla otra vez después de generar la gráfica)
         # self._scroll_window.update()
     
-    def show_model(self): # tengo q hacer q si no es valido me salte un error :(
+    def show_model(self): 
+
+        try:
+            feature_name = self.data.get("feature_name")
+            target_name = self.data.get("target_name")
+            intercept = self.data.get("intercept")
+            slope = self.data.get("slope")
+            r_squared = self.data.get("r_squared")
+            mse = self.data.get("mse")
+            description = self.data.get("description")
+        except:
+            messagebox.showinfo("Error", "El archivo no está en un formato válido.")               
+            return
+
+        messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")               
 
         self.clear_frame()
-
-        feature_name = self.data.get("feature_name")
-        target_name = self.data.get("target_name")
-        intercept = self.data.get("intercept")
-        slope = self.data.get("slope")
-        r_squared = self.data.get("r_squared")
-        mse = self.data.get("mse")
-        description = self.data.get("description")
-
+        
         # Crear etiquetas para cada valor y mostrarlos
         equation_label = tk.Label(self._frame, text=f"Ecuación de la recta predicha: {target_name} = {intercept:.2f} + {slope:.2f}*{feature_name}",
                                    fg="#FAF8F9", bg="#6677B8", font=("DejaVu Sans Mono", 11))
