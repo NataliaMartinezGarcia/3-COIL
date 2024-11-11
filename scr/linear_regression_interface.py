@@ -51,21 +51,28 @@ class LinearRegressionInterface:
 
     def comment(self):
         
-        entry_frame = tk.Frame(self._frame, width=290, height=300, bg = '#d0d7f2')
+        download_frame = tk.Frame(self._frame, width=500, height=250, bg = '#d0d7f2')
+
+        entry_frame = tk.Frame(download_frame, width=250, height=250, bg = '#d0d7f2')
 
         label = tk.Label(entry_frame,text = 'Introduce un comentario para el modelo (opcional)',  fg= "#FAF8F9", bg = '#808ec6',
                         font= ("DejaVu Sans Mono", 11),width = 50)
         label.pack(side='top', fill='x', padx=(10, 20), pady=5)
 
-        self._comment = tk.Text(entry_frame, width=30, height=8, font=("Arial", 10,'bold'), wrap="word")
+        self._comment = tk.Text(entry_frame, width=30, height=5, font=("Arial", 10,'bold'), wrap="word")
         self._comment.pack(side='top', fill=tk.BOTH, padx=20, pady=5)
 
-        entry_frame.pack(side = 'left', pady = 10)
+        entry_frame.pack(side = 'left', padx = 40, pady = 10)
 
-        save_button = tk.Button(self._frame, text="Descargar", font=("Arial", 12,'bold'),
+        save_button = tk.Button(download_frame, text="Descargar", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
                                   cursor="hand2", command = self.save_all, padx=20, pady=10,width = 5)
-        save_button.pack(side='right', padx=20, pady=5) 
+        save_button.pack(side='right', padx=(0,60), pady=5) 
+
+        download_frame.pack(side = 'top', padx = 60, pady = 20)
+
+        separator = tk.Frame(self._frame, bg = '#6677B8', height = 3)
+        separator.pack(fill = tk.X, side = tk.TOP, anchor = "center")
 
     def save_all(self):
         description = self._comment.get("1.0", "end-1c")

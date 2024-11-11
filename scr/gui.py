@@ -5,6 +5,7 @@ from open_files import open_files_interface
 from scroll_table import ScrollTable
 from column_menu import MenuManager
 from model_handler import open_models_interface
+import model_interface
 
 class ScrollApp:
     def __init__(self, window):
@@ -267,27 +268,8 @@ class App:
 
         self.clear_frame()
         
-        # Crear etiquetas para cada valor y mostrarlos
-        equation_label = tk.Label(self._frame, text=f"Ecuación de la recta predicha: {target_name} = {intercept:.2f} + {slope:.2f}*{feature_name}",
-                                   fg="#FAF8F9", bg="#6677B8", font=("DejaVu Sans Mono", 11))
-        equation_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
-
-        rsquared_label = tk.Label(self._frame, text=f"Coeficiente de determinación (R²): {r_squared:.4f}",
-                                    fg="#FAF8F9", bg="#6677B8", font=("DejaVu Sans Mono", 11))
-        rsquared_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
-
-        mse_label = tk.Label(self._frame, text=f"Error Cuadrático Medio (ECM): {mse:.4f}", fg="#FAF8F9", bg="#6677B8",
-                                   font=("DejaVu Sans Mono", 11))
-        mse_label.pack(side='top', padx=(10, 20), pady=5, anchor='center')
-
-        # Si la descripción existe (no es None o vacía), mostrarla en una etiqueta
-        if description and description.strip():
-
-            description_label = tk.Label(self._frame, text=description, fg="#FAF8F9", bg="#6677B8",
-                                         font=("DejaVu Sans Mono", 11), width=55)
-            description_label.pack(side='top', padx=(10, 20), pady=5, anchor='w')
-
-
+        model_interface.show(self._frame,feature_name,target_name,intercept,slope,r_squared,mse,description)
+        
         self._scroll_window.update()
 
     def clear_frame(self):
