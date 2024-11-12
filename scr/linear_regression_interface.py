@@ -51,7 +51,7 @@ class LinearRegressionInterface:
 
     def comment(self):
         
-        download_frame = tk.Frame(self._frame, width=500, height=250, bg = '#d0d7f2')
+        download_frame = tk.Frame(self._frame, height=250, bg = '#d0d7f2')
 
         entry_frame = tk.Frame(download_frame, width=250, height=250, bg = '#d0d7f2')
 
@@ -69,7 +69,7 @@ class LinearRegressionInterface:
                                   cursor="hand2", command = self.save_all, padx=20, pady=10,width = 5)
         save_button.pack(side='right', padx=(0,60), pady=5) 
 
-        download_frame.pack(side = 'top', padx = 60, pady = 20)
+        download_frame.pack(side = 'top', pady = 20)
 
         separator = tk.Frame(self._frame, bg = '#6677B8', height = 3)
         separator.pack(fill = tk.X, side = tk.TOP, anchor = "center")
