@@ -86,7 +86,7 @@ def open_models_interface(file_path):
         data = open_model(file_path)
 
     except FileNotFoundError as e:
-        messagebox.showerror("Error", f"File could not be found: {str(e)}")
+        messagebox.showerror("Error", f"The file could not be found: {str(e)}")
 
     except AssertionError as e:
         messagebox.showerror("Error", f"Invalid format: {str(e)}")
