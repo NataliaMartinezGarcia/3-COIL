@@ -113,7 +113,7 @@ class ColumnMenu:
         features_frame.place(relx=0.03, rely=0.25, relwidth=0.5, anchor="w")
 
         # Etiqueta
-        label = tk.Label(features_frame, text="Selecciona la columna de entrada (feature):", fg= "#FAF8F9", bg = '#808ec6',
+        label = tk.Label(features_frame, text="Select an input column (feature):", fg= "#FAF8F9", bg = '#808ec6',
                                 font= ("DejaVu Sans Mono",10),width = 35)
         label.place(relx=0.5, rely=0.1, anchor="center")
         
@@ -145,7 +145,7 @@ class ColumnMenu:
         target_frame = tk.Frame(self._frame, width=280, height=170, bg = '#d0d7f2')
         target_frame.place(relx=0.97, rely=0.25, relwidth=0.5, anchor="e")
 
-        label = tk.Label(target_frame, text="Selecciona la columna de salida (target):", fg= "#FAF8F9", bg = '#808ec6',
+        label = tk.Label(target_frame, text="Select an output column (target):", fg= "#FAF8F9", bg = '#808ec6',
                                 font= ("DejaVu Sans Mono",10),width = 35)
         label.place(relx=0.5, rely=0.1, anchor="center")
 
@@ -174,7 +174,7 @@ class ColumnMenu:
         -------
         None.
         """
-        confirm_button = tk.Button(self._frame, text="Confirmar selección", command=self._manager.confirm_selection,
+        confirm_button = tk.Button(self._frame, text="Confirm selection", command=self._manager.confirm_selection,
                                    font=("Arial", 11,'bold'), fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",
                                    activeforeground="#FAF8F9",cursor="hand2" )
         
@@ -209,7 +209,7 @@ class MethodMenu:
     -------
     create_nan_selector():
         Crea y coloca el selector de métodos en la interfaz gráfica.
-    toggle_cte_entry(event):
+    toggle_cte_input(event):
         Habilita o deshabilita el campo de entrada para un valor constante basado en el método seleccionado.
     create_apply_button():
         Crea y coloca el botón para aplicar el método seleccionado.
@@ -219,8 +219,8 @@ class MethodMenu:
         Deshabilita el selector de métodos y limpia la selección actual.
     """
     # Constante: métodos para tratar los NaN
-    METHODS = ("Eliminar Filas", "Rellenar con Media", 
-                "Rellenar con Mediana", "Rellenar con Valor Constante")
+    METHODS = ("Delete Rows", "Fill with Mean", 
+                "Fill with Median", "Fill with a Constant Value")
     
     def __init__(self, frame, manager):
         """Inicializa la clase MethodMenu.
@@ -268,18 +268,18 @@ class MethodMenu:
         -------
         None.
         """
-        label = tk.Label(self._frame, text="Selecciona el método para manejar NaN:", fg= "#FAF8F9", bg = '#808ec6')
+        label = tk.Label(self._frame, text="Select a method to handle NaN:", fg= "#FAF8F9", bg = '#808ec6')
         label.place(relx=0.5, rely=0.59, anchor="center")
 
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self._method_var, state="disabled", width=30)
         # textvariable=self._method_var: vincula el desplegable a la variable self._method_var
         # El valor seleccionado se actualiza automáticamente en self._method_var.
       
-        self._method_dropdown['values'] = ("Eliminar Filas", "Rellenar con Media", "Rellenar con Mediana", "Rellenar con Valor Constante")
+        self._method_dropdown['values'] = ("Delete Rows", "Fill with Mean", "Fill with Median", "Fill with a Constant Value")
         self._method_dropdown.place(relx=0.5, rely=0.67, relwidth=0.5, anchor="center")
-        self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_entry)
+        self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_input)
         
-        self._constant_label = tk.Label(self._frame, text="Introduce la constante :", bg = '#d0d7f2')
+        self._constant_label = tk.Label(self._frame, text="Introduce the constant:", bg = '#d0d7f2')
         self._constant_value_input = tk.Entry(self._frame, width=10, state="disabled")
 
         self._constant_value_input.place_forget()  # Ocultarlo inicialmente
@@ -289,7 +289,7 @@ class MethodMenu:
         separator.pack(fill = tk.X, side='bottom' )
 
 
-    def toggle_cte_entry(self, event):
+    def toggle_cte_input(self, event):
         """Habilita o deshabilita el campo de entrada para un valor constante
         basado en el método seleccionado.
 
@@ -304,7 +304,7 @@ class MethodMenu:
         """
         selected_method = self._method_var.get()
 
-        if selected_method == "Rellenar con Valor Constante": 
+        if selected_method == "Fill with a Constant Value": 
             self._constant_label.place(relx=0.45, rely=0.72, anchor="center")
             self._constant_value_input.place(relx=0.6, rely=0.72, anchor="center")
             self._constant_value_input.config(state="normal")
@@ -327,7 +327,7 @@ class MethodMenu:
         tk.Button
             El botón creado para aplicar el manejo de NaN.
         """
-        apply_button = tk.Button(self._frame, text="Aplicar", command=self._manager.apply_nan_handling, state="disabled",
+        apply_button = tk.Button(self._frame, text="Apply", command=self._manager.apply_nan_handling, state="disabled",
                                  font=("Arial", 10,'bold'), fg="#FAF8F9", bg = '#6677B8' , activebackground="#808ec6",
                                  activeforeground="#FAF8F9", cursor="hand2" )
         apply_button.place(relx=0.5, rely=0.80, anchor="center")
@@ -377,8 +377,8 @@ class MethodMenu:
 
 class MenuManager:
 
-    METHOD_NAMES = ("Eliminar Filas", "Rellenar con Media", 
-               "Rellenar con Mediana", "Rellenar con Valor Constante")
+    METHOD_NAMES = ("Delete Rows", "Fill with Mean", 
+               "Fill with Median", "Fill with a Constant Value")
     
     def __init__(self, app, frame, columns, df, chart_frame):
         self._app = app  # Solo lo usamos para actualizar la zona de scroll
@@ -399,10 +399,10 @@ class MenuManager:
         # (Habrá que llamarla otra vez después de generar la gráfica)
         self._app.scroll_window.update()
 
-        print("df Antes del preprocesado")
+        print("df Before pre-processing")
         print(self._df)
 
-        print("new_df Antes del preprocesado")
+        print("new_df Before pre-processing")
         print(self._new_df)
 
     @property
@@ -418,7 +418,7 @@ class MenuManager:
 
     def create_regression_button(self):
         """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
-        self._regression_button = tk.Button(self._frame, text="Crear Modelo de Regresión Lineal", 
+        self._regression_button = tk.Button(self._frame, text="Create Linear Regression Model", 
                                        command=self.create_linear_model,
                                        state = "disabled",  # Empieza deshabilitado
                                        font=("Arial", 10, 'bold'), fg="#FAF8F9", 
@@ -454,15 +454,15 @@ class MenuManager:
         selected_target = self._column_menu.selected_target
 
         if len(selected_features) == 0:
-            messagebox.showerror("Error", "Debes seleccionar al menos una columna de entrada (feature).")
+            messagebox.showerror("Error", "You must select an input column (feature).")
 
         elif len(selected_target) == 0:
-            messagebox.showerror("Error", "Debes seleccionar una columna de salida (target).")
+            messagebox.showerror("Error", "You must select an output column (target).")
         
         else:
             f_cols = ', '.join(selected_features)
             t_col = ', '.join(selected_target)
-            success_window = messagebox.showinfo("Éxito", f"Feature: {f_cols}\nTarget: {t_col}")
+            success_window = messagebox.showinfo("Success", f"Feature: {f_cols}\nTarget: {t_col}")
             
             if success_window == 'ok':
                 # Crea una instancia del objeto NaNHandler después de tener seleccionadas las columnas
@@ -471,7 +471,7 @@ class MenuManager:
                 # Comprobar si hay valores nulos en las columnas seleccionadas
                 has_missing, nan_message = self._nan_handler.check_for_nan()
                 
-                messagebox.showinfo("Valores Inexistentes", nan_message)
+                messagebox.showinfo("Non-existent values", nan_message)
                 if has_missing:
                     self._method_menu.enable_selector()  # Habilitar el selector si hay valores nulos
                 else:
@@ -489,15 +489,15 @@ class MenuManager:
             try:
                 constant_value = float(constant_value)  # Convertir a float
             except ValueError:
-                messagebox.showerror("Error", "El valor constante debe ser un número.")
+                messagebox.showerror("Error", "The constant value must be a number.")
                 return
 
         self._new_df = self._nan_handler.preprocess(method, constant_value)
 
-        print("\ndf Despues del preprocesado")
+        print("\ndf After pre-processing")
         print(self._df)
 
-        print("\nnew_df Despues del preprocesado")
+        print("\nnew_df Before pre-processing")
         print(self._new_df)
 
         for col in self._new_df.columns:
@@ -505,18 +505,18 @@ class MenuManager:
                 try:
                     self._new_df[col] = pd.to_numeric(self._new_df[col])
                 except ValueError:
-                    messagebox.showerror("Error", f"La columna {col} contiene valores no numéricos.")
+                    messagebox.showerror("Error", f"The column {col} contains non-numeric values.")
                     return
 
 
-        messagebox.showinfo("Éxito", "El manejo de datos inexistentes se ha aplicado correctamente.")
+        messagebox.showinfo("Success", "Non-existent data handling has been successfully applied.")
 
         self.enable_regression_button() # En cuanto confirma selección, se crea el modelo
 
     def create_linear_model(self):
         """Crea el modelo de regresión lineal utilizando las columnas seleccionadas."""
         if len(self._column_menu.selected_features) == 0 or len(self._column_menu.selected_target) == 0:
-            messagebox.showerror("Error", "Debes seleccionar columnas de entrada y salida antes de crear el modelo.")
+            messagebox.showerror("Error", "You must select input and output columns before creating the model.")
 
         # Usar el DataFrame procesado si existe, si no, usar el original
         df_to_use = self._new_df if self._new_df is not None else self._df
@@ -527,10 +527,10 @@ class MenuManager:
 
         # Verificar si hay suficientes datos para crear el modelo
         if len(feature) < 2 or len(target) < 2:
-            messagebox.showerror("Error", "No hay suficientes datos para crear el modelo de regresión.")
+            messagebox.showerror("Error", "There isn't enough data to create the regression model.")
 
         # Mostrar mensaje de éxito y esperar confirmación
-        success = messagebox.showinfo("Éxito", "El modelo de regresión lineal se creará correctamente.\nPresione Aceptar para ver los resultados.")
+        success = messagebox.showinfo("Success", "The linear regression model will be created successfully.\nPress OK to see the results.")
         
         if success == 'ok':
             self.clear_frame(self._chart_frame)  # Lo vaciamos si hay algo

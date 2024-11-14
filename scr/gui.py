@@ -70,39 +70,39 @@ class ScrollApp:
     
     def search_file(self,event = None):
         filetypes = (
-            ("Todos los archivos compatibles (CSV, EXCEL, SQL)", 
+            ("Compatible files (CSV, EXCEL, SQL)", 
             "*.csv *.xlsx *.xls *.db *.sqlite"),
             )
         self._file = filedialog.askopenfilename(
-            title="Buscar archivo",
+            title="Search file",
             filetypes=filetypes) 
 
         if self._file:
             text = self.shorten_route_text(self._file)
-            self._file_path.set(f"Archivo seleccionado: {text}")
+            self._file_path.set(f"Selected file: {text}")
             self._data = open_files_interface(self._file)
             
             if self._data is not None:
-                messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")
+                messagebox.showinfo("Success", "The file has been read correctly.")
                 # Actualiza los datos
                 self._app.data = self._data
                 # Muestra los datos
                 self._app.show_data()  # Llamar a show_data con el DataFrame cargado 
         else:
-            messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
+            messagebox.showwarning("Warning", "You haven't selected any files.")
     
     def search_model(self,event = None):
         filetypes = (
-            ("Todos los archivos compatibles (pickle, joblib)", 
+            ("Compatible files (pickle, joblib)", 
             "*.pkl *.joblib"),
             )
         self._file = filedialog.askopenfilename(
-            title="Buscar modelo",
+            title="Load model",
             filetypes=filetypes) 
 
         if self._file:
             text = self.shorten_route_text(self._file)
-            self._file_path.set(f"Archivo seleccionado: {text}")
+            self._file_path.set(f"Selected file: {text}")
             self._data = open_models_interface(self._file)
 
             if self._data is not None:
@@ -110,7 +110,7 @@ class ScrollApp:
 
                 self._app.show_model()
         else:
-            messagebox.showwarning("Advertencia", "No has seleccionado ningún archivo.")
+            messagebox.showwarning("Warning", "You haven't selected any files.")
 
     def shorten_route_text(self, text):
         """Recorta el texto de la ruta si excede el número máximo de caracteres."""
@@ -131,18 +131,18 @@ class ScrollApp:
         header_frame.pack_propagate(False)
     
         # Variable para almacenar la ruta del file seleccionado y botón para seleccionarlo
-        self._file_path.set("Abre un archivo con 'Abrir' o un modelo con 'Cargar'")
+        self._file_path.set("Open a file by clicking 'Open' or load a model by clicking 'Load'")
         path_label = tk.Label(header_frame, textvariable= self._file_path, fg= "#FAF8F9", bg = '#6677B8',
                                 font= ("DejaVu Sans Mono", 11),width = 55)
         path_label.pack(side='left',padx=(10,20), pady=5)
 
-        load_button = tk.Button(header_frame, text="Cargar", font=("Arial", 12,'bold'),
+        load_button = tk.Button(header_frame, text="Load", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
                                   cursor="hand2" , command=self.search_model, padx=20, pady=10, width = 5)
         load_button.pack(side='right', padx=10, pady=5) 
 
         # Botón para abrir el explorador de archivos 
-        search_button = tk.Button(header_frame, text="Abrir", font=("Arial", 12,'bold'),
+        search_button = tk.Button(header_frame, text="Open", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
                                   cursor="hand2", command= self.search_file , padx=20, pady=10,width = 5)
         search_button.pack(side='right', padx=20, pady=5) 
@@ -261,10 +261,10 @@ class App:
             mse = self.data.get("mse")
             description = self.data.get("description")
         except:
-            messagebox.showinfo("Error", "El archivo no está en un formato válido.")               
+            messagebox.showinfo("Error", "The file is not in a valid format.")               
             return
 
-        messagebox.showinfo("Éxito", "El archivo se ha leído correctamente.")               
+        messagebox.showinfo("Success", "The file has been read correctly.")               
 
         self.clear_frame()
         

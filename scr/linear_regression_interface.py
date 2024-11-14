@@ -34,8 +34,8 @@ class LinearRegressionInterface:
         fig, ax = plt.subplots()
         fig.patch.set_facecolor('#d0d7f2')  # Cambia el color de fondo de toda la figura (azul claro)
 
-        ax.scatter(self._feature, self._target, color='#808ec6', label='Datos reales', s=10)  # Puntos de datos reales
-        ax.plot(self._feature, predictions, color='#bc2716', label='Línea de regresión', linewidth=2)  # Línea de regresión
+        ax.scatter(self._feature, self._target, color='#808ec6', label='Data', s=10)  # Puntos de datos reales
+        ax.plot(self._feature, predictions, color='#bc2716', label='Regression line', linewidth=2)  # Línea de regresión
         ax.set_xlabel(self._linear_regression._feature_name, fontsize=8)
         ax.set_ylabel(self._linear_regression._target_name, fontsize=8)
         ax.tick_params(axis='both', which='major', labelsize=8)  # Tamaño de los números en los ejes
@@ -55,7 +55,7 @@ class LinearRegressionInterface:
 
         entry_frame = tk.Frame(download_frame, width=250, height=250, bg = '#d0d7f2')
 
-        label = tk.Label(entry_frame,text = 'Introduce un comentario para el modelo (opcional)',  fg= "#FAF8F9", bg = '#808ec6',
+        label = tk.Label(entry_frame,text = 'Introduce a description for the model (optional)',  fg= "#FAF8F9", bg = '#808ec6',
                         font= ("DejaVu Sans Mono", 11),width = 50)
         label.pack(side='top', fill='x', padx=(10, 20), pady=5)
 
@@ -64,7 +64,7 @@ class LinearRegressionInterface:
 
         entry_frame.pack(side = 'left', padx = 40, pady = 10)
 
-        save_button = tk.Button(download_frame, text="Descargar", font=("Arial", 12,'bold'),
+        save_button = tk.Button(download_frame, text="Download", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
                                   cursor="hand2", command = self.save_all, padx=20, pady=10,width = 5)
         save_button.pack(side='right', padx=(0,60), pady=5) 
@@ -80,7 +80,7 @@ class LinearRegressionInterface:
         # Verificar si el comentario está vacío
         if not description:
             # Mostrar un mensaje de advertencia
-            messagebox.showwarning("Advertencia", "El modelo no incluye una descripción")
+            messagebox.showwarning("Warning", "The model does not include a description.")
             description = None
 
         model_handler.save_model(self._linear_regression, description)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # Crear la ventana principal de Tkinter
     root = tk.Tk()
-    root.title("Interfaz de Regresión Lineal")
+    root.title("Linear regression interface")
 
     # Datos de ejemplo para pruebas directas
     df = pd.DataFrame({
