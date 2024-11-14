@@ -71,7 +71,7 @@ class LinearRegression:
         self._mse = np.mean((np.array(target) - self._predictions) ** 2)
 
         # Actualizar etiquetas con los resultados
-        self._output_labels[0].config(text=f"Ecuación de la recta predicha: {self._target_name} = {self._intercept:.2f} + {self._slope:.2f}*{self._feature_name}")
-        self._output_labels[1].config(text=f"Coeficiente de determinación (R²): {self._r_squared:.4f}")
-        self._output_labels[2].config(text=f"Error Cuadrático Medio (ECM): {self._mse:.4f}")
+        self._output_labels[0].config(text=f"Predicted line equation: {self._target_name} = {self._intercept:.2f} + {self._slope:.2f}*{self._feature_name}")
+        self._output_labels[1].config(text=f"Coefficient of determination (R²): {self._r_squared:.4f}")
+        self._output_labels[2].config(text=f"Mean Square Error (MSE): {self._mse:.4f}")
   

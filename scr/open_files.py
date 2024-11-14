@@ -35,7 +35,7 @@ def open_file(file_path):
 
     # Comprobar si el archivo existe primero
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"El archivo '{file_path}' no existe.")
+        raise FileNotFoundError(f"The file '{file_path}' does not exist.")
     
     EXTENSIONS = ('.csv', '.xlsx', '.xls', '.db', '.sqlite') # Posibles extensiones
     # Dependiendo de la extensión le asocia una función
@@ -45,7 +45,7 @@ def open_file(file_path):
     _, extension = os.path.splitext(file_path) # Extrae la extensión (incluye el punto)
 
     # Comprueba que nos pasan archivo válido
-    assert extension in EXTENSIONS, "Formato de archivo inválido. (Válidos: .csv, .xlsx, .xls, .db, .sqlite)."
+    assert extension in EXTENSIONS, "Invalid file format. (Valid: .csv, .xlsx, .xls, .db, .sqlite)."
     # Extrae el dataframe con la función que corresponda
     return EXTENSION_MAP[extension](file_path)
 
@@ -56,17 +56,17 @@ def open_files_interface(file_path):
         df = open_file(file_path)
 
     except FileNotFoundError as e:
-        messagebox.showerror("Error", f"No se pudo encontrar el archivo: {str(e)}")
+        messagebox.showerror("Error", f"The file could not be found: {str(e)}")
 
     except AssertionError as e:
-        messagebox.showerror("Error", f"Formato inválido: {str(e)}")
+        messagebox.showerror("Error", f"Invalid format: {str(e)}")
     
     except Exception as e:
-        messagebox.showerror("Error", f"No se pudo cargar el archivo: {str(e)}")
+        messagebox.showerror("Error", f"The file could not be loaded: {str(e)}")
             
     else: # Aunque se haya leido correctamente, tenemos que comprobar si el dataframe tiene datos
         if df.empty:
-            messagebox.showwarning("Advertencia", "El archivo no contiene datos. La tabla no existe.")
+            messagebox.showwarning("Warning", "The file does not contain data. The table does not exist.")
             df = None
 
     return df  # Será None si ha habido algún error y un DataFrame si se ha leido correctamente

@@ -24,12 +24,12 @@ class NaNHandler:
         missing_columns = missing_info[missing_info > 0]
 
         if not missing_columns.empty:
-            nan_message = "Valores inexistentes detectados en las siguientes columnas:\n"
+            nan_message = "Non-existent values detected in the following columns:\n"
             for col, count in missing_columns.items():
-                nan_message += f"- {col}: {count} valores faltantes\n"
+                nan_message += f"- {col}: {count} missing values\n"
             return True, nan_message
         else:
-            return False, "No se detectaron valores inexistentes."
+            return False, "No non-existent values were detected."
 
     def remove_rows(self, columns):
         """Elimina las filas con datos inexistentes en el DataFrame.
@@ -129,18 +129,18 @@ class NaNHandler:
         
         # Métodos y las funciones que les corresponden
         METHOD_FUNCTIONS = {
-            "Eliminar Filas": self.remove_rows,
-            "Rellenar con Media": self.fill_mean,
-            "Rellenar con Mediana": self.fill_median,
-            "Rellenar con Valor Constante": self.fill_constant,
+            "Delete rows": self.remove_rows,
+            "Fill with Mean": self.fill_mean,
+            "Fill with Median": self.fill_median,
+            "Fill with a Constant Value": self.fill_constant,
         }
 
         # Comprobamos el método y llamamos a la función correspondiente
-        if method == "Rellenar con Valor Constante":
+        if method == "Fill with a Constant Value":
             if constant_value is not None:
                 return METHOD_FUNCTIONS[method](self._selected_columns, constant_value)
             else:
-                messagebox.showerror("Error", "Debes introducir un valor numérico válido.")
+                messagebox.showerror("Error", "You must introduce a valid numeric value.")
                 return None
         else:
             return METHOD_FUNCTIONS[method](self._selected_columns)
@@ -149,8 +149,8 @@ if __name__ == "__main__":
     # Ejemplo de uso del módulo
     import pandas as pd
 
-    METHOD_NAMES = ("Eliminar Filas", "Rellenar con Media", 
-               "Rellenar con Mediana", "Rellenar con Valor Constante")
+    METHOD_NAMES = ("Delete rows", "Fill with Mean", 
+               "Fill with Median", "Fill with a Constant Value")
     
     data = {
         "Columna1": [1, 2, None, 4],
@@ -160,17 +160,17 @@ if __name__ == "__main__":
     }
     df = pd.DataFrame(data)
 
-    print("df Antes del preprocesado")
+    print("df Before the pre-processing")
     print(df)
 
     nan = NaNHandler(df, METHOD_NAMES, ["Columna1", "Columna2", "Columna3"])
     has_missing, message = nan.check_for_nan()
     print(message)
 
-    new_df = nan.preprocess("Rellenar con Media")
+    new_df = nan.preprocess("Fill with Mean")
 
-    print("\nnew_df después del preprocesado")
+    print("\nnew_df after the pre-processing")
     print(new_df)
 
-    print("\ndf después del preprocesado")
+    print("\ndf after the pre-processing")
     print(df)
