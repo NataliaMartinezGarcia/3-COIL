@@ -49,7 +49,7 @@ class ScrollApp:
 
         # Crear otro frame dentro del canvas
         # En este es donde se añaden el resto de widgets
-        self._second_frame = tk.Frame(self._my_canvas)
+        self._second_frame = tk.Frame(self._my_canvas, bg = '#d0d7f2')
         
         # Añadir el nuevo frame a la window dentro del canvas
         self._my_canvas.create_window((0, 0), window=self._second_frame, anchor="nw")
@@ -285,6 +285,7 @@ class App:
 
         self.clear_frame()
         
+        #self._frame.pack(fill=tk.BOTH, expand=True)        
         model_interface.show(self._frame,feature_name,target_name,intercept,slope,r_squared,mse,description)
         
         self._scroll_window.update()

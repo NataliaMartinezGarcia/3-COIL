@@ -29,14 +29,6 @@ class LinearRegression:
     @property
     def target_name(self):
         return self._target_name
-    
-    @property
-    def feature(self):
-        return self._feature
-
-    @property
-    def target(self):
-        return self._target
 
     @property 
     def predictions(self):
