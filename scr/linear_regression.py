@@ -6,7 +6,7 @@ import pandas as pd
 import tkinter as tk
 
 class LinearRegression:
-    def __init__(self, feature, target, output_labels):
+    def __init__(self, feature, target):
         # Guardar las series de datos de las columnas seleccionadas
         self._feature_name = feature.name
         self._feature = feature
@@ -20,7 +20,6 @@ class LinearRegression:
         self._r_squared = None
         self._mse = None
 
-        self._output_labels = output_labels  # Almacenar los labels para mostrar los resultados
         self.create_regression(self._feature, self._target)
     
     @property
@@ -30,6 +29,14 @@ class LinearRegression:
     @property
     def target_name(self):
         return self._target_name
+    
+    @property
+    def feature(self):
+        return self._feature
+
+    @property
+    def target(self):
+        return self._target
 
     @property 
     def predictions(self):
@@ -69,9 +76,3 @@ class LinearRegression:
        
         # ECM
         self._mse = np.mean((np.array(target) - self._predictions) ** 2)
-
-        # Actualizar etiquetas con los resultados
-        self._output_labels[0].config(text=f"Predicted line equation: {self._target_name} = {self._intercept:.2f} + {self._slope:.2f}*{self._feature_name}")
-        self._output_labels[1].config(text=f"Coefficient of determination (R²): {self._r_squared:.4f}")
-        self._output_labels[2].config(text=f"Mean Square Error (MSE): {self._mse:.4f}")
-  
