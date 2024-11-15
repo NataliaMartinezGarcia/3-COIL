@@ -1,7 +1,8 @@
 import tkinter as tk  
 from tkinter import messagebox, filedialog, ttk  
 import pandas as pd
-from open_files import open_files_interface
+# from open_files import open_files_interface
+from open_files import open_file, FileFormatError, EmptyDataError
 from scroll_table import ScrollTable
 from column_menu import MenuManager
 from model_handler import open_models_interface
@@ -68,29 +69,42 @@ class ScrollApp:
     def window(self):
         return self._window
     
-    def search_file(self,event = None):
+    def search_file(self, event=None):
         filetypes = (
-            ("Compatible files (CSV, EXCEL, SQL)", 
-            "*.csv *.xlsx *.xls *.db *.sqlite"),
-            )
+            ("Compatible files (CSV, EXCEL, SQL)", "*.csv *.xlsx *.xls *.db *.sqlite"),
+        )
         self._file = filedialog.askopenfilename(
             title="Search file",
-            filetypes=filetypes) 
+            filetypes=filetypes,
+        )
 
         if self._file:
-            text = self.shorten_route_text(self._file)
-            self._file_path.set(f"Selected file: {text}")
-            self._data = open_files_interface(self._file)
-            
-            if self._data is not None:
+            try:
+                # Abre el archivo y actualiza los datos
+                self._data = open_file(self._file)
+                
+                # Actualiza la ruta del archivo en la interfaz
+                text = self.shorten_route_text(self._file)
+                self._file_path.set(f"Selected file: {text}")
+                
+                # Mensaje de éxito
                 messagebox.showinfo("Success", "The file has been read correctly.")
-                # Actualiza los datos
+
+                # Actualiza los datos en la aplicación y los muestra
                 self._app.data = self._data
-                # Muestra los datos
-                self._app.show_data()  # Llamar a show_data con el DataFrame cargado 
+                self._app.show_data()  # Llamar a show_data con el DataFrame cargado
+
+            except FileNotFoundError as e:
+                messagebox.showerror("Error", f"The file could not be found: {str(e)}")
+            except FileFormatError as e:
+                messagebox.showerror("Error", f"Invalid format: {str(e)}")
+            except EmptyDataError as e:
+                messagebox.showwarning("Error", str(e))
+            except Exception as e:
+                messagebox.showerror("Error", f"The file could not be loaded: {str(e)}")
         else:
             messagebox.showwarning("Warning", "You haven't selected any files.")
-    
+
     def search_model(self,event = None):
         filetypes = (
             ("Compatible files (pickle, joblib)", 
