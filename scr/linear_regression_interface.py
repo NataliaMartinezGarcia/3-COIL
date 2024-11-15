@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from linear_regression import LinearRegression
 import statsmodels.api as sm
 import model_handler 
+import model_interface
 
 class LinearRegressionInterface:
     def __init__(self, frame, feature, target):
@@ -13,15 +14,8 @@ class LinearRegressionInterface:
         self._target = target
         self._comment = None
 
-        # Crear etiquetas para mostrar los resultados de la regresión
-        self._output_labels = []
-        for i in range(3):
-            label = tk.Label(self._frame, text="", wraplength=400, fg= "#FAF8F9", bg = '#808ec6')
-            label.pack(pady=10)
-            self._output_labels.append(label)
-
         # Crear el objeto de regresión lineal para cálculos y resultados
-        self._linear_regression = LinearRegression(feature, target, self._output_labels)
+        self._linear_regression = LinearRegression(feature, target)
 
         # Crear y mostrar el gráfico en la interfaz
         self.create_plot()
@@ -46,7 +40,11 @@ class LinearRegressionInterface:
         canvas.get_tk_widget().config(bg = '#d0d7f2')
         canvas.draw()
         canvas.get_tk_widget().pack()
-        
+       
+        model_interface.show(self._frame,self._linear_regression.feature_name,self._linear_regression.target_name,self._linear_regression.intercept,
+                             self._linear_regression.slope,self._linear_regression.r_squared,
+                             self._linear_regression.mse,None)
+
         self.comment()
 
     def comment(self):
@@ -55,8 +53,8 @@ class LinearRegressionInterface:
 
         entry_frame = tk.Frame(download_frame, width=250, height=250, bg = '#d0d7f2')
 
-        label = tk.Label(entry_frame,text = 'Introduce a description for the model (optional)',  fg= "#FAF8F9", bg = '#808ec6',
-                        font= ("DejaVu Sans Mono", 11),width = 50)
+        label = tk.Label(entry_frame,text = 'Write a description for the model (optional)', fg = '#4d598a', bg = '#d0d7f2',
+                        font= ("DejaVu Sans Mono", 11, 'bold'),width = 50)
         label.pack(side='top', fill='x', padx=(10, 20), pady=5)
 
         self._comment = tk.Text(entry_frame, width=30, height=5, font=("Arial", 10,'bold'), wrap="word")

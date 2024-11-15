@@ -113,8 +113,8 @@ class ColumnMenu:
         features_frame.place(relx=0.03, rely=0.25, relwidth=0.5, anchor="w")
 
         # Etiqueta
-        label = tk.Label(features_frame, text="Select an input column (feature):", fg= "#FAF8F9", bg = '#808ec6',
-                                font= ("DejaVu Sans Mono",10),width = 35)
+        label = tk.Label(features_frame, text="Select an input column (feature):", fg = '#4d598a', bg = '#d0d7f2',
+                                font= ("DejaVu Sans Mono",10, 'bold'),width = 35)
         label.place(relx=0.5, rely=0.1, anchor="center")
         
         # Contenedor que mantiene juntos el listbox y la scrollbar
@@ -145,8 +145,8 @@ class ColumnMenu:
         target_frame = tk.Frame(self._frame, width=280, height=170, bg = '#d0d7f2')
         target_frame.place(relx=0.97, rely=0.25, relwidth=0.5, anchor="e")
 
-        label = tk.Label(target_frame, text="Select an output column (target):", fg= "#FAF8F9", bg = '#808ec6',
-                                font= ("DejaVu Sans Mono",10),width = 35)
+        label = tk.Label(target_frame, text="Select an output column (target):", fg = '#4d598a', bg = '#d0d7f2',
+                                font= ("DejaVu Sans Mono",10, 'bold'),width = 35)
         label.place(relx=0.5, rely=0.1, anchor="center")
 
         # Contenedor que mantiene juntos el listbox y la scrollbar
@@ -268,7 +268,7 @@ class MethodMenu:
         -------
         None.
         """
-        label = tk.Label(self._frame, text="Select a method to handle NaN:", fg= "#FAF8F9", bg = '#808ec6')
+        label = tk.Label(self._frame, text="Select a method to handle NaN:", fg = '#4d598a', bg = '#d0d7f2',font= ("DejaVu Sans Mono", 10,'bold'))
         label.place(relx=0.5, rely=0.59, anchor="center")
 
         self._method_dropdown = ttk.Combobox(self._frame, textvariable=self._method_var, state="disabled", width=30)
@@ -279,7 +279,7 @@ class MethodMenu:
         self._method_dropdown.place(relx=0.5, rely=0.67, relwidth=0.5, anchor="center")
         self._method_dropdown.bind("<<ComboboxSelected>>", self.toggle_cte_input)
         
-        self._constant_label = tk.Label(self._frame, text="Introduce the constant:", bg = '#d0d7f2')
+        self._constant_label = tk.Label(self._frame, text="Introduce the constant:", fg = '#4d598a', bg = '#d0d7f2')
         self._constant_value_input = tk.Entry(self._frame, width=10, state="disabled")
 
         self._constant_value_input.place_forget()  # Ocultarlo inicialmente
@@ -305,8 +305,8 @@ class MethodMenu:
         selected_method = self._method_var.get()
 
         if selected_method == "Fill with a Constant Value": 
-            self._constant_label.place(relx=0.45, rely=0.72, anchor="center")
-            self._constant_value_input.place(relx=0.6, rely=0.72, anchor="center")
+            self._constant_label.place(relx=0.45, rely=0.73, anchor="center")
+            self._constant_value_input.place(relx=0.6, rely=0.73, anchor="center")
             self._constant_value_input.config(state="normal")
         else:
             self._constant_label.place_forget()
