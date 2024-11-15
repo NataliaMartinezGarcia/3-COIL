@@ -85,7 +85,7 @@ class ScrollApp:
                 
                 # Actualiza la ruta del archivo en la interfaz
                 text = self.shorten_route_text(self._file)
-                self._file_path.set(f"Selected file: {text}")
+                self._file_path.set(text)
                 
                 # Mensaje de éxito
                 messagebox.showinfo("Success", "The file has been read correctly.")
@@ -116,7 +116,7 @@ class ScrollApp:
 
         if self._file:
             text = self.shorten_route_text(self._file)
-            self._file_path.set(f"Selected file: {text}")
+            self._file_path.set(text)
             self._data = open_models_interface(self._file)
 
             if self._data is not None:
@@ -143,23 +143,26 @@ class ScrollApp:
         header_frame = tk.Frame(self._main_frame, bg = '#d0d7f2', height = 40, width = 682)
         header_frame.pack(fill = tk.X, side='top')
         header_frame.pack_propagate(False)
-    
+
+        label = tk.Label(header_frame, text= 'PATH' ,fg = '#6677B8',bg= "#d0d7f2", font= ("DejaVu Sans Mono", 13, 'bold'))
+        label.pack(side='left',padx= (10,5) , pady=5)
+
         # Variable para almacenar la ruta del file seleccionado y botón para seleccionarlo
         self._file_path.set("Open a file by clicking 'Open' or load a model by clicking 'Load'")
         path_label = tk.Label(header_frame, textvariable= self._file_path, fg= "#FAF8F9", bg = '#6677B8',
-                                font= ("DejaVu Sans Mono", 11),width = 55)
-        path_label.pack(side='left',padx=(10,20), pady=5)
+                                font= ("DejaVu Sans Mono", 11), width = 50)
+        path_label.pack(side='left',padx=(20,0), pady=5)
 
         load_button = tk.Button(header_frame, text="Load", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
-                                  cursor="hand2" , command=self.search_model, padx=20, pady=10, width = 5)
-        load_button.pack(side='right', padx=10, pady=5) 
+                                  cursor="hand2" , command=self.search_model, padx=10, pady=10, width = 5)
+        load_button.pack(side='right',padx = (0,20), pady=5) 
 
         # Botón para abrir el explorador de archivos 
         search_button = tk.Button(header_frame, text="Open", font=("Arial", 12,'bold'),
                                   fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
-                                  cursor="hand2", command= self.search_file , padx=20, pady=10,width = 5)
-        search_button.pack(side='right', padx=20, pady=5) 
+                                  cursor="hand2", command= self.search_file , padx=10, pady=10,width = 5)
+        search_button.pack(side='right',padx = (10,20), pady=5) 
 
         # Una línea de separador por estética
         separator = tk.Frame(self._main_frame, bg = '#6677B8', height=3)
