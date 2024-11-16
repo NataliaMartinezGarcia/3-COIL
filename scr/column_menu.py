@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import pandas as pd
-from nan_handler import NaNHandler
+from nan_handler import NaNHandler, ConstantValueError
 from linear_regression_interface import LinearRegressionInterface
 
 # Clase que implementa la interfaz para seleccionar columnas de entrada y salida
@@ -474,44 +474,41 @@ class MenuManager:
                 messagebox.showinfo("Non-existent values", nan_message)
                 if has_missing:
                     self._method_menu.enable_selector()  # Habilitar el selector si hay valores nulos
+                    self.disable_regression_button()  # Lo deshabilita si cambia las columnas
                 else:
                     self._method_menu.disable_selector() # Deshabilitar el selector si no hay valores nulos
                     self.enable_regression_button()  # Permite crear el modelo 
 
     def apply_nan_handling(self):
         method = self._method_menu.method_var.get()
-        
         constant_value = self._method_menu.constant_value_input
-        # Estará vacío si no ha introducido nada (porque ha elegido otro método o porque no lo ha introducido cuando toca.)
+
+        # Estará vacío si no ha introducido nada (porque ha elegido otro método o porque no lo ha introducido cuando toca).
         if constant_value is None or constant_value.strip() == "":
-            constant_value = None # Nos aseguramos de que es None si no ha introducido nada 
+            constant_value = None  # Nos aseguramos de que es None si no ha introducido nada
         else:
             try:
                 constant_value = float(constant_value)  # Convertir a float
             except ValueError:
                 messagebox.showerror("Error", "The constant value must be a number.")
-                return
+                return  # Salimos del método si no es un número válido
 
-        self._new_df = self._nan_handler.preprocess(method, constant_value)
+        try:
+            # Aplicamos el preprocesamiento con el método seleccionado
+            self._new_df = self._nan_handler.preprocess(method, constant_value)
+        except ConstantValueError as e:
+            messagebox.showerror("Error", str(e))
+            return  # Salimos del método si hay un error
 
+        # Si no hay errores, mostramos éxito y habilitamos el botón de regresión
         print("\ndf After pre-processing")
         print(self._df)
 
         print("\nnew_df Before pre-processing")
         print(self._new_df)
 
-        for col in self._new_df.columns:
-            if self._new_df[col].dtype == 'object':
-                try:
-                    self._new_df[col] = pd.to_numeric(self._new_df[col])
-                except ValueError:
-                    messagebox.showerror("Error", f"The column {col} contains non-numeric values.")
-                    return
-
-
         messagebox.showinfo("Success", "Non-existent data handling has been successfully applied.")
-
-        self.enable_regression_button() # En cuanto confirma selección, se crea el modelo
+        self.enable_regression_button()  # Permite crear el modelo
 
     def create_linear_model(self):
         """Crea el modelo de regresión lineal utilizando las columnas seleccionadas."""

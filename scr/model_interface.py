@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import gui
+# import gui
 
 def show(frame,feature_name,target_name,intercept,slope,r_squared,mse,description):
 

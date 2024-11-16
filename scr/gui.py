@@ -1,7 +1,6 @@
 import tkinter as tk  
 from tkinter import messagebox, filedialog, ttk  
 import pandas as pd
-# from open_files import open_files_interface
 from open_files import open_file, FileFormatError, EmptyDataError
 from scroll_table import ScrollTable
 from column_menu import MenuManager
