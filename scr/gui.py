@@ -115,11 +115,10 @@ class ScrollApp:
 
         if self._file:
         
-            text = self.shorten_route_text(self._file)
-            self._file_path.set(text)
-
             try: 
                 self._data = open_model(self._file)
+                text = self.shorten_route_text(self._file)
+                self._file_path.set(text)
 
             except FileNotFoundError as e:
                 messagebox.showerror("Error", f"The file could not be found: {str(e)}")
