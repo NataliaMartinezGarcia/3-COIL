@@ -36,22 +36,17 @@ def save_model(model,description = None):
 
     # Si el usuario no selecciona ninguna ruta (presiona cancelar), no hace nada
     if not file_path:
-        return
+        return None
 
     # Guardar el archivo según la extensión seleccionada
-    try:
-        if file_path.endswith(".pkl"):
-            with open(file_path, "wb") as f:
-                pickle.dump(data, f)
-            messagebox.showinfo("Success", "File saved as .pkl correctly.")
+    if file_path.endswith(".pkl"):
+        with open(file_path, "wb") as f:
+            pickle.dump(data, f)
+            return ".pkl"  # Devuelve el tipo de archivo para especificarlo en el messagebox con mensaje de éxito
 
-        elif file_path.endswith(".joblib"):
-            joblib.dump(data, file_path)
-            messagebox.showinfo("Success", "File saved as .joblib correctly.")
-
-    except Exception as e:
-        messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
-
+    elif file_path.endswith(".joblib"):
+        joblib.dump(data, file_path)
+        return ".joblib"
 
 def open_pkl(file_path):
     with open(file_path, 'rb') as file:
@@ -59,7 +54,6 @@ def open_pkl(file_path):
 
 def open_joblib(file_path):
     return joblib.load(file_path)  # Cambiado para usar joblib directamente
-
 
 def open_model(file_path):
     # Comprobar si el archivo existe primero
@@ -74,10 +68,8 @@ def open_model(file_path):
 
     # Comprueba que nos pasan archivo válido
     assert extension in EXTENSIONS, "Invalid file format. (Valid: .pkl, .joblib)."
-    # Extrae el dataframe con la función que corresponda
-    
-    return EXTENSION_MAP[extension](file_path)
 
+    return EXTENSION_MAP[extension](file_path)
 
 def open_models_interface(file_path):
     data = None  # Inicializamos df con None por defecto
