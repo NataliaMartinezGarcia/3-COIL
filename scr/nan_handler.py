@@ -1,6 +1,10 @@
 import pandas as pd
 from tkinter import messagebox
 
+class ConstantValueError(Exception):
+    """Excepción lanzada cuando el valor constante no es válido."""
+    pass
+
 class NaNHandler:
     """Clase para manejar la verificación y gestión de valores NaN en un DataFrame."""
 
@@ -98,6 +102,28 @@ class NaNHandler:
         return self._df_copy.fillna(constant_value)
 
     def preprocess(self, method, constant_value=None):
+        
+        """Devuelve una copia preprocesada de las columnas 'columns'
+        del DataFrame como indique 'method'.
+        
+        """
+        # Métodos y las funciones que les corresponden
+        METHOD_FUNCTIONS = {
+            "Delete rows": self.remove_rows,
+            "Fill with Mean": self.fill_mean,
+            "Fill with Median": self.fill_median,
+            "Fill with a Constant Value": self.fill_constant,
+        }
+
+        # Comprobamos el método y llamamos a la función correspondiente
+        if method == "Fill with a Constant Value":
+            if constant_value is not None:  # Comprueba que haya un valor constante
+                return METHOD_FUNCTIONS[method](self._selected_columns, constant_value)
+            else:  # Si no hay valor constante
+                raise ConstantValueError("You must introduce a valid numeric value.")
+        else:
+            return METHOD_FUNCTIONS[method](self._selected_columns)
+
         """Devuelve una copia preprocesada de las columnas 'columns'
         del DataFrame como indique 'method'.
 
@@ -127,7 +153,7 @@ class NaNHandler:
             Copia de las columnas del DataFrame preprocesadas.
         """
         
-        # Métodos y las funciones que les corresponden
+        """# Métodos y las funciones que les corresponden
         METHOD_FUNCTIONS = {
             "Delete rows": self.remove_rows,
             "Fill with Mean": self.fill_mean,
@@ -137,14 +163,14 @@ class NaNHandler:
 
         # Comprobamos el método y llamamos a la función correspondiente
         if method == "Fill with a Constant Value":
-            if constant_value is not None:
+            if constant_value is not None: # Comprueba que haya un valor constante
                 return METHOD_FUNCTIONS[method](self._selected_columns, constant_value)
-            else:
+            else:  # Si no hay valor constante
                 messagebox.showerror("Error", "You must introduce a valid numeric value.")
-                return None
+                # raise ConstantValueError("You must introduce a valid numeric value.")
         else:
             return METHOD_FUNCTIONS[method](self._selected_columns)
-
+        """
 if __name__ == "__main__":
     # Ejemplo de uso del módulo
     import pandas as pd

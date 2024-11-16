@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 import numpy as np
+from tkinter import font
  
 # Clase para gestionar la tabla de datos con barras deslizables.
 class ScrollTable(ttk.Treeview):
@@ -53,11 +54,32 @@ class ScrollTable(ttk.Treeview):
         self._scroll_x.pack(side=tk.TOP, fill=tk.X)  # Barra horizontal en la parte superior
         self._scroll_y.pack(side=tk.LEFT, fill=tk.Y)  # Barra vertical a la derecha
         self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) # Tabla
+        self.adjust_width()
  
     def numeric_columns(self):
         """Devuelve nombres de las columnas con variables numéricas."""
         return self._data.select_dtypes(include=['number']).columns
-
+    
+    def adjust_width(self):
+        for col in self["columns"]:
+            # Obtener el texto de la cabecera
+            heading = self.heading(col, "text")
+            
+            # Calcular el ancho del texto de la cabecera
+            column_font = font.Font()
+            heading_width = column_font.measure(heading) + 20
+            
+            # Obtener el primer elemento de la columna (si existe)
+            first_element = self.item(self.get_children()[0])["values"][self["columns"].index(col)]
+            
+            # Calcular el ancho del texto del primer elemento
+            first_element_width = column_font.measure(str(first_element)) + 30  # Para el contenidpo hay que sumarle algo porque si no va muy justo !
+            
+            # Seleccionar el ancho mayor entre la cabecera y el primer elemento
+            width = max(heading_width, first_element_width)
+            
+            # Asignar el ancho final a la columna
+            self.column(col, width=width)
 
 # Código para probar la clase ScrollTable
 if __name__ == "__main__":
