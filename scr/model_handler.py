@@ -70,20 +70,3 @@ def open_model(file_path):
     assert extension in EXTENSIONS, "Invalid file format. (Valid: .pkl, .joblib)."
 
     return EXTENSION_MAP[extension](file_path)
-
-def open_models_interface(file_path):
-    data = None  # Inicializamos df con None por defecto
-
-    try: 
-        data = open_model(file_path)
-
-    except FileNotFoundError as e:
-        messagebox.showerror("Error", f"The file could not be found: {str(e)}")
-
-    except AssertionError as e:
-        messagebox.showerror("Error", f"Invalid format: {str(e)}")
-    
-    except Exception as e:
-        messagebox.showerror("Error", f"The file could not be loaded: {str(e)}")
-
-    return data  # Será None si ha habido algún error y un DataFrame si se ha leido correctamente

@@ -4,7 +4,7 @@ import pandas as pd
 from open_files import open_file, FileFormatError, EmptyDataError
 from scroll_table import ScrollTable
 from column_menu import MenuManager
-from model_handler import open_models_interface
+from model_handler import open_model
 import model_interface
 
 class ScrollApp:
@@ -114,15 +114,27 @@ class ScrollApp:
             filetypes=filetypes) 
 
         if self._file:
+        
             text = self.shorten_route_text(self._file)
             self._file_path.set(text)
-            self._data = open_models_interface(self._file)
 
-            if self._data is not None:
+            try: 
+                self._data = open_model(self._file)
+
+            except FileNotFoundError as e:
+                messagebox.showerror("Error", f"The file could not be found: {str(e)}")
+
+            except AssertionError as e:
+                messagebox.showerror("Error", f"Invalid format: {str(e)}")
+            
+            except Exception as e:
+                messagebox.showerror("Error", f"The file could not be loaded: {str(e)}")
+
+            else:  # Si todo ha ido bien
                 self._app.data = self._data
-
                 self._app.show_model()
-        else:
+
+        else:  # Si no ha elegido un archivo
             messagebox.showwarning("Warning", "You haven't selected any files.")
 
     def shorten_route_text(self, text):
