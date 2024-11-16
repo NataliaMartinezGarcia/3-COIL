@@ -204,6 +204,16 @@ class ScrollApp:
 
         return truncated_text
     
+    def introduction(self):
+        messagebox.showinfo("Welcome !", "To use this app correctly, follow these steps:"
+                            "\n\n 1 ) Open a file / model from your computer with the buttons"
+                            "\n\n 2 ) Select your feature and target columns"
+                            "\n\n 3 ) If they have non-existent values, handle them before creating the model"
+                            "\n\n 4 ) Press Create Linear Regression to see the graph and the model information"
+                            "\n\n You can save your model by pressing Download and add a comment of your choice."
+                            "\n\n If you'd like to change your selections at any point you can always go back and follow the steps again.")
+
+    
     def header(self):
         """
         Create the header section of the application.
@@ -240,6 +250,7 @@ class ScrollApp:
         separator.pack(fill = tk.X, side='top')
 
         self._main_frame.pack(fill=tk.BOTH, expand=True)
+        self.introduction()
 
     def update(self):
         """
