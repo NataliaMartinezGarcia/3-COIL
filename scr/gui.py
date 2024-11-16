@@ -204,6 +204,16 @@ class ScrollApp:
 
         return truncated_text
     
+    def introduction(self):
+        messagebox.showinfo("Welcome !", "To use this app correctly, follow these steps:"
+                            "\n\n 1 ) Open a file / model from your computer with the buttons"
+                            "\n\n 2 ) Select your feature and target columns"
+                            "\n\n 3 ) If they have non-existent values, handle them before creating the model"
+                            "\n\n 4 ) Press Create Linear Regression to see the graph and the model information"
+                            "\n\n You can save your model by pressing Download and add a comment of your choice."
+                            "\n\n If you'd like to change your selections at any point you can always go back and follow the steps again.")
+
+    
     def header(self):
         """
         Create the header section of the application.
@@ -219,9 +229,9 @@ class ScrollApp:
         label.pack(side='left',padx= (10,5) , pady=5)
 
         # Variable to store the path of the selected file and button to select it
-        self._file_path.set("Open a file by clicking 'Open' or load a model by clicking 'Load'")
+        self._file_path.set("  Open a file by clicking 'Open' or load a model by clicking 'Load'  ")
         path_label = tk.Label(header_frame, textvariable= self._file_path, fg= "#FAF8F9", bg = '#6677B8',
-                                font= ("DejaVu Sans Mono", 11), width = 50)
+                                font= ("DejaVu Sans Mono", 11), width = 52)
         path_label.pack(side='left',padx=(20,0), pady=5)
 
         load_button = tk.Button(header_frame, text="Load", font=("Arial", 12,'bold'),
@@ -240,6 +250,7 @@ class ScrollApp:
         separator.pack(fill = tk.X, side='top')
 
         self._main_frame.pack(fill=tk.BOTH, expand=True)
+        self.introduction()
 
     def update(self):
         """
@@ -398,9 +409,12 @@ class App:
         messagebox.showinfo("Success", "The file has been read correctly.")               
 
         self.clear_frame()
-        
-        #self._frame.pack(fill=tk.BOTH, expand=True)        
-        model_interface.show(self._frame,feature_name,target_name,intercept,slope,r_squared,mse,description)
+               
+        info_frame = tk.Frame(self._frame, height = self._scroll_window.window.winfo_height() - 50, width = self._scroll_window.window.winfo_width() - 15, bg = '#d0d7f2') 
+        info_frame.pack(side= tk.TOP, fill= tk.X, anchor = "center")
+        info_frame.pack_propagate(False) 
+
+        model_interface.show(info_frame,feature_name,target_name,intercept,slope,r_squared,mse,description)
         
         self._scroll_window.update()
 
