@@ -124,7 +124,7 @@ class ColumnMenu:
         # Crear el Listbox y colocarlo en el lado izquierdo del container_frame
         self._feature_listbox = tk.Listbox(container_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
         self._feature_listbox.pack(side="left", fill="both", expand=True)
-        self._feature_listbox.bind("<<ListboxSelect>>", self._manager.on_column_select)
+        self._feature_listbox.bind("<<ListboxSelect>>", self._manager.on_select)
 
         for column in self._columns:
             self._feature_listbox.insert(tk.END, column)
@@ -154,7 +154,7 @@ class ColumnMenu:
         container_frame.place(relx=0.5, rely=0.5, relwidth=0.75, relheight=0.5, anchor="center")
 
         self._target_listbox = tk.Listbox(container_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
-        self._target_listbox.bind("<<ListboxSelect>>", self._manager.on_column_select)
+        self._target_listbox.bind("<<ListboxSelect>>", self._manager.on_select)
         # Usamos pack para que se expanda dentro del frame que lo empaqueta con el scrollbar
         self._target_listbox.pack(side="left", fill="both", expand=True)
 
@@ -302,12 +302,18 @@ class MethodMenu:
         -------
         None.
         """
+        
+        # Cada vez que cambie la forma de procesado bloquea el botón de regresión
+        # para obligarle a pulsar aceptar y usar así la selección más actualizada
+        self._manager.disable_regression_button()
+
         selected_method = self._method_var.get()
 
         if selected_method == "Fill with a Constant Value": 
             self._constant_label.place(relx=0.45, rely=0.73, anchor="center")
             self._constant_value_input.place(relx=0.6, rely=0.73, anchor="center")
             self._constant_value_input.config(state="normal")
+            self._constant_value_input.bind("<KeyRelease>", lambda event: self._manager.disable_regression_button())
         else:
             self._constant_label.place_forget()
             self._constant_value_input.place_forget()  # Ocultarlo inicialment
@@ -413,8 +419,9 @@ class MenuManager:
     def new_df(self):
         return self._new_df
     
-    def on_column_select(self, event):
+    def on_select(self, event):
         self._method_menu.disable_selector()
+        self.disable_regression_button()
 
     def create_regression_button(self):
         """Crea el botón para iniciar el proceso de creación del modelo de regresión lineal."""
