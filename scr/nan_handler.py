@@ -2,27 +2,44 @@ import pandas as pd
 from tkinter import messagebox
 
 class ConstantValueError(Exception):
-    """Excepción lanzada cuando el valor constante no es válido."""
+    """Exception raised when the constant value is not valid."""
     pass
 
 class NaNHandler:
-    """Clase para manejar la verificación y gestión de valores NaN en un DataFrame."""
-
+    """
+    Class for handling the verification and management of NaN values in a DataFrame.
+    
+    This class provides methods to detect and handle missing values in specified columns
+    of a pandas DataFrame using various strategies like deletion or imputation.
+    
+    Attributes:
+        _df (pandas.DataFrame): The original DataFrame to process.
+        _method_names (tuple): Available processing method names.
+        _selected_columns (list): List of columns to process.
+        _df_copy (pandas.DataFrame): Working copy of the DataFrame to avoid modifying the original.
+    """
     def __init__(self, df, method_names, selected_columns):
+        """
+        Initialize the NaNHandler with a DataFrame and selected columns.
+        
+        Parameters:
+            df (pandas.DataFrame): The DataFrame to process.
+            method_names (tuple): Tuple of available processing method names.
+            selected_columns (list): List of column names to process.
+        """
         self._df = df
-        self._method_names = method_names  # Agregar el atributo method_names
+        self._method_names = method_names  # Add the atrubute method_names
         self._selected_columns = list(set(selected_columns))
 
-        # DataFrame sobre el que se opera para no modificar el dado
+        # DataFrame which is operated with so the given one isn't modified 
         self._df_copy = self._df[self._selected_columns].copy()
 
     def check_for_nan(self):
-        """Verifica si hay valores NaN en las columnas seleccionadas.
+        """
+        Verify if there are NaN values in the selected columns.
 
-        Returns
-        -------
-        tuple
-            Un booleano que indica si hay datos faltantes y un mensaje informativo.
+        Returns:
+            tuple: A boolean indicating if there are missing values and an informative message.
         """
         missing_info = self._df[self._selected_columns].isnull().sum()
         missing_columns = missing_info[missing_info > 0]
@@ -36,78 +53,76 @@ class NaNHandler:
             return False, "No non-existent values were detected."
 
     def remove_rows(self, columns):
-        """Elimina las filas con datos inexistentes en el DataFrame.
+        """
+        Remove rows with missing data from the DataFrame.
 
-        Parámetros 
-        ----------
-        columns: list
-            Lista de columnas en las que se eliminarán filas con NaN.
+        Parameters:
+            columns (list): List of columns where rows with NaN will be removed.
 
-        Returns
-        -------
-        DataFrame
-            DataFrame sin las filas que contenían NaN en las columnas especificadas.
+        Returns:
+            pandas.DataFrame: DataFrame without rows that contained NaN in specified columns.
         """
         return self._df_copy.dropna(subset=columns).copy()
 
     def fill_mean(self, columns):
-        """Sustituye los datos inexistentes en cada columna del DataFrame
-        por la media en esa columna.
+        """
+        Replace missing data in DataFrame columns with their mean values.
 
-        Parámetros 
-        ----------
-        columns: list
-            Lista de columnas en las que se rellenarán NaN con la media.
+        Parameters:
+            columns (list): List of columns where NaN will be filled with mean values.
 
-        Returns
-        -------
-        DataFrame
-            DataFrame con NaN rellenados con la media.
+        Returns:
+            pandas.DataFrame: DataFrame with NaN values filled with column means.
         """
         return self._df_copy.fillna(self._df_copy.mean())
 
     def fill_median(self, columns):
-        """Sustituye los datos inexistentes en cada columna del DataFrame
-        por la mediana en esa columna.
+        """
+        Replace missing data in DataFrame columns with their median values.
 
-        Parámetros 
-        ----------
-        columns: list
-            Lista de columnas en las que se rellenarán NaN con la mediana.
+        Parameters:
+            columns (list): List of columns where NaN will be filled with median values.
 
-        Returns
-        -------
-        DataFrame
-            DataFrame con NaN rellenados con la mediana.
+        Returns:
+            pandas.DataFrame: DataFrame with NaN values filled with column medians.
         """
         return self._df_copy.fillna(self._df_copy.median())
 
     def fill_constant(self, columns, constant_value):
-        """Sustituye los datos inexistentes en el DataFrame
-        en cada columna por una constante 'constant_value'.
+        """
+        Replace missing data in DataFrame columns with a constant value.
 
-        Parámetros 
-        ----------
-        columns: list
-            Lista de columnas en las que se rellenarán NaN con un valor constante.
+        Parameters:
+            columns (list): List of columns where NaN will be filled with a constant value.
+            constant_value (float): Constant value to fill NaN values with.
 
-        constant_value: float
-            Valor constante con el que se rellenarán los NaN.
-
-        Returns
-        -------
-        DataFrame
-            DataFrame con NaN rellenados con el valor constante.
+        Returns:
+            pandas.DataFrame: DataFrame with NaN values filled with the constant value.
         """
         return self._df_copy.fillna(constant_value)
 
     def preprocess(self, method, constant_value=None):
-        
-        """Devuelve una copia preprocesada de las columnas 'columns'
-        del DataFrame como indique 'method'.
-        
         """
-        # Métodos y las funciones que les corresponden
+        Return a preprocessed copy of the selected columns using the specified method.
+        
+        Parameters:
+            method : str
+                Preprocessing method to use.
+                Valid values:
+                - "Delete rows"
+                - "Fill with Mean"
+                - "Fill with Median"
+                - "Fill with a Constant Value"
+            constant_value (float, optional):
+                Value to use when filling NaN values if method is "Fill with a Constant Value".
+            
+        Returns:
+            pandas.DataFrame: Preprocessed copy of the selected columns.
+            
+        Raises:
+            ConstantValueError: If method is "Fill with a Constant Value" and no constant value is provided.
+        """
+        # Methods and their corresponding functions
         METHOD_FUNCTIONS = {
             "Delete rows": self.remove_rows,
             "Fill with Mean": self.fill_mean,
@@ -115,64 +130,17 @@ class NaNHandler:
             "Fill with a Constant Value": self.fill_constant,
         }
 
-        # Comprobamos el método y llamamos a la función correspondiente
+        # We check the method and call the corresponding function
         if method == "Fill with a Constant Value":
-            if constant_value is not None:  # Comprueba que haya un valor constante
+            if constant_value is not None:  # Check that there is a constant value
                 return METHOD_FUNCTIONS[method](self._selected_columns, constant_value)
-            else:  # Si no hay valor constante
+            else:  # If there is no constant value
                 raise ConstantValueError("You must introduce a valid numeric value.")
         else:
             return METHOD_FUNCTIONS[method](self._selected_columns)
 
-        """Devuelve una copia preprocesada de las columnas 'columns'
-        del DataFrame como indique 'method'.
-
-        Precondiciones: 
-        - 'columns' tiene que ser una lista con columnas válidas de 'df'.
-        - Si 'method' = Rellenar con Valor Constante, 'constant_value' no puede ser None.
-
-        Parámetros 
-        ----------
-        columns: list
-            Columnas de 'df' a procesar.
-
-        method: string
-            Método de preprocesado.
-            Posibles valores: 
-            -"Eliminar Filas"
-            -"Rellenar con Media"
-            -"Rellenar con Mediana"
-            -"Rellenar con Valor Constante"
-
-        constant_value: float, optional
-            Valor constante para rellenar los NaN, si corresponde al método.
-
-        Returns
-        -------
-        DataFrame
-            Copia de las columnas del DataFrame preprocesadas.
-        """
-        
-        """# Métodos y las funciones que les corresponden
-        METHOD_FUNCTIONS = {
-            "Delete rows": self.remove_rows,
-            "Fill with Mean": self.fill_mean,
-            "Fill with Median": self.fill_median,
-            "Fill with a Constant Value": self.fill_constant,
-        }
-
-        # Comprobamos el método y llamamos a la función correspondiente
-        if method == "Fill with a Constant Value":
-            if constant_value is not None: # Comprueba que haya un valor constante
-                return METHOD_FUNCTIONS[method](self._selected_columns, constant_value)
-            else:  # Si no hay valor constante
-                messagebox.showerror("Error", "You must introduce a valid numeric value.")
-                # raise ConstantValueError("You must introduce a valid numeric value.")
-        else:
-            return METHOD_FUNCTIONS[method](self._selected_columns)
-        """
 if __name__ == "__main__":
-    # Ejemplo de uso del módulo
+    # Example for using the module 
     import pandas as pd
 
     METHOD_NAMES = ("Delete rows", "Fill with Mean", 

@@ -4,42 +4,65 @@ import pandas as pd
 import numpy as np
 from tkinter import font
  
-# Clase para gestionar la tabla de datos con barras deslizables.
+# Class to manage data table with slider bars.
 class ScrollTable(ttk.Treeview):
+    """
+    A scrollable table widget that displays pandas DataFrame data.
+    
+    This class extends ttk.Treeview to create a table with both horizontal
+    and vertical scrollbars. It provides methods to load and display
+    DataFrame data with proper column sizing.
+    
+    Attributes
+        _frame (ttk.Frame): The parent frame containing the table and scrollbars.
+        _data (pandas.DataFrame): The DataFrame being displayed in the table.
+        _scroll_x (tk.Scrollbar): Horizontal scrollbar for the table.
+        _scroll_y (tk.Scrollbar): Vertical scrollbar for the table.
+    """
 
     def __init__(self, frame):
+        """
+        Initialize the ScrollTable widget.
+        
+        Parameters
+        frame (ttk.Frame): The parent frame to contain the table and scrollbars.
+        """
         super().__init__(frame, columns=[], show="headings")
         self._frame = frame
-        self._data = None  # En el momento de crearla, la tabla está vacía
+        self._data = None  # At the time of creation, the table is empty
  
-        # Crea tabla y scrollbars pero permanecen ocultas hasta que la tabla tenga datos
- 
-        # Barra de desplazamiento horizontal
+        # Creates table and scrollbars but they remain hidden until the table has data
+
+        # Horizontal scroll bar
         self._scroll_x = tk.Scrollbar(self._frame, orient=tk.HORIZONTAL)
  
-        # Barra de desplazamiento vertical
+        # Vertical scroll bar 
         self._scroll_y = tk.Scrollbar(self._frame, orient=tk.VERTICAL)
  
-        # Conectar las barras de desplazamiento a la tabla existente (self)
+        # Connect scrollbars to existing table (self)
         self.config(xscrollcommand=self._scroll_x.set, yscrollcommand=self._scroll_y.set)
  
-        # Configuramos las barras de desplazamiento
+        # Configure the scrollbars 
         self._scroll_x.config(command=self.xview)
         self._scroll_y.config(command=self.yview)
  
-        # self._frame.pack_propagate(True)  # Evitar que el frame cambie de tamaño"""
+        #self._frame.pack_propagate(True) 
  
-    @property  # DataFrame que muestra la tabla
+    @property  # DataFrame that the table shows 
     def data(self):
         return self._data
     
     def empty_table(self):
-        """Elimina todos los elementos de la tabla existente."""
+        """Remove all items from the existing table."""
         self.delete(*self.get_children())
  
     def create_from_df(self, df):
-        """Configura las columnas de la tabla según el DataFrame proporcionado.
-        Inserta datos en el Treeview desde ese DataFrame."""
+        """
+        Configure table columns and insert data from a DataFrame.
+        
+        Parameters:
+            df (pandas.DataFrame): The DataFrame to display in the table.
+        """
         self._data = df
         self['columns'] = list(df.columns)
         for col in df.columns:
@@ -50,54 +73,60 @@ class ScrollTable(ttk.Treeview):
             self.insert("", "end", values=list(row))
  
     def show(self):
-        """Muestra la tabla y los scrollbars en el frame."""
-        self._scroll_x.pack(side=tk.TOP, fill=tk.X)  # Barra horizontal en la parte superior
-        self._scroll_y.pack(side=tk.LEFT, fill=tk.Y)  # Barra vertical a la derecha
-        self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) # Tabla
+        """Display the table and scrollbars in the frame."""
+        self._scroll_x.pack(side=tk.TOP, fill=tk.X)  # Horizontal bar at the top
+        self._scroll_y.pack(side=tk.LEFT, fill=tk.Y)  # Vertical bar on the right
+        self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) # Table
         self.adjust_width()
  
     def numeric_columns(self):
-        """Devuelve nombres de las columnas con variables numéricas."""
+        """
+        Get the names of columns containing numeric data.
+        
+        Returns:
+            pandas.Index: Names of columns with numeric data types.
+        """
         return self._data.select_dtypes(include=['number']).columns
     
     def adjust_width(self):
+        """Adjust the width of each column based on content and header text."""
         for col in self["columns"]:
-            # Obtener el texto de la cabecera
+            # Obtain the header text
             heading = self.heading(col, "text")
             
-            # Calcular el ancho del texto de la cabecera
+            # Calculate the width of the header text
             column_font = font.Font()
             heading_width = column_font.measure(heading) + 20
             
-            # Obtener el primer elemento de la columna (si existe)
+            # Obtain the first elemento of the column (if it exists):
             first_element = self.item(self.get_children()[0])["values"][self["columns"].index(col)]
             
-            # Calcular el ancho del texto del primer elemento
-            first_element_width = column_font.measure(str(first_element)) + 30  # Para el contenidpo hay que sumarle algo porque si no va muy justo !
+            # Calculate the width of the first element's text
+            first_element_width = column_font.measure(str(first_element)) + 30  # For the content you have to add something because otherwise it will be very tight!
             
-            # Seleccionar el ancho mayor entre la cabecera y el primer elemento
+            # Select the largest width between the header and the first element
             width = max(heading_width, first_element_width)
             
-            # Asignar el ancho final a la columna
+            # Assign final width to column
             self.column(col, width=width)
 
-# Código para probar la clase ScrollTable
+# Code to test the ScrollTable class
 if __name__ == "__main__":
-    # Crear la ventana principal
+    # Create the main window 
     root = tk.Tk()
     root.title("Demo de ScrollTable")
     root.geometry("300x400")
 
-    # Crear un marco para la tabla
+    # Create a frame for the table
     frame = ttk.Frame(root)
     frame.pack(fill=tk.BOTH, expand=True)
 
-    # Crear una instancia de ScrollTable
+    # Create a ScrollTable instance
     table = ScrollTable(frame)
 
-    # Crear datos de ejemplo en un DataFrame con muchas filas y columnas
-    num_rows = 200  # Aumentar el número de filas
-    num_columns = 10  # Aumentar el número de columnas
+    # Create sample data in a DataFrame with many rows and columns
+    num_rows = 200  # Increase the number of rows
+    num_columns = 10  # Increase the number of columns
     data = {
         "ID": np.arange(1, num_rows + 1),
         "Nombre": [f"Nombre {i}" for i in range(1, num_rows + 1)],
@@ -113,11 +142,11 @@ if __name__ == "__main__":
     
     df = pd.DataFrame(data)
 
-    # Cargar datos en la tabla
+    # Load the data in the table 
     table.create_from_df(df)
 
-    # Mostrar la tabla
+    # Display the table 
     table.show()
 
-    # Iniciar el bucle principal de la interfaz gráfica
+    # Start the main loop of the graphical interface
     root.mainloop()

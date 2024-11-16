@@ -3,15 +3,31 @@ from tkinter import messagebox
 # import gui
 
 def show(frame,feature_name,target_name,intercept,slope,r_squared,mse,description):
+    """
+    Displays the linear regression model results in a tkinter frame with a styled interface.
+    
+    Creates a formatted display showing the predicted equation, coefficient of determination (R²),
+    mean square error (MSE), and an optional description of the model.
+    
+    Args:
+        frame (tk.Frame): The parent frame where the results will be displayed
+        feature_name (str): Name of the independent variable (X)
+        target_name (str): Name of the dependent variable (Y)
+        intercept (float): Y-intercept of the regression line
+        slope (float): Slope coefficient of the regression line
+        r_squared (float): R-squared value of the model (coefficient of determination)
+        mse (float): Mean Square Error of the model
+        description (str, optional): Additional description or interpretation of the model
 
-    # Para crear el efecto de un borde
+    """
+    # Create a border effect
     info_labels_border = tk.Frame(frame, bg = '#6677B8')
     info_labels_border.pack(side = 'top', pady = (40,0))
 
     info_labels = tk.Frame(info_labels_border, bg = '#d0d7f2')
     info_labels.pack(fill = tk.BOTH, padx = 3, pady = 3)
 
-    # Crear etiquetas para cada valor y mostrarlos
+    # Create labels for each value and display them
     equation_frame = tk.Frame(info_labels, bg = '#d0d7f2')
     equation_frame.pack(side='top', fill='x', pady=5)
 
@@ -23,7 +39,7 @@ def show(frame,feature_name,target_name,intercept,slope,r_squared,mse,descriptio
                             fg = '#6677B8', bg = '#d0d7f2', font=('Arial Black', 11,'bold'))
     equation_label.pack(side='right', padx=5)
 
-    # Par 2: Coeficiente de determinación (R²)
+    # Pair 2: Coefficient of determination (R²)
     rsquared_frame = tk.Frame(info_labels, bg = '#d0d7f2')
     rsquared_frame.pack(side='top', fill='x', pady=5)
 
@@ -35,7 +51,7 @@ def show(frame,feature_name,target_name,intercept,slope,r_squared,mse,descriptio
                             fg = '#6677B8', bg = '#d0d7f2', font=('Arial Black', 11,'bold'))
     rsquared_label.pack(side='right', padx=5)
 
-    # Par 3: Error cuadrático medio (MSE)
+    # Pair 3: Mean Square Error (MSE)
     mse_frame = tk.Frame(info_labels, bg = '#d0d7f2')
     mse_frame.pack(side='top', fill='x', pady=5)
 
@@ -47,7 +63,7 @@ def show(frame,feature_name,target_name,intercept,slope,r_squared,mse,descriptio
                         fg = '#6677B8', bg = '#d0d7f2', font=('Arial Black', 11,'bold'))
     mse_label.pack(side='right', padx=5)
 
-    # Si la descripción existe (no es None o vacía), mostrarla en una etiqueta
+    # If description exists (not None or empty), display it in a label
     if description and description.strip():
 
         description_frame = tk.Frame(info_labels, bg = '#d0d7f2')

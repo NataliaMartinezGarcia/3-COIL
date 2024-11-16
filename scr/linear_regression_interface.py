@@ -8,34 +8,65 @@ from model_handler import save_model
 import model_interface
 
 class LinearRegressionInterface:
+    """
+    A class that provides a graphical user interface for linear regression analysis.
+    
+    This class creates a visualization of the linear regression model, including the scatter plot
+    of the data points, the regression line, and model statistics. It also provides functionality
+    to save the model with an optional description.
+
+    Attributes:
+        _frame (tk.Frame): The main frame where the interface elements will be placed
+        _feature (pd.Series): The independent variable (X) for the regression
+        _target (pd.Series): The dependent variable (y) for the regression
+        _comment (tk.Text): Text widget for model description input
+        _linear_regression (LinearRegression): Object that handles the regression calculations
+    """
     def __init__(self, frame, feature, target):
-        self._frame = frame  # Frame principal de la interfaz
-        self._feature = feature  # Se lo pasaremos a la clase que hace los calculos
+        """
+        Initialize the LinearRegressionInterface with the provided data.
+
+        Args:
+            frame (tk.Frame): The main frame to contain the interface elements
+            feature (pd.Series): The independent variable data
+            target (pd.Series): The dependent variable data
+        """
+        self._frame = frame   # Main frame of the interface
+        self._feature = feature  # Will be passed to the calculation class
         self._target = target
         self._comment = None
 
-        # Crear el objeto de regresión lineal para cálculos y resultados
+        # Create linear regression object for calculations and results
         self._linear_regression = LinearRegression(feature, target)
 
-        # Crear y mostrar el gráfico en la interfaz
+        # Create and display the plot in the interface
         self.create_plot()
 
     def create_plot(self):
-        # Extraer los datos necesarios para la gráfica
+        """
+        Creates and displays the regression plot in the interface.
+        
+        The plot includes:
+        - Scatter plot of the actual data points
+        - Regression line
+        - Axis labels and legend
+        - Model statistics display
+        """ 
+        # Extract the necessary data for the plot
         predictions = self._linear_regression.predictions
 
-        # Crear la figura de matplotlib
+        # Create matplotlib figure
         fig, ax = plt.subplots()
-        fig.patch.set_facecolor('#d0d7f2')  # Cambia el color de fondo de toda la figura (azul claro)
+        fig.patch.set_facecolor('#d0d7f2')   # Change background color of the entire figure (light blue)
 
-        ax.scatter(self._feature, self._target, color='#808ec6', label='Data', s=10)  # Puntos de datos reales
-        ax.plot(self._feature, predictions, color='#bc2716', label='Regression line', linewidth=2)  # Línea de regresión
+        ax.scatter(self._feature, self._target, color='#808ec6', label='Data', s=10)  # Real data points
+        ax.plot(self._feature, predictions, color='#bc2716', label='Regression line', linewidth=2)  # Regression line
         ax.set_xlabel(self._linear_regression._feature_name, fontsize=8)
         ax.set_ylabel(self._linear_regression._target_name, fontsize=8)
-        ax.tick_params(axis='both', which='major', labelsize=8)  # Tamaño de los números en los ejes
+        ax.tick_params(axis='both', which='major', labelsize=8)   # Size of numbers on axes
         ax.legend(fontsize=8)
 
-        # Integrar la figura dentro del frame de tkinter
+        # Integrate the figure into the tkinter frame
         canvas = FigureCanvasTkAgg(fig, master=self._frame)
         canvas.get_tk_widget().config(bg = '#d0d7f2')
         canvas.draw()
@@ -48,7 +79,14 @@ class LinearRegressionInterface:
         self.comment()
 
     def comment(self):
+        """
+        Creates and displays the interface elements for adding a model description
+        and downloading the model.
         
+        This includes:
+        - A text area for entering the model description
+        - A download button to save the model
+        """
         download_frame = tk.Frame(self._frame, height=250, bg = '#d0d7f2')
 
         entry_frame = tk.Frame(download_frame, width=250, height=250, bg = '#d0d7f2')
@@ -73,11 +111,21 @@ class LinearRegressionInterface:
         separator.pack(fill = tk.X, side = tk.TOP, anchor = "center")
 
     def save_all(self):
+        """
+        Saves the linear regression model along with its optional description.
+        
+        This method retrieves the description from the text area, validates it,
+        and attempts to save the model. It shows appropriate message boxes for
+        success or failure cases.
+        
+        Raises:
+            Displays an error message box if the save operation fails
+        """
         description = self._comment.get("1.0", "end-1c")
 
-        # Verificar si el comentario está vacío
+        # Check if the comment is empty
         if not description:
-            # Mostrar un mensaje de advertencia
+            # Show warning message
             messagebox.showwarning("Warning", "The model does not include a description.")
             description = None
 
@@ -88,26 +136,26 @@ class LinearRegressionInterface:
             messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
 
 
-# Ejemplo de uso directo de LinearRegressionInterface en una ventana Tkinter
+# Example of direct use of LinearRegressionInterface in a Tkinter window
 if __name__ == "__main__":
     import pandas as pd
 
-    # Crear la ventana principal de Tkinter
+    # Create the main Tkinter window
     root = tk.Tk()
     root.title("Linear regression interface")
 
-    # Datos de ejemplo para pruebas directas
+    # Sample data for testing
     df = pd.DataFrame({
         "Feature": [2, 5, 0, 2, 1, 9, 8],
         "Target": [1, 3, 5, 5, 5, 1, 3]
     })
 
-    # Crear un frame en la ventana principal para la interfaz de regresión lineal
+    # Create a frame in the main window for the linear regression interface
     frame = tk.Frame(root)
     frame.pack()
 
-    # Crear la interfaz de regresión lineal
+    # Create the linear regression interface
     app = LinearRegressionInterface(frame, df["Feature"], df["Target"])
 
-    # Iniciar el loop principal de tkinter
+    # Start the main tkinter loop
     root.mainloop()
