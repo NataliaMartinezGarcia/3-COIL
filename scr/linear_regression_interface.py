@@ -4,7 +4,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from linear_regression import LinearRegression
 import statsmodels.api as sm
-import model_handler 
+from model_handler import save_model
 import model_interface
 
 class LinearRegressionInterface:
@@ -81,7 +81,11 @@ class LinearRegressionInterface:
             messagebox.showwarning("Warning", "The model does not include a description.")
             description = None
 
-        model_handler.save_model(self._linear_regression, description)
+        try:
+            extension = save_model(self._linear_regression, description)
+            messagebox.showinfo("Success", f"File saved as {extension} correctly.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
 
 
 # Ejemplo de uso directo de LinearRegressionInterface en una ventana Tkinter
