@@ -3,6 +3,7 @@ from tkinter import messagebox, ttk
 import pandas as pd
 from nan_handler import NaNHandler, ConstantValueError
 from linear_regression_interface import LinearRegressionInterface
+from progress_bar import run_with_loading
 
 # Class that implements the interface for selecting input and output columns
 class ColumnMenu:
@@ -170,22 +171,14 @@ class MethodMenu:
     and additional inputs for specific methods like constant value filling.
     
     Attributes:
-        METHODS : tuple
-            Available methods for handling NaN values.
-        _frame : tk.Frame
-            The main frame where widgets will be placed.
-        _manager : MenuManager
-            Controller object that handles the data processing logic.
-        _method_var : tk.StringVar
-            Variable holding the currently selected method.
-        _method_dropdown : ttk.Combobox
-            Dropdown widget for method selection.
-        _constant_label : tk.Label
-            Label for constant value input field.
-        _constant_value_input : tk.Entry
-            Entry widget for constant value input.
-        _apply_button : tk.Button
-            Button to apply the selected method.
+        METHODS (tuple): Available methods for handling NaN values.
+        _frame (tk.Frame): The main frame where widgets will be placed.
+        _manager (MenuManager): Controller object that handles the data processing logic.
+        _method_var (tk.StringVar): Variable holding the currently selected method.
+        _method_dropdown ( ttk.Combobox): Dropdown widget for method selection.
+        _constant_label (tk.Label): Label for constant value input field.
+        _constant_value_input (tk.Entry): Entry widget for constant value input.
+        _apply_button (tk.Button): Button to apply the selected method.
     """
     # Constant: Methods for dealing with NaNs
     METHODS = ("Delete Rows", "Fill with Mean", 
@@ -247,7 +240,6 @@ class MethodMenu:
 
         separator = tk.Frame(self._frame, bg = '#6677B8', height=3)
         separator.pack(fill = tk.X, side='bottom' )
-
 
     def toggle_cte_input(self, event):
         """
@@ -323,45 +315,31 @@ class MenuManager:
     of the linear regression model.
     
     Attributes:
-        METHOD_NAMES : tuple
-            Available methods for handling NaN values.
-        _app : object
-            The main application instance.
-        _frame : tk.Frame
-            The main frame containing all menu components.
-        _columns : list
-            List of available column names.
-        _df : pd.DataFrame
-            The original DataFrame.
-        _new_df : pd.DataFrame or None
-            The preprocessed DataFrame.
-        _chart_frame : tk.Frame
-            Frame for displaying the regression chart.
-        _column_menu : ColumnMenu
-            Interface for column selection.
-        _method_menu : MethodMenu
-            Interface for NaN handling method selection.
-        _regression_button : tk.Button
-            Button to trigger regression model creation.
+        METHOD_NAMES (tuple): Available methods for handling NaN values.
+        _app (object): The main application instance.
+        _frame  (tk.Frame): The main frame containing all menu components.
+        _columns (list): List of available column names.
+        _df ( pd.DataFrame): The original DataFrame.
+        _new_df (pd.DataFrame or None): The preprocessed DataFrame.
+        _chart_frame  (tk.Frame): Frame for displaying the regression chart.
+        _column_menu (ColumnMenu): Interface for column selection.
+        _method_menu  (MethodMenu): Interface for NaN handling method selection.
+        _regression_button (tk.Button): Button to trigger regression model creation.
     """
 
     METHOD_NAMES = ("Delete Rows", "Fill with Mean", 
                "Fill with Median", "Fill with a Constant Value")
     
     def __init__(self, app, frame, columns, df, chart_frame):
-        """Initialize the menu manager.
+        """
+        Initialize the menu manager.
         
         Parameters:
-            app : object
-                The main application instance.
-            frame : tk.Frame
-                The main frame for menu components.
-            columns : list
-                List of available column names.
-            df : pd.DataFrame
-                The input DataFrame.
-            chart_frame : tk.Frame
-                Frame for displaying the regression chart.
+            app (object): The main application instance.
+            frame (tk.Frame): The main frame for menu components.
+            columns (list): List of available column names.
+            df (pd.DataFrame): The input DataFrame.
+            chart_frame ( tk.Frame): Frame for displaying the regression chart.
         """
         self._app = app  # We only use it to update the scroll area 
 
