@@ -1,27 +1,30 @@
 import pandas as pd
 from tkinter import messagebox
 
+
 class ConstantValueError(Exception):
     """Exception raised when the constant value is not valid."""
     pass
 
+
 class NaNHandler:
     """
     Class for handling the verification and management of NaN values in a DataFrame.
-    
+
     This class provides methods to detect and handle missing values in specified columns
     of a pandas DataFrame using various strategies like deletion or imputation.
-    
+
     Attributes:
         _df (pandas.DataFrame): The original DataFrame to process.
         _method_names (tuple): Available processing method names.
         _selected_columns (list): List of columns to process.
         _df_copy (pandas.DataFrame): Working copy of the DataFrame to avoid modifying the original.
     """
+
     def __init__(self, df, method_names, selected_columns):
         """
         Initialize the NaNHandler with a DataFrame and selected columns.
-        
+
         Parameters:
             df (pandas.DataFrame): The DataFrame to process.
             method_names (tuple): Tuple of available processing method names.
@@ -31,7 +34,7 @@ class NaNHandler:
         self._method_names = method_names  # Add the atrubute method_names
         self._selected_columns = list(set(selected_columns))
 
-        # DataFrame which is operated with so the given one isn't modified 
+        # DataFrame which is operated with so the given one isn't modified
         self._df_copy = self._df[self._selected_columns].copy()
 
     def check_for_nan(self):
@@ -104,7 +107,7 @@ class NaNHandler:
     def preprocess(self, method, constant_value=None):
         """
         Return a preprocessed copy of the selected columns using the specified method.
-        
+
         Parameters:
             method : str
                 Preprocessing method to use.
@@ -115,10 +118,10 @@ class NaNHandler:
                 - "Fill with a Constant Value"
             constant_value (float, optional):
                 Value to use when filling NaN values if method is "Fill with a Constant Value".
-            
+
         Returns:
             pandas.DataFrame: Preprocessed copy of the selected columns.
-            
+
         Raises:
             ConstantValueError: If method is "Fill with a Constant Value" and no constant value is provided.
         """
@@ -135,17 +138,19 @@ class NaNHandler:
             if constant_value is not None:  # Check that there is a constant value
                 return METHOD_FUNCTIONS[method](self._selected_columns, constant_value)
             else:  # If there is no constant value
-                raise ConstantValueError("You must introduce a valid numeric value.")
+                raise ConstantValueError(
+                    "You must introduce a valid numeric value.")
         else:
             return METHOD_FUNCTIONS[method](self._selected_columns)
 
+
 if __name__ == "__main__":
-    # Example for using the module 
+    # Example for using the module
     import pandas as pd
 
-    METHOD_NAMES = ("Delete rows", "Fill with Mean", 
-               "Fill with Median", "Fill with a Constant Value")
-    
+    METHOD_NAMES = ("Delete rows", "Fill with Mean",
+                    "Fill with Median", "Fill with a Constant Value")
+
     data = {
         "Columna1": [1, 2, None, 4],
         "Columna2": [None, 1, 2, 3],

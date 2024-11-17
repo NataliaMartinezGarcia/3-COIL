@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tkinter as tk
 
+
 class LinearRegression:
     """
     A class to perform simple linear regression analysis.
-    
+
     This class implements a simple linear regression model using statsmodels,
     calculating the relationship between a single feature (independent variable)
     and a target (dependent variable).
@@ -36,7 +37,7 @@ class LinearRegression:
         # Store the data series from selected columns
         self._feature_name = feature.name
         self._feature = feature
- 
+
         self._target_name = target.name
         self._target = target
 
@@ -47,7 +48,7 @@ class LinearRegression:
         self._mse = None
 
         self.create_regression(self._feature, self._target)
-    
+
     @property
     def feature_name(self):
         return self._feature_name
@@ -56,7 +57,7 @@ class LinearRegression:
     def target_name(self):
         return self._target_name
 
-    @property 
+    @property
     def predictions(self):
         return self._predictions
 
@@ -76,7 +77,6 @@ class LinearRegression:
     def mse(self):
         return self._mse
 
-    
     def create_regression(self, feature, target):
         """
         Create and fit the linear regression model.
@@ -94,17 +94,17 @@ class LinearRegression:
         """
         # Add a column of ones for the intercept term
         feature_with_intercept = sm.add_constant(feature)
-       
+
         # Train the model
         model_training = sm.OLS(target, feature_with_intercept)
         modelofin = model_training.fit()
- 
+
         # Get intercept and slope coefficients
         self._intercept, self._slope = modelofin.params
         self._r_squared = modelofin.rsquared
-       
+
         # Generate model predictions
         self._predictions = modelofin.predict(feature_with_intercept)
-       
+
         # Calculate MSE (Mean Squared Error)
         self._mse = np.mean((np.array(target) - self._predictions) ** 2)

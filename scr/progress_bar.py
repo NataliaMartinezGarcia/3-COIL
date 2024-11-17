@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
+
 class LoadingIndicator:
     def __init__(self, parent):
         """
         Initialize the loading indicator popup window.
-        
+
         Args:
             parent: The parent window where the loading indicator will be shown
         """
@@ -18,7 +19,7 @@ class LoadingIndicator:
     def start(self, message="Loading..."):
         """
         Show the loading indicator as a popup window with a custom message.
-        
+
         Args:
             message (str): Message to display below the progress bar
         """
@@ -33,8 +34,10 @@ class LoadingIndicator:
 
         # Center popup on screen
         self.popup.update_idletasks()
-        x = self.parent.winfo_x() + (self.parent.winfo_width() // 2) - (self.popup.winfo_width() // 2)
-        y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - (self.popup.winfo_height() // 2)
+        x = self.parent.winfo_x() + (self.parent.winfo_width() // 2) - \
+            (self.popup.winfo_width() // 2)
+        y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - \
+            (self.popup.winfo_height() // 2)
         self.popup.geometry(f"+{x}+{y}")
 
         # Create and configure progress bar
@@ -76,14 +79,14 @@ class LoadingIndicator:
 def run_with_loading(parent, func, message="Loading...", *args, **kwargs):
     """
     Run a function with a loading indicator.
-    
+
     Args:
         parent: Parent window
         func: Function to run
         message: Loading message to display
         *args: Positional arguments for the function
         **kwargs: Keyword arguments for the function
-    
+
     Returns:
         The result of the function execution
     """
