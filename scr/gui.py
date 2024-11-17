@@ -1,11 +1,12 @@
 import tkinter as tk  
-from tkinter import messagebox, filedialog, ttk  
+from tkinter import messagebox, filedialog, ttk
 import pandas as pd
 from open_files import open_file, FileFormatError, EmptyDataError
 from scroll_table import ScrollTable
 from column_menu import MenuManager
 from model_handler import open_model
 import model_interface
+from progress_bar import run_with_loading
 
 class ScrollApp:
     """
@@ -116,11 +117,18 @@ class ScrollApp:
             title="Search file",
             filetypes=filetypes,
         )
-
+        
         if self._file:
             try:
-                # Open the files and updates the data 
-                self._data = open_file(self._file)
+                # Wrap the file loading operation with the loading indicator
+                def load_file():
+                    return open_file(self._file)
+                    
+                self._data = run_with_loading(
+                    self._window,
+                    load_file,
+                    "Reading file..."
+                )
                 
                 # Update the file's path in the interface 
                 text = self.shorten_route_text(self._file)
@@ -131,7 +139,7 @@ class ScrollApp:
 
                 # Update the data in the application and displays it
                 self._app.data = self._data
-                self._app.show_data()  # Call show_data with the DataFrame loaded
+                self._app.show_data()
 
             except FileNotFoundError as e:
                 messagebox.showerror("Error", f"The file could not be found: {str(e)}")
@@ -143,7 +151,7 @@ class ScrollApp:
                 messagebox.showerror("Error", f"The file could not be loaded: {str(e)}")
         else:
             messagebox.showwarning("Warning", "You haven't selected any files.")
-
+                
     def search_model(self,event = None):
         """
         Open a file dialog to select and load a model file.
@@ -163,26 +171,30 @@ class ScrollApp:
             filetypes=filetypes) 
 
         if self._file:
-        
             try: 
-                self._data = open_model(self._file)
+                # Wrap the model loading operation with the loading indicator
+                def load_model():
+                    return open_model(self._file)
+                    
+                self._data = run_with_loading(
+                    self._window,
+                    load_model,
+                    "Loading model..."
+                )
+                
                 text = self.shorten_route_text(self._file)
                 self._file_path.set(text)
 
             except FileNotFoundError as e:
                 messagebox.showerror("Error", f"The file could not be found: {str(e)}")
-
             except AssertionError as e:
                 messagebox.showerror("Error", f"Invalid format: {str(e)}")
-            
             except Exception as e:
                 messagebox.showerror("Error", f"The file could not be loaded: {str(e)}")
-
-            else:  # Si todo ha ido bien
+            else:  
                 self._app.data = self._data
                 self._app.show_model()
-
-        else:  # Si no ha elegido un archivo
+        else:  
             messagebox.showwarning("Warning", "You haven't selected any files.")
 
     def shorten_route_text(self, text):
@@ -213,7 +225,6 @@ class ScrollApp:
                             "\n\n You can save your model by pressing Download and add a comment of your choice."
                             "\n\n If you'd like to change your selections at any point you can always go back and follow the steps again.")
 
-    
     def header(self):
         """
         Create the header section of the application.
@@ -405,7 +416,7 @@ class App:
         except:
             messagebox.showinfo("Error", "The file is not in a valid format.")               
             return
-
+        
         messagebox.showinfo("Success", "The file has been read correctly.")               
 
         self.clear_frame()
