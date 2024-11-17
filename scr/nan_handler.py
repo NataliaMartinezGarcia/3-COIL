@@ -124,7 +124,7 @@ class NaNHandler:
         """
         # Methods and their corresponding functions
         METHOD_FUNCTIONS = {
-            "Delete rows": self.remove_rows,
+            "Delete Rows": self.remove_rows,
             "Fill with Mean": self.fill_mean,
             "Fill with Median": self.fill_median,
             "Fill with a Constant Value": self.fill_constant,
