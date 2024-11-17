@@ -7,10 +7,11 @@ import statsmodels.api as sm
 from model_handler import save_model
 import model_interface
 
+
 class LinearRegressionInterface:
     """
     A class that provides a graphical user interface for linear regression analysis.
-    
+
     This class creates a visualization of the linear regression model, including the scatter plot
     of the data points, the regression line, and model statistics. It also provides functionality
     to save the model with an optional description.
@@ -22,6 +23,7 @@ class LinearRegressionInterface:
         _comment (tk.Text): Text widget for model description input
         _linear_regression (LinearRegression): Object that handles the regression calculations
     """
+
     def __init__(self, frame, feature, target):
         """
         Initialize the LinearRegressionInterface with the provided data.
@@ -45,36 +47,40 @@ class LinearRegressionInterface:
     def create_plot(self):
         """
         Creates and displays the regression plot in the interface.
-        
+
         The plot includes:
         - Scatter plot of the actual data points
         - Regression line
         - Axis labels and legend
         - Model statistics display
-        """ 
+        """
         # Extract the necessary data for the plot
         predictions = self._linear_regression.predictions
 
         # Create matplotlib figure
         fig, ax = plt.subplots()
-        fig.patch.set_facecolor('#d0d7f2')   # Change background color of the entire figure (light blue)
+        # Change background color of the entire figure (light blue)
+        fig.patch.set_facecolor('#d0d7f2')
 
-        ax.scatter(self._feature, self._target, color='#808ec6', label='Data', s=10)  # Real data points
-        ax.plot(self._feature, predictions, color='#bc2716', label='Regression line', linewidth=2)  # Regression line
+        ax.scatter(self._feature, self._target, color='#808ec6',
+                   label='Data', s=10)  # Real data points
+        ax.plot(self._feature, predictions, color='#bc2716',
+                label='Regression line', linewidth=2)  # Regression line
         ax.set_xlabel(self._linear_regression._feature_name, fontsize=8)
         ax.set_ylabel(self._linear_regression._target_name, fontsize=8)
-        ax.tick_params(axis='both', which='major', labelsize=8)   # Size of numbers on axes
+        # Size of numbers on axes
+        ax.tick_params(axis='both', which='major', labelsize=8)
         ax.legend(fontsize=8)
 
         # Integrate the figure into the tkinter frame
         canvas = FigureCanvasTkAgg(fig, master=self._frame)
-        canvas.get_tk_widget().config(bg = '#d0d7f2')
+        canvas.get_tk_widget().config(bg='#d0d7f2')
         canvas.draw()
         canvas.get_tk_widget().pack()
-       
-        model_interface.show(self._frame,self._linear_regression.feature_name,self._linear_regression.target_name,self._linear_regression.intercept,
-                             self._linear_regression.slope,self._linear_regression.r_squared,
-                             self._linear_regression.mse,None)
+
+        model_interface.show(self._frame, self._linear_regression.feature_name, self._linear_regression.target_name, self._linear_regression.intercept,
+                             self._linear_regression.slope, self._linear_regression.r_squared,
+                             self._linear_regression.mse, None)
 
         self.comment()
 
@@ -82,42 +88,44 @@ class LinearRegressionInterface:
         """
         Creates and displays the interface elements for adding a model description
         and downloading the model.
-        
+
         This includes:
         - A text area for entering the model description
         - A download button to save the model
         """
-        download_frame = tk.Frame(self._frame, height=250, bg = '#d0d7f2')
+        download_frame = tk.Frame(self._frame, height=250, bg='#d0d7f2')
 
-        entry_frame = tk.Frame(download_frame, width=250, height=250, bg = '#d0d7f2')
+        entry_frame = tk.Frame(download_frame, width=250,
+                               height=250, bg='#d0d7f2')
 
-        label = tk.Label(entry_frame,text = 'Write a description for the model (optional)', fg = '#4d598a', bg = '#d0d7f2',
-                        font= ("DejaVu Sans Mono", 11, 'bold'),width = 50)
+        label = tk.Label(entry_frame, text='Write a description for the model (optional)', fg='#4d598a', bg='#d0d7f2',
+                         font=("DejaVu Sans Mono", 11, 'bold'), width=50)
         label.pack(side='top', fill='x', padx=(10, 20), pady=5)
 
-        self._comment = tk.Text(entry_frame, width=30, height=5, font=("Arial", 10,'bold'), wrap="word")
+        self._comment = tk.Text(entry_frame, width=30, height=5, font=(
+            "Arial", 10, 'bold'), wrap="word")
         self._comment.pack(side='top', fill=tk.BOTH, padx=20, pady=5)
 
-        entry_frame.pack(side = 'left', padx = 40, pady = 10)
+        entry_frame.pack(side='left', padx=40, pady=10)
 
-        save_button = tk.Button(download_frame, text="Download", font=("Arial", 12,'bold'),
-                                  fg="#FAF8F9", bg = '#6677B8' ,activebackground="#808ec6",activeforeground="#FAF8F9",
-                                  cursor="hand2", command = self.save_all, padx=20, pady=10,width = 5)
-        save_button.pack(side='right', padx=(0,60), pady=5) 
+        save_button = tk.Button(download_frame, text="Download", font=("Arial", 12, 'bold'),
+                                fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6", activeforeground="#FAF8F9",
+                                cursor="hand2", command=self.save_all, padx=20, pady=10, width=5)
+        save_button.pack(side='right', padx=(0, 60), pady=5)
 
-        download_frame.pack(side = 'top', pady = 20)
+        download_frame.pack(side='top', pady=20)
 
-        separator = tk.Frame(self._frame, bg = '#6677B8', height = 3)
-        separator.pack(fill = tk.X, side = tk.TOP, anchor = "center")
+        separator = tk.Frame(self._frame, bg='#6677B8', height=3)
+        separator.pack(fill=tk.X, side=tk.TOP, anchor="center")
 
     def save_all(self):
         """
         Saves the linear regression model along with its optional description.
-        
+
         This method retrieves the description from the text area, validates it,
         and attempts to save the model. It shows appropriate message boxes for
         success or failure cases.
-        
+
         Raises:
             Displays an error message box if the save operation fails
         """
@@ -126,12 +134,14 @@ class LinearRegressionInterface:
         # Check if the comment is empty
         if not description:
             # Show warning message
-            messagebox.showwarning("Warning", "The model does not include a description.")
+            messagebox.showwarning(
+                "Warning", "The model does not include a description.")
             description = None
 
         try:
             extension = save_model(self._linear_regression, description)
-            messagebox.showinfo("Success", f"File saved as {extension} correctly.")
+            messagebox.showinfo(
+                "Success", f"File saved as {extension} correctly.")
         except Exception as e:
             messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
 
