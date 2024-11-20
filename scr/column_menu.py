@@ -4,117 +4,98 @@ import pandas as pd
 from nan_handler import NaNHandler, ConstantValueError
 from linear_regression_interface import LinearRegressionInterface
 
-# Class that implements the interface for selecting input and output columns
-
 
 class ColumnMenu:
     """
     A graphical interface for selecting input and output columns from a DataFrame.
-
     This class provides a GUI that allows users to select one input column (feature)
     and one output column (target) from a DataFrame using Tkinter widgets. It includes
     scrollable listboxes for both feature and target selection, along with a confirmation
     button to validate the selection.
-
-    Attributes:
-        _frame (tk.Frame): The main frame where all widgets will be placed.
-        _columns (list): List of available column names for selection.
-        _manager (MenuManager): Controller object that handles selection logic and confirmation.
-        _selected_features (list): List of selected feature column names.
-        _selected_target (list): List containing the selected target column name.
-        _feature_listbox (tk.Listbox): Listbox widget for selecting feature columns.
-        _target_listbox (tk.Listbox): Listbox widget for selecting target column.
     """
 
-    def __init__(self, frame, columns, manager):
+    def __init__(self, frame: tk.Frame, columns: list, manager: 'MenuManager'):
         """
-        Initialize the column selection menu.
+        Initialize the column selection interface.
 
-        Parameters
-            frame (tk.Frame): Parent frame where widgets will be placed.
-            columns (list): List of column names from the DataFrame.
-            manager (MenuManager): Controller object for handling selection and confirmation logic.
+        Parameters:
+            - frame: Parent frame where widgets will be placed
+            - columns: List of available column names
+            - manager: Reference to the MenuManager controller
         """
+
         self._frame = frame
         self._columns = columns
         self._manager = manager
-        self._selected_features = []
+        self._selected_feature = []
         self._selected_target = []
 
+        self._init_ui()
+
+    def _init_ui(self):
+        """Initialize all UI components."""
+        # Create the UI elements for feature and target selection
         self.create_features_selector()
         self.create_target_selector()
         self.create_confirm_button()
 
     @property
-    def selected_features(self):
-        """ 
-        Get the list of selected feature columns.
-
-        Returns:
-            list: Names of columns selected as features.
+    def selected_features(self) -> list:
         """
-        return self._selected_features
+        Get the list of selected feature column
+.
+        Returns:
+            - list: Names of selected feature column
+        """
+        return self._selected_feature
 
     @property
-    def selected_target(self):
+    def selected_target(self) -> list:
         """
-        Get the selected target column.
+        Get the list of selected target column.
 
         Returns:
-            list: List containing the name of the selected target column.
+            - list: Names of selected taget column
         """
         return self._selected_target
 
-    def add_scrollbar_to_listbox(self, listbox, container_frame):
+    def _add_scrollbar_to_listbox(self, listbox: tk.Listbox, container: tk.Frame):
         """
-        Add a vertical scrollbar to a listbox within a container frame.
+        Add a scrollbar to a listbox and configure their interaction.
 
         Parameters:
-            listbox (tk.Listbox): The listbox to add the scrollbar to.
-            container_frame (tk.Frame): Frame containing the listbox where the scrollbar will be placed.
+            - listbox: Listbox widget to add scrollbar to
+            - container: Frame containing the listbox
         """
-
-        # Create and place the vertical scrollbar
+        # Create scrollbar and link it with listbox
         scrollbar = tk.Scrollbar(
-            container_frame, orient="vertical", command=listbox.yview)
+            container,
+            orient="vertical",
+            command=listbox.yview
+        )
         scrollbar.pack(side="right", fill="y")
+        # Configure listbox to use scrollbar
         listbox.config(yscrollcommand=scrollbar.set)
 
     def create_features_selector(self):
         """
         Create the feature columns selector.
-
         Creates a frame containing a label, a single-selection listbox, and a scrollbar
         for selecting input features. The listbox is bound to the manager's selection
         handler.
         """
-        # Main frame containing the label and the container_frame with the listbox and scrollbar
-        features_frame = tk.Frame(
-            self._frame, width=290, height=170, bg='#d0d7f2')
-        features_frame.place(relx=0.03, rely=0.25, relwidth=0.5, anchor="w")
 
-        # Label
-        label = tk.Label(features_frame, text="Select an input column (feature):", fg='#4d598a', bg='#d0d7f2',
-                         font=("DejaVu Sans Mono", 10, 'bold'), width=35)
-        label.place(relx=0.5, rely=0.1, anchor="center")
+        # Create frame for feature selection on the left side
+        features_frame = self._create_selector_frame(
+            relx=0.03,
+            title="Select an input column (feature):"
+        )
 
-        # Container that holds the listbox and scrollbar together
-        container_frame = tk.Frame(features_frame)
-        container_frame.place(relx=0.5, rely=0.5,
-                              relwidth=0.75, relheight=0.5, anchor="center")
-
-        # Create the Listbox and place it on the left side of the container_frame
-        self._feature_listbox = tk.Listbox(
-            container_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
-        self._feature_listbox.pack(side="left", fill="both", expand=True)
-        self._feature_listbox.bind(
-            "<<ListboxSelect>>", self._manager.on_select)
-
-        for column in self._columns:
-            self._feature_listbox.insert(tk.END, column)
-
-        # Call the function to add the scrollbar to the Listbox
-        self.add_scrollbar_to_listbox(self._feature_listbox, container_frame)
+        # Create listbox container and components
+        container = self._create_listbox_container(features_frame)
+        self._feature_listbox = self._create_listbox(container)
+        self._populate_listbox(self._feature_listbox)
+        self._add_scrollbar_to_listbox(self._feature_listbox, container)
 
     def create_target_selector(self):
         """
@@ -124,42 +105,125 @@ class ColumnMenu:
         for selecting the target variable. The listbox is bound to the manager's
         selection handler.
         """
-        target_frame = tk.Frame(self._frame, width=280,
-                                height=170, bg='#d0d7f2')
-        target_frame.place(relx=0.97, rely=0.25, relwidth=0.5, anchor="e")
 
-        label = tk.Label(target_frame, text="Select an output column (target):", fg='#4d598a', bg='#d0d7f2',
-                         font=("DejaVu Sans Mono", 10, 'bold'), width=35)
+        # Create frame for target selection on the right side
+        target_frame = self._create_selector_frame(
+            relx=0.97,
+            title="Select an output column (target):"
+        )
+
+        container = self._create_listbox_container(target_frame)
+        self._target_listbox = self._create_listbox(container)
+        self._populate_listbox(self._target_listbox)
+        self._add_scrollbar_to_listbox(self._target_listbox, container)
+
+    def _create_selector_frame(self, relx: float, title: str) -> tk.Frame:
+        """
+        Create a frame with title for column selection.
+
+        Parameters:
+            - relx: Relative x position (0-1) for frame placement
+            - title: Text to display as frame title
+
+        Returns:
+            - tk.Frame: Configured frame for selection components
+        """
+        # Create main frame with fixed dimensions
+        frame = tk.Frame(
+            self._frame,
+            width=290,
+            height=170,
+            bg='#d0d7f2'
+        )
+        # Position frame using relative coordinates
+        frame.place(relx=relx, rely=0.25, relwidth=0.5,
+                    anchor="w" if relx < 0.5 else "e")
+        # Create and position title label
+        label = tk.Label(
+            frame,
+            text=title,
+            fg='#4d598a',
+            bg='#d0d7f2',
+            font=("DejaVu Sans Mono", 10, 'bold'),
+            width=35
+        )
         label.place(relx=0.5, rely=0.1, anchor="center")
 
-        # Container that holds the listbox and scrollbar together
-        container_frame = tk.Frame(target_frame)
-        container_frame.place(relx=0.5, rely=0.5,
-                              relwidth=0.75, relheight=0.5, anchor="center")
+        return frame
 
-        self._target_listbox = tk.Listbox(
-            container_frame, selectmode=tk.SINGLE, height=5, exportselection=False)
-        self._target_listbox.bind("<<ListboxSelect>>", self._manager.on_select)
-        # We use pack so that it expands within the frame that packs it with the scrollbar
-        self._target_listbox.pack(side="left", fill="both", expand=True)
+    def _create_listbox_container(self, parent: tk.Frame) -> tk.Frame:
+        """
+        Create container frame for listbox and scrollbar.
 
+        Parameters:
+            - parent: Parent frame to contain the listbox
+
+        Returns:
+            - tk.Frame: Container frame for listbox components
+        """
+        # Create and position container frame
+        container = tk.Frame(parent)
+        container.place(
+            relx=0.5,
+            rely=0.5,
+            relwidth=0.75,
+            relheight=0.5,
+            anchor="center"
+        )
+        return container
+
+    def _create_listbox(self, container: tk.Frame) -> tk.Listbox:
+        """
+        Create and configure a listbox for column selection.
+
+        Parameters:
+            - container: Parent frame for the listbox
+
+        Returns:
+            - tk.Listbox: Configured listbox widget
+        """
+        # Create listbox with single selection mode
+        listbox = tk.Listbox(
+            container,
+            selectmode=tk.SINGLE,
+            height=5,
+            exportselection=False
+        )
+        listbox.pack(side="left", fill="both", expand=True)
+        # Bind selection event to manager's handler
+        listbox.bind("<<ListboxSelect>>", self._manager.on_select)
+        return listbox
+
+    def _populate_listbox(self, listbox: tk.Listbox):
+        """
+        Fill listbox with column names.
+
+        Parameters:
+            - listbox: Listbox widget to populate
+        """
+        # Add each column name to the listbox
         for column in self._columns:
-            self._target_listbox.insert(tk.END, column)
-
-        # Call the function to add the scrollbar to the Listbox
-        self.add_scrollbar_to_listbox(self._target_listbox, container_frame)
+            listbox.insert(tk.END, column)
 
     def create_confirm_button(self):
         """
         Create the confirmation button.
-
         Creates a button that triggers the manager's confirm_selection method when clicked.
         The button is styled with custom colors and fonts.
         """
-        confirm_button = tk.Button(self._frame, text="Confirm selection", command=self._manager.confirm_selection,
-                                   font=("Arial", 11, 'bold'), fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6",
-                                   activeforeground="#FAF8F9", cursor="hand2")
-
+        # Create styled confirmation button
+        confirm_button = tk.Button(
+            self._frame,
+            text="Confirm selection",
+            command=self._manager.confirm_selection,
+            font=("Arial", 11, 'bold'),
+            fg="#FAF8F9",
+            bg='#6677B8',
+            activebackground="#808ec6",
+            activeforeground="#FAF8F9",
+            cursor="hand2"
+        )
+        # Center button in frame
         confirm_button.place(relx=0.5, rely=0.45, anchor='center')
 
     def get_selected_columns(self):
@@ -168,11 +232,20 @@ class ColumnMenu:
 
         Updates the internal _selected_features and _selected_target lists with
         the current selections from the respective listboxes.
+
+        Returns:
+            - None: Updates internal selected columns lists
         """
-        self._selected_features = [self._feature_listbox.get(
-            i) for i in self._feature_listbox.curselection()]
-        self._selected_target = [self._target_listbox.get(
-            i) for i in self._target_listbox.curselection()]
+        # Get selected features from listbox
+        self._selected_feature = [
+            self._feature_listbox.get(i)
+            for i in self._feature_listbox.curselection()
+        ]
+        # Get selected target from listbox
+        self._selected_target = [
+            self._target_listbox.get(i)
+            for i in self._target_listbox.curselection()
+        ]
 
 
 class MethodMenu:
@@ -182,56 +255,52 @@ class MethodMenu:
     This class provides a GUI interface for selecting different methods to handle
     missing values in the dataset. It includes a dropdown menu for method selection
     and additional inputs for specific methods like constant value filling.
-
-    Attributes:
-        METHODS : tuple
-            Available methods for handling NaN values.
-        _frame : tk.Frame
-            The main frame where widgets will be placed.
-        _manager : MenuManager
-            Controller object that handles the data processing logic.
-        _method_var : tk.StringVar
-            Variable holding the currently selected method.
-        _method_dropdown : ttk.Combobox
-            Dropdown widget for method selection.
-        _constant_label : tk.Label
-            Label for constant value input field.
-        _constant_value_input : tk.Entry
-            Entry widget for constant value input.
-        _apply_button : tk.Button
-            Button to apply the selected method.
     """
-    # Constant: Methods for dealing with NaNs
-    METHODS = ("Delete Rows", "Fill with Mean",
-               "Fill with Median", "Fill with a Constant Value")
+    # Available methods for handling NaN values
+    METHODS = (
+        "Delete Rows",
+        "Fill with Mean",
+        "Fill with Median",
+        "Fill with a Constant Value"
+    )
 
-    def __init__(self, frame, manager):
+    def __init__(self, frame: tk.Frame, manager: 'MenuManager'):
         """
-        Initialize the method selection menu.
+        Initialize method selection menu.
 
         Parameters:
-            frame (tk.Frame): Parent frame where widgets will be placed.
-            manager (MenuManager): Controller object for handling method application logic.
+            - frame: Parent frame for the menu
+            - manager: Reference to MenuManager controller
         """
         self._frame = frame
         self._manager = manager
-        self._method_var = tk.StringVar()
+        self._method_var = tk.StringVar()  # Variable to store selected method
 
+        self._init_ui()
+
+    def _init_ui(self):
+        """Initialize all UI components."""
         self.create_nan_selector()
         self._apply_button = self.create_apply_button()
 
     @property
-    def method_var(self):
+    def method_var(self) -> tk.StringVar:
         """
-        Get the currently selected method.
+        Get the variable containing selected method.
 
         Returns:
-            tk.StringVar: Variable containing the selected NaN handling method.
+            - tk.StringVar: Variable containing selected method
         """
         return self._method_var
 
     @property
-    def constant_value_input(self):
+    def constant_value_input(self) -> str:
+        """
+        Get the value entered in constant input field.
+
+        Returns:
+            - str: Current value in constant input field
+        """
         return self._constant_value_input.get()
 
     def create_nan_selector(self):
@@ -242,180 +311,226 @@ class MethodMenu:
         constant value input when needed. Includes appropriate labels and
         styling.
         """
-        label = tk.Label(self._frame, text="Select a method to handle NaN:",
-                         fg='#4d598a', bg='#d0d7f2', font=("DejaVu Sans Mono", 10, 'bold'))
+        # Create all UI components for method selection
+        self._create_method_label()
+        self._create_method_dropdown()
+        self._create_constant_input()
+        self._create_separator()
+
+    def _create_method_label(self):
+        """Create label for method selector."""
+        # Create and position method selection label
+        label = tk.Label(
+            self._frame,
+            text="Select a method to handle NaN:",
+            fg='#4d598a',
+            bg='#d0d7f2',
+            font=("DejaVu Sans Mono", 10, 'bold')
+        )
         label.place(relx=0.5, rely=0.59, anchor="center")
 
+    def _create_method_dropdown(self):
+        """Create dropdown for method selection."""
+        # Create combobox with predefined methods
         self._method_dropdown = ttk.Combobox(
-            self._frame, textvariable=self._method_var, state="disabled", width=30)
-        # textvariable=self._method_var: binds the dropdown to the variable self._method_var
-        # The selected value is automatically updated in self._method_var
-
-        self._method_dropdown['values'] = (
-            "Delete Rows", "Fill with Mean", "Fill with Median", "Fill with a Constant Value")
+            self._frame,
+            textvariable=self._method_var,
+            state="disabled",  # Initially disabled
+            width=30,
+            values=self.METHODS
+        )
         self._method_dropdown.place(
-            relx=0.5, rely=0.67, relwidth=0.5, anchor="center")
+            relx=0.5,
+            rely=0.67,
+            relwidth=0.5,
+            anchor="center"
+        )
+        # Bind selection event to input toggle
         self._method_dropdown.bind(
-            "<<ComboboxSelected>>", self.toggle_cte_input)
+            "<<ComboboxSelected>>",
+            self.toggle_cte_input
+        )
 
+    def _create_constant_input(self):
+        """Create input field for constant value."""
+        # Create label and entry for constant value input
         self._constant_label = tk.Label(
-            self._frame, text="Introduce the constant:", fg='#4d598a', bg='#d0d7f2')
+            self._frame,
+            text="Introduce the constant:",
+            fg='#4d598a',
+            bg='#d0d7f2'
+        )
         self._constant_value_input = tk.Entry(
-            self._frame, width=10, state="disabled")
+            self._frame,
+            width=10,
+            state="disabled"
+        )
 
-        self._constant_value_input.place_forget()  # Hide it initially
+        # Hide both widgets initially
+        self._constant_value_input.place_forget()
         self._constant_label.place_forget()
 
+    def _create_separator(self):
+        """Create visual separator."""
+        # Create horizontal line separator
         separator = tk.Frame(self._frame, bg='#6677B8', height=3)
         separator.pack(fill=tk.X, side='bottom')
 
     def toggle_cte_input(self, event):
         """
-        Enables or disables the input field for a constant value
-        based on the selected method.
+        Toggle constant value input field based on method selection.
 
         Parameters:
-            event (tk.Event): The event triggered by method selection change.
+            - event: Event from combobox selection
         """
-        # Every time you change the processing mode it locks the regression button to
-        # force you to press accept and use the most up-to-date selection.
+        # Disable regression button when method changes
         self._manager.disable_regression_button()
-
         selected_method = self._method_var.get()
 
+        # Show/hide constant input based on method
         if selected_method == "Fill with a Constant Value":
-            self._constant_label.place(relx=0.45, rely=0.73, anchor="center")
-            self._constant_value_input.place(
-                relx=0.6, rely=0.73, anchor="center")
-            self._constant_value_input.config(state="normal")
-            self._constant_value_input.bind(
-                "<KeyRelease>", lambda event: self._manager.disable_regression_button())
+            self._show_constant_input()
         else:
-            self._constant_label.place_forget()
-            self._constant_value_input.place_forget()  # Hide it initially
-            self._constant_value_input.delete(0, "end")
-            self._constant_value_input.config(state="disabled")
+            self._hide_constant_input()
 
-        if selected_method:
-            self._apply_button.config(state="normal")
-        else:
-            self._apply_button.config(state="disabled")
+        # Enable apply button if method is selected
+        self._apply_button.config(
+            state="normal" if selected_method else "disabled"
+        )
 
-    def create_apply_button(self):
+    def _show_constant_input(self):
+        """Show and enable constant value input."""
+        # Position and show constant value components
+        self._constant_label.place(relx=0.45, rely=0.73, anchor="center")
+        self._constant_value_input.place(relx=0.6, rely=0.73, anchor="center")
+        # Enable input and bind key events
+        self._constant_value_input.config(state="normal")
+        self._constant_value_input.bind(
+            "<KeyRelease>",
+            lambda event: self._manager.disable_regression_button()
+        )
+
+    def _hide_constant_input(self):
+        """Hide and clear constant value input."""
+        # Hide input components
+        self._constant_label.place_forget()
+        self._constant_value_input.place_forget()
+        # Clear and disable input field
+        self._constant_value_input.delete(0, "end")
+        self._constant_value_input.config(state="disabled")
+
+    def create_apply_button(self) -> tk.Button:
         """
-        Create the button to apply the selected NaN handling method.
+        Create button to apply NaN handling method.
 
         Returns:
-            tk.Button: The configured apply button widget.
+            - tk.Button: Configured apply button
         """
-        apply_button = tk.Button(self._frame, text="Apply", command=self._manager.apply_nan_handling, state="disabled",
-                                 font=("Arial", 10, 'bold'), fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6",
-                                 activeforeground="#FAF8F9", cursor="hand2")
+        # Create and position apply button
+        apply_button = tk.Button(
+            self._frame,
+            text="Apply",
+            command=self._manager.apply_nan_handling,
+            state="disabled",
+            font=("Arial", 10, 'bold'),
+            fg="#FAF8F9",
+            bg='#6677B8',
+            activebackground="#808ec6",
+            activeforeground="#FAF8F9",
+            cursor="hand2"
+        )
         apply_button.place(relx=0.5, rely=0.80, anchor="center")
         return apply_button
 
     def enable_selector(self):
-        """Enable the method selection dropdown."""
+        """Enable method selection dropdown."""
+        # Set dropdown to readonly state (can select but not edit)
         self._method_dropdown["state"] = "readonly"
 
     def disable_selector(self):
-        """Disable the method selection dropdown and clear current selection."""
-        self._method_var.set("")  # Clears the selected value
+        """Disable and clear method selection."""
+        # Clear selection and disable dropdown
+        self._method_var.set("")
         self._method_dropdown["state"] = "disabled"
-
-    def display_nan_message(self, message):
-        """
-        Display a message about NaN values.
-
-        Parameters:
-            message (str): The message to display.
-        """
-        self._message_label.config(text=message)
-
-    def clear_nan_message(self):
-        """Clear the NaN message display."""
-        self._message_label.config(text="")
 
 
 class MenuManager:
     """
-    Manager class for coordinating column selection and NaN handling interfaces.
+    Coordinates column selection and NaN handling interfaces.
 
     This class manages the interaction between the column selection menu and the
     NaN handling menu, coordinates data preprocessing, and handles the creation
     of the linear regression model.
-
-    Attributes:
-        METHOD_NAMES : tuple
-            Available methods for handling NaN values.
-        _app : object
-            The main application instance.
-        _frame : tk.Frame
-            The main frame containing all menu components.
-        _columns : list
-            List of available column names.
-        _df : pd.DataFrame
-            The original DataFrame.
-        _new_df : pd.DataFrame or None
-            The preprocessed DataFrame.
-        _chart_frame : tk.Frame
-            Frame for displaying the regression chart.
-        _column_menu : ColumnMenu
-            Interface for column selection.
-        _method_menu : MethodMenu
-            Interface for NaN handling method selection.
-        _regression_button : tk.Button
-            Button to trigger regression model creation.
     """
+    # Available methods for NaN handling
+    METHOD_NAMES = (
+        "Delete Rows",
+        "Fill with Mean",
+        "Fill with Median",
+        "Fill with a Constant Value"
+    )
 
-    METHOD_NAMES = ("Delete Rows", "Fill with Mean",
-                    "Fill with Median", "Fill with a Constant Value")
-
-    def __init__(self, app, frame, columns, df, chart_frame):
-        """Initialize the menu manager.
+    def __init__(
+        self,
+        app,
+        frame: tk.Frame,
+        columns: list,
+        df: pd.DataFrame,
+        chart_frame: tk.Frame
+    ):
+        """
+        Initialize menu manager with necessary components.
 
         Parameters:
-            app : object
-                The main application instance.
-            frame : tk.Frame
-                The main frame for menu components.
-            columns : list
-                List of available column names.
-            df : pd.DataFrame
-                The input DataFrame.
-            chart_frame : tk.Frame
-                Frame for displaying the regression chart.
+            - app: Main application instance
+            - frame: Frame for menu components
+            - columns: List of available column names
+            - df: Input DataFrame
+            - chart_frame: Frame for displaying charts
         """
-        self._app = app  # We only use it to update the scroll area
-
+        self._app = app
         self._frame = frame
         self._columns = columns
         self._df = df
-        self._new_df = None  # DataFrame where the preprocessed data will be
+        self._new_df = None  # Will store processed DataFrame
+        self._chart_frame = chart_frame
 
-        self._chart_frame = chart_frame  # Frame where the graphic will be
+        self._init_components()
+        self._init_debug_print()
 
-        self._column_menu = ColumnMenu(self._frame, columns, self)
+    def _init_components(self):
+        """Initialize menu components."""
+        self._column_menu = ColumnMenu(self._frame, self._columns, self)
         self._method_menu = MethodMenu(self._frame, self)
         self.create_regression_button()
-
-        # To update the scroll area
-        # This function must be called whenever we create a new widget
-        # (It will have to be called again after generating the graph)
         self._app.scroll_window.update()
 
+    def _init_debug_print(self):
+        """Print initial debug information."""
+        # Print original and processed DataFrames
         print("df Before pre-processing")
         print(self._df)
-
         print("new_df Before pre-processing")
         print(self._new_df)
 
     @property
-    def df(self):
+    def df(self) -> pd.DataFrame:
+        """
+        Get original DataFrame.
+
+        Returns:
+            - pd.DataFrame: Original input DataFrame
+        """
         return self._df
 
     @property
-    def new_df(self):
+    def new_df(self) -> pd.DataFrame:
+        """
+        Get processed DataFrame.
+
+        Returns:
+            - pd.DataFrame: Processed DataFrame or None if not processed
+        """
         return self._new_df
 
     def on_select(self, event):
@@ -423,9 +538,10 @@ class MenuManager:
         Handle selection events from the column listboxes.
         Disables the method selector and regression button when column selection changes.
 
-        Parameters
-            event (tk.Event): The selection event from the listbox.
+        Parameters:
+            - event: Selection change event
         """
+        # Reset method selection when columns change
         self._method_menu.disable_selector()
         self.disable_regression_button()
 
@@ -435,20 +551,27 @@ class MenuManager:
         Creates and places a styled button that triggers the linear regression
         model creation process. The button is initially disabled.
         """
-        self._regression_button = tk.Button(self._frame, text="Create Linear Regression Model",
-                                            command=self.create_linear_model,
-                                            state="disabled",  # Empieza deshabilitado
-                                            font=("Arial", 10, 'bold'), fg="#FAF8F9",
-                                            bg='#6677B8', activebackground="#808ec6",
-                                            activeforeground="#FAF8F9", cursor="hand2")
+        # Create and position regression button
+        self._regression_button = tk.Button(
+            self._frame,
+            text="Create Linear Regression Model",
+            command=self.create_linear_model,
+            state="disabled",
+            font=("Arial", 10, 'bold'),
+            fg="#FAF8F9",
+            bg='#6677B8',
+            activebackground="#808ec6",
+            activeforeground="#FAF8F9",
+            cursor="hand2"
+        )
         self._regression_button.place(relx=0.5, rely=0.93, anchor='center')
 
     def enable_regression_button(self):
-        """Enable the regression model creation button."""
+        """Enable regression model creation."""
         self._regression_button.config(state="normal")
 
     def disable_regression_button(self):
-        """Disable the regression model creation button."""
+        """Disable regression model creation."""
         self._regression_button.config(state="disabled")
 
     def confirm_selection(self):
@@ -461,45 +584,75 @@ class MenuManager:
 
         Displays appropriate message boxes for errors and success confirmations.
         """
-        # Updates the selected_features and selected_target variables of
-        # ColumnMenu with the current selection
+        # Get current selection from listboxes
         self._column_menu.get_selected_columns()
 
-        # Obtains the ColumnMenu selection
-        selected_features = self._column_menu.selected_features
-        selected_target = self._column_menu.selected_target
+        # Validate selection and proceed if valid
+        if not self._validate_selection():
+            return
 
-        if len(selected_features) == 0:
+        self._show_success_message()
+        self._handle_nan_checking()
+
+    def _validate_selection(self) -> bool:
+        """
+        Check if both feature and target columns are selected.
+
+        Returns:
+            - bool: True if selection is valid, False otherwise
+        """
+        # Check feature selection
+        if not self._column_menu.selected_features:
             messagebox.showerror(
-                "Error", "You must select an input column (feature).")
+                "Error",
+                "You must select an input column (feature)."
+            )
+            return False
 
-        elif len(selected_target) == 0:
+        # Check target selection
+        if not self._column_menu.selected_target:
             messagebox.showerror(
-                "Error", "You must select an output column (target).")
+                "Error",
+                "You must select an output column (target)."
+            )
+            return False
 
+        return True
+
+    def _show_success_message(self):
+        """Show success message with selected columns."""
+        # Format column names for display
+        f_cols = ', '.join(self._column_menu.selected_features)
+        t_col = ', '.join(self._column_menu.selected_target)
+        # Show selection confirmation
+        messagebox.showinfo(
+            "Success",
+            f"Feature: {f_cols}\nTarget: {t_col}"
+        )
+
+    def _handle_nan_checking(self):
+        """Check for NaN values and update UI accordingly."""
+        # Combine selected columns
+        selected_columns = (
+            self._column_menu.selected_features +
+            self._column_menu.selected_target
+        )
+        # Initialize NaN handler
+        self._nan_handler = NaNHandler(
+            self._df,
+            self.METHOD_NAMES,
+            selected_columns
+        )
+        # Check for missing values
+        has_missing, nan_message = self._nan_handler.check_for_nan()
+        messagebox.showinfo("Non-existent values", nan_message)
+        # Update UI based on presence of NaN values
+        if has_missing:
+            self._method_menu.enable_selector()
+            self.disable_regression_button()
         else:
-            f_cols = ', '.join(selected_features)
-            t_col = ', '.join(selected_target)
-            success_window = messagebox.showinfo(
-                "Success", f"Feature: {f_cols}\nTarget: {t_col}")
-
-            if success_window == 'ok':
-                # Create an instance of the NanHandler object after having the columns selected
-                self._nan_handler = NaNHandler(self._df, MenuManager.METHOD_NAMES,
-                                               selected_features + selected_target)
-
-                # Verify if there are null values in the selected columns
-                has_missing, nan_message = self._nan_handler.check_for_nan()
-
-                messagebox.showinfo("Non-existent values", nan_message)
-                if has_missing:
-                    # Enable the selector if there are null values
-                    self._method_menu.enable_selector()
-                    self.disable_regression_button()  # Disable it if the columns change
-                else:
-                    # Disable the selector if there are no null values
-                    self._method_menu.disable_selector()
-                    self.enable_regression_button()  # Allows the model to be created
+            self._method_menu.disable_selector()
+            self.enable_regression_button()
 
     def apply_nan_handling(self):
         """
@@ -510,40 +663,59 @@ class MenuManager:
         Enables the regression button if preprocessing is successful.
 
         Raises:
-            ValueError: If the constant value input is not a valid number.
-            ConstantValueError: If there's an error with the constant value handling.
+            - ValueError: If the constant value input is not a valid number.
+            - ConstantValueError: If there's an error with the constant value handling.
         """
+        # Get selected method and validate constant value
         method = self._method_menu.method_var.get()
-        constant_value = self._method_menu.constant_value_input
-
-        # It will be empty if nothing has beeen entered (because another method was chosen or because it was not entered it when it was due).
-        if constant_value is None or constant_value.strip() == "":
-            constant_value = None  # We make sure it is None if nothing was entered
-        else:
-            try:
-                constant_value = float(constant_value)  # Convert to float
-            except ValueError:
-                messagebox.showerror(
-                    "Error", "The constant value must be a number.")
-                return  # We exit the method if it is not a valid number
+        constant_value = self._validate_constant_value()
+        # Check for constant value when required
+        if constant_value is None and method == "Fill with a Constant Value":
+            return
 
         try:
-            # We apply preprocessing with the selected method
+            # Process data with selected method
             self._new_df = self._nan_handler.preprocess(method, constant_value)
+            self._show_preprocessing_success()
         except ConstantValueError as e:
             messagebox.showerror("Error", str(e))
-            return  # We exit the method if there is an error
 
-        # If there are no errors, we show success and enable the regression button
+    def _validate_constant_value(self) -> float:
+        """
+        Validate and convert constant value input.
+
+         Returns:
+            - float: Validated constant value or None if invalid/empty
+        """
+        # Get input value
+        value = self._method_menu.constant_value_input
+        # Check if empty
+        if not value or value.strip() == "":
+            return None
+
+        try:
+            # Try to convert to float
+            return float(value)
+        except ValueError:
+            messagebox.showerror(
+                "Error",
+                "The constant value must be a number."
+            )
+            return None
+
+    def _show_preprocessing_success(self):
+        """Show success message after preprocessing."""
+        # Print debug information
         print("\ndf After pre-processing")
         print(self._df)
-
-        print("\nnew_df Before pre-processing")
+        print("\nnew_df After pre-processing")
         print(self._new_df)
-
+        # Show success message
         messagebox.showinfo(
-            "Success", "Non-existent data handling has been successfully applied.")
-        self.enable_regression_button()  # Allows the model to be created
+            "Success",
+            "Non-existent data handling has been successfully applied."
+        )
+        self.enable_regression_button()
 
     def create_linear_model(self):
         """
@@ -554,34 +726,85 @@ class MenuManager:
 
         Displays appropriate error messages if there are issues with the data or selection.
         """
-        if len(self._column_menu.selected_features) == 0 or len(self._column_menu.selected_target) == 0:
-            messagebox.showerror(
-                "Error", "You must select input and output columns before creating the model.")
-
-        # Use the processed DataFrame if it exists, otherwise use the original
+        # Validate prerequisites
+        if not self._validate_model_prerequisites():
+            return
+        # Use processed DataFrame if available, otherwise use original
         df_to_use = self._new_df if self._new_df is not None else self._df
-
-        # Get the first selected feature
+        # Get selected feature and target columns
         feature = df_to_use[self._column_menu.selected_features[0]]
         target = df_to_use[self._column_menu.selected_target[0]]
+        # Check data sufficiency
+        if not self._validate_data_sufficiency(feature, target):
+            return
 
-        # Check if there is enough data to create the model
+        self._show_model_creation()
+
+    def _validate_model_prerequisites(self) -> bool:
+        """
+        Validate that necessary columns are selected.
+
+        Returns:
+            - bool: True if prerequisites are met, False otherwise
+        """
+        # Check if both columns are selected
+        if not self._column_menu.selected_features or not self._column_menu.selected_target:
+            messagebox.showerror(
+                "Error",
+                "You must select input and output columns before creating the model."
+            )
+            return False
+        return True
+
+    def _validate_data_sufficiency(self, feature: pd.Series, target: pd.Series) -> bool:
+        """
+        Check if there's enough data for regression.
+
+        Parameters:
+            - feature: Feature column data
+            - target: Target column data
+
+        Returns:
+            - bool: True if enough data exists, False otherwise
+        """
+        # Need at least 2 points for regression
         if len(feature) < 2 or len(target) < 2:
             messagebox.showerror(
-                "Error", "There isn't enough data to create the regression model.")
+                "Error",
+                "There isn't enough data to create the regression model."
+            )
+            return False
+        return True
 
-        # Show success message and wait for confirmation
+    def _show_model_creation(self):
+        """Show model creation success and create visualization."""
+        # Show success message
         success = messagebox.showinfo(
-            "Success", "The linear regression model will be created successfully.\nPress OK to see the results.")
+            "Success",
+            "The linear regression model will be created successfully.\n"
+            "Press OK to see the results."
+        )
 
         if success == 'ok':
-            # We empty it if there is something
+            # Clear previous chart
             self.clear_frame(self._chart_frame)
-
-            # Create the regression model
-            LinearRegressionInterface(self._chart_frame, feature, target)
+            df_to_use = self._new_df if self._new_df is not None else self._df
+            # Clear previous chart
+            LinearRegressionInterface(
+                self._chart_frame,
+                df_to_use[self._column_menu.selected_features[0]],
+                df_to_use[self._column_menu.selected_target[0]]
+            )
             self._app.scroll_window.update()
 
-    def clear_frame(self, frame):
+    @staticmethod
+    def clear_frame(frame: tk.Frame):
+        """
+        Remove all widgets from a frame.
+
+        Parameters:
+            - frame: Frame to clear
+        """
+        # Destroy all child widgets
         for widget in frame.winfo_children():
             widget.destroy()
