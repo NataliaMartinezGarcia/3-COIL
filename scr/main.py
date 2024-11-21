@@ -1,9 +1,5 @@
 import tkinter as tk
-# from tkinter import messagebox, filedialog, ttk
-# import pandas as pd
-# import sqlite3
 from gui import ScrollApp
-
 
 def main():
     ventana = tk.Tk()  # Ventana principal
