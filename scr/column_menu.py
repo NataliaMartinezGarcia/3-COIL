@@ -186,7 +186,7 @@ class ColumnMenu:
         )
         listbox.pack(side="left", fill="both", expand=True)
         # Bind selection event to manager's handler
-        listbox.bind("<<ListboxSelect>>", self._manager.on_select)
+        listbox.bind("<<ListboxSelect>>", self._manager.on_listbox_select)
         return listbox
 
     def _populate_listbox(self, listbox: tk.Listbox):
