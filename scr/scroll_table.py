@@ -101,7 +101,7 @@ class ScrollTable(ttk.Treeview):
 
             # Calculate the width of the header text
             column_font = font.Font()
-            heading_width = column_font.measure(heading) + 20
+            heading_width = column_font.measure(heading)
 
             # Obtain the first elemento of the column (if it exists):
             first_element = self.item(self.get_children()[0])[
@@ -109,7 +109,7 @@ class ScrollTable(ttk.Treeview):
 
             # Calculate the width of the first element's text
             # For the content you have to add something because otherwise it will be very tight!
-            first_element_width = column_font.measure(str(first_element)) + 30
+            first_element_width = column_font.measure(str(first_element)) + 15
 
             # Select the largest width between the header and the first element
             width = max(heading_width, first_element_width)
