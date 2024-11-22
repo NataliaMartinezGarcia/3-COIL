@@ -267,9 +267,6 @@ class MenuManager:
         # Get selected method and validate constant value
         method = self._method_menu.method_var.get()
         constant_value = self._validate_constant_value()
-        # Check for constant value when required
-        if constant_value is None and method == "Fill with a Constant Value":
-            return
 
         try:
             # Process data with selected method
