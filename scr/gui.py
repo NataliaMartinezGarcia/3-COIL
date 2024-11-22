@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
-import pandas as pd
 from open_files import open_file, FileFormatError, EmptyDataError
 from scroll_table import ScrollTable
-from column_menu import MenuManager
+from menu_manager import MenuManager
 from model_handler import open_model
 import model_interface
 from progress_bar import run_with_loading
