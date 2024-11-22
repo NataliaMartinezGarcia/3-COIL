@@ -264,9 +264,15 @@ class MenuManager:
             - ValueError: If the constant value input is not a valid number.
             - ConstantValueError: If there's an error with the constant value handling.
         """
-        # Get selected method and validate constant value
+        # Get selected method
         method = self._method_menu.method_var.get()
-        constant_value = self._validate_constant_value()
+        
+        # Only validate constant value if the selected method requires it
+        constant_value = None
+        if method == "Fill with a Constant Value":
+            constant_value = self._validate_constant_value()
+            if constant_value is None:  # Validation failed
+                return
 
         try:
             # Process data with selected method
@@ -279,13 +285,17 @@ class MenuManager:
         """
         Validate and convert constant value input.
 
-         Returns:
+        Returns:
             - float: Validated constant value or None if invalid/empty
         """
         # Get input value
         value = self._method_menu.constant_value_input
         # Check if empty
         if not value or value.strip() == "":
+            messagebox.showerror(
+                "Error",
+                "You must introduce a valid numeric value."
+            )
             return None
 
         try:
@@ -297,6 +307,7 @@ class MenuManager:
                 "The constant value must be a number."
             )
             return None
+
 
     def _show_preprocessing_success(self):
         """Show success message after preprocessing."""
