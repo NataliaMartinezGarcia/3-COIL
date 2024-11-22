@@ -55,6 +55,10 @@ class MethodMenu:
             - str: Current value in constant input field
         """
         return self._constant_value_input.get()
+    
+    def apply_button_disable(self):
+        """Disables the button that applies the method selection."""
+        self._apply_button.config(state="disabled")
 
     def create_nan_selector(self):
         """
@@ -137,14 +141,15 @@ class MethodMenu:
             - event: Event from combobox selection
         """
         # Disable regression button when method changes
-        self._manager.disable_regression_button()
+        # self._manager.disable_regression_button()
+        self._manager.on_dropdown_select(event)
         selected_method = self._method_var.get()
 
         # Show/hide constant input based on method
         if selected_method == "Fill with a Constant Value":
             self._show_constant_input()
         else:
-            self._hide_constant_input()
+            self.hide_constant_input()
 
         # Enable apply button if method is selected
         self._apply_button.config(
@@ -160,10 +165,10 @@ class MethodMenu:
         self._constant_value_input.config(state="normal")
         self._constant_value_input.bind(
             "<KeyRelease>",
-            lambda event: self._manager.disable_regression_button()
-        )
+            self._manager.on_dropdown_select
+        )        
 
-    def _hide_constant_input(self):
+    def hide_constant_input(self):
         """Hide and clear constant value input."""
         # Hide input components
         self._constant_label.place_forget()

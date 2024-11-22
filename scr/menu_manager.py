@@ -85,7 +85,37 @@ class MenuManager:
         """
         return self._new_df
 
-    def on_select(self, event):
+    """def on_select(self, event):
+        ""
+        Handle selection events from the column listboxes.
+        Disables the method selector and regression button when column selection changes.
+
+        Parameters:
+            - event: Selection change event
+        ""
+        # Reset method selection when columns change
+        self._method_menu.disable_selector()
+        self.disable_regression_button()
+        # Deletes previous chart
+        self._chart_frame.pack_forget()
+        self._app.scroll_window.update()
+
+    def desplegable_select(self, event):
+        self.disable_regression_button()
+        # Deletes previuos chart
+        self._chart_frame.pack_forget()
+        self._app.scroll_window.update()"""
+    
+    def _reset_chart_and_controls(self):
+        """
+        Resets the chart and disables relevant controls.
+        This method is used by selection handlers to avoid code duplication.
+        """
+        self.disable_regression_button()
+        self._chart_frame.pack_forget()
+        self._app.scroll_window.update()
+
+    def on_listbox_select(self, event):
         """
         Handle selection events from the column listboxes.
         Disables the method selector and regression button when column selection changes.
@@ -95,7 +125,23 @@ class MenuManager:
         """
         # Reset method selection when columns change
         self._method_menu.disable_selector()
-        self.disable_regression_button()
+        self._method_menu.disable_selector()
+        self._method_menu.hide_constant_input()
+
+        # Deshabilitar apply button
+        self._method_menu.apply_button_disable()
+
+        self._reset_chart_and_controls()
+
+    def on_dropdown_select(self, event):
+        """
+        Handle selection events from dropdowns.
+        Disables the regression button and resets the chart.
+
+        Parameters:
+            - event: Selection change event
+        """
+        self._reset_chart_and_controls()
 
     def create_regression_button(self):
         """
@@ -221,9 +267,6 @@ class MenuManager:
         # Get selected method and validate constant value
         method = self._method_menu.method_var.get()
         constant_value = self._validate_constant_value()
-        # Check for constant value when required
-        if constant_value is None and method == "Fill with a Constant Value":
-            return
 
         try:
             # Process data with selected method
@@ -340,6 +383,7 @@ class MenuManager:
         if success == 'ok':
             # Clear previous chart
             self.clear_frame(self._chart_frame)
+            self._chart_frame.pack()
             df_to_use = self._new_df if self._new_df is not None else self._df
             # Clear previous chart
             LinearRegressionInterface(
