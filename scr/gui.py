@@ -61,6 +61,7 @@ class ScrollApp:
 
         # Apply geometry settings
         self._window.geometry(f"{self._width}x{self._height}+{self._x}+{self._y}")
+        self._window.resizable(False, False)
 
     def _create_frames(self):
         """Create main application frames."""
