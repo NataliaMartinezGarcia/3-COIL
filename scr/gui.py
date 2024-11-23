@@ -19,12 +19,9 @@ class ScrollApp:
     Returns:
         - ScrollApp: Instance of the ScrollApp class
     """
-    
-    # Window size ratios relative to screen dimensions
-    WINDOW_WIDTH_RATIO = 2  # Screen width divided by this number
-    WINDOW_HEIGHT_RATIO = 1.5  # Screen height divided by this number
+
     MAX_PATH_LENGTH = 50  # Maximum length for displayed file paths
-    
+        
     def __init__(self, window: tk.Tk):
         """
         Initialize the ScrollApp with a main window.
@@ -54,9 +51,9 @@ class ScrollApp:
         self._window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self._window.title("Linear Regression App")
         
-        # Calculate window dimensions based on screen size ratios
-        self._width = self._window.winfo_screenwidth() // self.WINDOW_WIDTH_RATIO
-        self._height = int(self._window.winfo_screenheight() / self.WINDOW_HEIGHT_RATIO)
+        # Fixed window size
+        self._width = 768
+        self._height = 576
         
         # Calculate position to center window
         self._x = (self._window.winfo_screenwidth() - self._width) // 2
@@ -64,7 +61,6 @@ class ScrollApp:
 
         # Apply geometry settings
         self._window.geometry(f"{self._width}x{self._height}+{self._x}+{self._y}")
-    
 
     def _create_frames(self):
         """Create main application frames."""
