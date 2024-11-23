@@ -162,7 +162,16 @@ class MenuManager:
             activeforeground="#FAF8F9",
             cursor="hand2"
         )
-        self._regression_button.place(relx=0.5, rely=0.93, anchor='center')
+        self._regression_button.pack(side = 'top', pady = (20,30))
+
+        self._create_separator()
+
+    def _create_separator(self):
+        """Create visual separator."""
+        # Create horizontal line separator
+        separator = tk.Frame(self._frame, bg='#6677B8', height=3)
+        separator.pack(fill=tk.X, side='top')
+
 
     def enable_regression_button(self):
         """Enable regression model creation."""
