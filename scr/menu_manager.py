@@ -14,13 +14,6 @@ class MenuManager:
     NaN handling menu, coordinates data preprocessing, and handles the creation
     of the linear regression model.
     """
-    # Available methods for NaN handling
-    METHOD_NAMES = (
-        "Delete Rows",
-        "Fill with Mean",
-        "Fill with Median",
-        "Fill with a Constant Value"
-    )
 
     def __init__(
         self,
@@ -84,27 +77,6 @@ class MenuManager:
             - pd.DataFrame: Processed DataFrame or None if not processed
         """
         return self._new_df
-
-    """def on_select(self, event):
-        ""
-        Handle selection events from the column listboxes.
-        Disables the method selector and regression button when column selection changes.
-
-        Parameters:
-            - event: Selection change event
-        ""
-        # Reset method selection when columns change
-        self._method_menu.disable_selector()
-        self.disable_regression_button()
-        # Deletes previous chart
-        self._chart_frame.pack_forget()
-        self._app.scroll_window.update()
-
-    def desplegable_select(self, event):
-        self.disable_regression_button()
-        # Deletes previuos chart
-        self._chart_frame.pack_forget()
-        self._app.scroll_window.update()"""
     
     def _reset_chart_and_controls(self):
         """
@@ -247,7 +219,6 @@ class MenuManager:
         # Initialize NaN handler
         self._nan_handler = NaNHandler(
             self._df,
-            self.METHOD_NAMES,
             selected_columns
         )
         # Check for missing values
