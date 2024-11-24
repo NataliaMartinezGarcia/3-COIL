@@ -29,6 +29,9 @@ class MethodMenu:
         self._manager = manager
         self._method_var = tk.StringVar()  # Variable to store selected method
 
+        self._menu_frame = tk.Frame(self._frame, bg='#d0d7f2')
+        self._menu_frame.pack()
+
         self._init_ui()
 
     def _init_ui(self):
@@ -72,35 +75,32 @@ class MethodMenu:
         self._create_method_label()
         self._create_method_dropdown()
         self._create_constant_input()
-        self._create_separator()
 
     def _create_method_label(self):
         """Create label for method selector."""
         # Create and position method selection label
         label = tk.Label(
-            self._frame,
+            self._menu_frame,
             text="Select a method to handle NaN:",
             fg='#4d598a',
             bg='#d0d7f2',
             font=("DejaVu Sans Mono", 10, 'bold')
         )
-        label.place(relx=0.5, rely=0.59, anchor="center")
+        label.pack(side = 'top',pady = (10,0))
 
     def _create_method_dropdown(self):
         """Create dropdown for method selection."""
         # Create combobox with predefined methods
         self._method_dropdown = ttk.Combobox(
-            self._frame,
+            self._menu_frame,
             textvariable=self._method_var,
             state="disabled",  # Initially disabled
             width=30,
             values=self.METHODS
         )
-        self._method_dropdown.place(
-            relx=0.5,
-            rely=0.67,
-            relwidth=0.5,
-            anchor="center"
+        self._method_dropdown.pack(
+           side = 'top', 
+           pady = 5
         )
         # Bind selection event to input toggle
         self._method_dropdown.bind(
@@ -112,13 +112,13 @@ class MethodMenu:
         """Create input field for constant value."""
         # Create label and entry for constant value input
         self._constant_label = tk.Label(
-            self._frame,
+            self._menu_frame,
             text="Introduce the constant:",
             fg='#4d598a',
             bg='#d0d7f2'
         )
         self._constant_value_input = tk.Entry(
-            self._frame,
+            self._menu_frame,
             width=10,
             state="disabled"
         )
@@ -126,12 +126,6 @@ class MethodMenu:
         # Hide both widgets initially
         self._constant_value_input.place_forget()
         self._constant_label.place_forget()
-
-    def _create_separator(self):
-        """Create visual separator."""
-        # Create horizontal line separator
-        separator = tk.Frame(self._frame, bg='#6677B8', height=3)
-        separator.pack(fill=tk.X, side='bottom')
 
     def toggle_cte_input(self, event):
         """
@@ -159,8 +153,10 @@ class MethodMenu:
     def _show_constant_input(self):
         """Show and enable constant value input."""
         # Position and show constant value components
-        self._constant_label.place(relx=0.45, rely=0.73, anchor="center")
-        self._constant_value_input.place(relx=0.6, rely=0.73, anchor="center")
+        self._constant_label.pack(side = 'left')
+        self._constant_value_input.pack(side = 'left')
+        self._apply_button.pack(side = 'bottom', pady = 10)
+
         # Enable input and bind key events
         self._constant_value_input.config(state="normal")
         self._constant_value_input.bind(
@@ -171,8 +167,10 @@ class MethodMenu:
     def hide_constant_input(self):
         """Hide and clear constant value input."""
         # Hide input components
-        self._constant_label.place_forget()
-        self._constant_value_input.place_forget()
+        self._constant_label.pack_forget()
+        self._constant_value_input.pack_forget()
+        self._apply_button.pack(side = 'top')
+
         # Clear and disable input field
         self._constant_value_input.delete(0, "end")
         self._constant_value_input.config(state="disabled")
@@ -186,7 +184,7 @@ class MethodMenu:
         """
         # Create and position apply button
         apply_button = tk.Button(
-            self._frame,
+            self._menu_frame,
             text="Apply",
             command=self._manager.apply_nan_handling,
             state="disabled",
@@ -197,7 +195,7 @@ class MethodMenu:
             activeforeground="#FAF8F9",
             cursor="hand2"
         )
-        apply_button.place(relx=0.5, rely=0.80, anchor="center")
+        apply_button.pack(side = 'top', pady = (10,20))
         return apply_button
 
     def enable_selector(self):

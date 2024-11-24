@@ -15,26 +15,19 @@ class NaNHandler:
 
     Attributes:
         _df (pandas.DataFrame): The original DataFrame to process.
-        _method_names (tuple): Available processing method names.
-        _selected_columns (list): List of columns to process.
-        _df_copy (pandas.DataFrame): Working copy of the DataFrame to avoid modifying the original.
+        _selected_columns (list): List of valid columns of the DataFrame to process.
     """
 
-    def __init__(self, df, method_names, selected_columns):
+    def __init__(self, df, selected_columns):
         """
         Initialize the NaNHandler with a DataFrame and selected columns.
 
         Parameters:
             df (pandas.DataFrame): The DataFrame to process.
-            method_names (tuple): Tuple of available processing method names.
-            selected_columns (list): List of column names to process.
+            selected_columns (list): List of valid column names of the DataFrame to process.
         """
         self._df = df
-        self._method_names = method_names  # Add the atrubute method_names
         self._selected_columns = list(set(selected_columns))
-
-        # DataFrame which is operated with so the given one isn't modified
-        self._df_copy = self._df[self._selected_columns].copy()
 
     def check_for_nan(self):
         """
@@ -54,7 +47,7 @@ class NaNHandler:
         else:
             return False, "No non-existent values were detected."
 
-    def remove_rows(self, columns):
+    def _remove_rows(self, columns):
         """
         Remove rows with missing data from the DataFrame.
 
@@ -64,9 +57,9 @@ class NaNHandler:
         Returns:
             pandas.DataFrame: DataFrame without rows that contained NaN in specified columns.
         """
-        return self._df_copy.dropna(subset=columns).copy()
+        return self._df[columns].dropna(subset=columns).copy()
 
-    def fill_mean(self, columns):
+    def _fill_mean(self, columns):
         """
         Replace missing data in DataFrame columns with their mean values.
 
@@ -76,9 +69,9 @@ class NaNHandler:
         Returns:
             pandas.DataFrame: DataFrame with NaN values filled with column means.
         """
-        return self._df_copy.fillna(self._df_copy.mean())
+        return self._df[columns].fillna(self._df[columns].mean())
 
-    def fill_median(self, columns):
+    def _fill_median(self, columns):
         """
         Replace missing data in DataFrame columns with their median values.
 
@@ -88,9 +81,9 @@ class NaNHandler:
         Returns:
             pandas.DataFrame: DataFrame with NaN values filled with column medians.
         """
-        return self._df_copy.fillna(self._df_copy.median())
+        return self._df[columns].fillna(self._df[columns].median())
 
-    def fill_constant(self, columns, constant_value):
+    def _fill_constant(self, columns, constant_value):
         """
         Replace missing data in DataFrame columns with a constant value.
 
@@ -101,7 +94,7 @@ class NaNHandler:
         Returns:
             pandas.DataFrame: DataFrame with NaN values filled with the constant value.
         """
-        return self._df_copy.fillna(constant_value)
+        return self._df[columns].fillna(constant_value)
 
     def preprocess(self, method, constant_value=None):
         """
@@ -126,10 +119,10 @@ class NaNHandler:
         """
         # Methods and their corresponding functions
         METHOD_FUNCTIONS = {
-            "Delete Rows": self.remove_rows,
-            "Fill with Mean": self.fill_mean,
-            "Fill with Median": self.fill_median,
-            "Fill with a Constant Value": self.fill_constant,
+            "Delete Rows": self._remove_rows,
+            "Fill with Mean": self._fill_mean,
+            "Fill with Median": self._fill_median,
+            "Fill with a Constant Value": self._fill_constant,
         }
 
         # We check the method and call the corresponding function
@@ -147,25 +140,47 @@ if __name__ == "__main__":
     # Example for using the module
     import pandas as pd
 
-    METHOD_NAMES = ("Delete rows", "Fill with Mean",
-                    "Fill with Median", "Fill with a Constant Value")
-
     data = {
         "Columna1": [1, 2, None, 4],
         "Columna2": [None, 1, 2, 3],
         "Columna3": [1, None, None, 4],
-        "Columna4": [5, 6, 7, 8],
+        "Columna4": [5, 6, 7, None],
     }
     df = pd.DataFrame(data)
 
     print("df Before the pre-processing")
     print(df)
 
-    nan = NaNHandler(df, METHOD_NAMES, ["Columna1", "Columna2", "Columna3"])
+    nan = NaNHandler(df, ["Columna1", "Columna2", "Columna3"])
     has_missing, message = nan.check_for_nan()
     print(message)
 
+    new_df = nan.preprocess("Delete Rows")
+
+    print("\nnew_df after the pre-processing")
+    print(new_df)
+
+    print("\ndf after the pre-processing")
+    print(df)
+
     new_df = nan.preprocess("Fill with Mean")
+
+    print("\nnew_df after the pre-processing")
+    print(new_df)
+
+    print("\ndf after the pre-processing")
+    print(df)
+
+
+    new_df = nan.preprocess("Fill with Median")
+
+    print("\nnew_df after the pre-processing")
+    print(new_df)
+
+    print("\ndf after the pre-processing")
+    print(df)
+
+    new_df = nan.preprocess("Fill with a Constant Value", 0)
 
     print("\nnew_df after the pre-processing")
     print(new_df)

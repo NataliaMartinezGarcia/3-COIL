@@ -25,6 +25,9 @@ class ColumnMenu:
         self._selected_feature = []
         self._selected_target = []
 
+        self._menu_frame = tk.Frame(self._frame, bg='#d0d7f2')
+        self._menu_frame.pack(fill = tk.X, padx = 80, pady = 20) 
+
         self._init_ui()
 
     def _init_ui(self):
@@ -123,16 +126,17 @@ class ColumnMenu:
         Returns:
             - tk.Frame: Configured frame for selection components
         """
+
         # Create main frame with fixed dimensions
         frame = tk.Frame(
-            self._frame,
+            self._menu_frame,
             width=290,
             height=170,
             bg='#d0d7f2'
         )
         # Position frame using relative coordinates
-        frame.place(relx=relx, rely=0.25, relwidth=0.5,
-                    anchor="w" if relx < 0.5 else "e")
+        frame.pack(side ="left" if relx < 0.5 else "right")
+
         # Create and position title label
         label = tk.Label(
             frame,
@@ -142,7 +146,7 @@ class ColumnMenu:
             font=("DejaVu Sans Mono", 10, 'bold'),
             width=35
         )
-        label.place(relx=0.5, rely=0.1, anchor="center")
+        label.pack(side = 'top')
 
         return frame
 
@@ -158,13 +162,7 @@ class ColumnMenu:
         """
         # Create and position container frame
         container = tk.Frame(parent)
-        container.place(
-            relx=0.5,
-            rely=0.5,
-            relwidth=0.75,
-            relheight=0.5,
-            anchor="center"
-        )
+        container.pack( side = 'top', fill = tk.X, padx = 30)
         return container
 
     def _create_listbox(self, container: tk.Frame) -> tk.Listbox:
@@ -219,7 +217,7 @@ class ColumnMenu:
             cursor="hand2"
         )
         # Center button in frame
-        confirm_button.place(relx=0.5, rely=0.45, anchor='center')
+        confirm_button.pack(side = 'top', pady = (0,10))
 
     def get_selected_columns(self):
         """

@@ -37,7 +37,7 @@ class LinearRegressionInterface:
         self._feature = feature  # Will be passed to the calculation class
         self._target = target
         self._comment = None
-        self._prediction_frame = None # Will be used to make predictions based on the model
+        self._prediction_frame = None  # Will be used to make predictions based on the model
 
         # Create linear regression object for calculations and results
         self._linear_regression = LinearRegression(feature, target)
@@ -55,6 +55,11 @@ class LinearRegressionInterface:
         - Axis labels and legend
         - Model statistics display
         """
+       
+        title = tk.Label(self._frame, text='MODEL INFORMATION', fg='#4d598a', bg='#d0d7f2',
+                         font=('Arial Black', 12, 'bold'))
+        title.pack(side='top', pady= (10,0))
+
         # Extract the necessary data for the plot
         predictions = self._linear_regression.predictions
 
@@ -83,6 +88,29 @@ class LinearRegressionInterface:
                              self._linear_regression.slope, self._linear_regression.r_squared,
                              self._linear_regression.mse, None)
 
+        self.predictions()
+
+    def predictions(self):
+
+        predictions_frame = tk.Frame(self._frame, height=250, bg='#d0d7f2')
+        predictions_frame.pack(side='top')
+
+        entry_frame = tk.Frame(predictions_frame, bg='#d0d7f2')
+        entry_frame.pack(side='left')
+
+        # Model predictions
+        label = tk.Label(entry_frame, text='Enter a value to predict its output', fg='#4d598a', bg='#d0d7f2',
+                         font=("DejaVu Sans Mono", 11, 'bold'))
+        label.pack(side='top', padx=(10, 20), pady=5)
+
+        self._prediction_frame = tk.Entry(entry_frame, width=10)
+        self._prediction_frame.pack(side='top', padx=20, pady=5)
+
+        prediction_button = tk.Button(predictions_frame, text="Predict", font=("Arial", 12, 'bold'),
+                                      fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6", activeforeground="#FAF8F9",
+                                      cursor="hand2", command=self.predict)
+        prediction_button.pack(side='left', padx=10)
+
         self.comment()
 
     def comment(self):
@@ -96,23 +124,15 @@ class LinearRegressionInterface:
         """
         download_frame = tk.Frame(self._frame, height=250, bg='#d0d7f2')
 
+        separator = tk.Frame(download_frame, bg='#6677B8', height=3)
+        separator.pack(fill=tk.X, side=tk.TOP, anchor="center")
+
+        title = tk.Label(download_frame, text='SAVE YOUR MODEL', fg='#4d598a', bg='#d0d7f2',
+                         font=('Arial Black', 12, 'bold'))
+        title.pack(side='top', pady=10)
+
         entry_frame = tk.Frame(download_frame, width=250,
                                height=250, bg='#d0d7f2')
-        
-        # Model predictions
-        label = tk.Label(entry_frame, text='Write a value for making predictions (must be a number)', fg='#4d598a', bg='#d0d7f2',
-                         font=("DejaVu Sans Mono", 11, 'bold'), width=50)
-        label.pack(side='top', fill='x', padx=(10, 20), pady=5)
-
-        self._prediction_frame = tk.Text(entry_frame, width=20, height=1, font=(
-            "Arial", 10, 'bold'), wrap="word")
-        self._prediction_frame.pack(side='top', fill=tk.BOTH, padx=20, pady=5)
-
-        prediction_button = tk.Button(download_frame, text="Predict", font=("Arial", 12, 'bold'),
-                                fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6", activeforeground="#FAF8F9",
-                                cursor="hand2", command=self.predict, padx=20, pady=10, width=5)
-        prediction_button.pack(side='right', padx=(0, 60), pady=5)
-
         # Description
         label = tk.Label(entry_frame, text='Write a description for the model (optional)', fg='#4d598a', bg='#d0d7f2',
                          font=("DejaVu Sans Mono", 11, 'bold'), width=50)
@@ -162,29 +182,28 @@ class LinearRegressionInterface:
             messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
 
     def predict(self):
-        entry_value = (self._prediction_frame.get("1.0", "end-1c").strip())
-        print(f"Raw entry_value: '{entry_value}'")  # Para ver qué estás obteniendo exactamente
+        entry_value = self._prediction_frame.get()
+        # Para ver qué estás obteniendo exactamente
+        print(f"Raw entry_value: '{entry_value}'")
         target = self._linear_regression.target_name
-        
+
         if not entry_value:
             # Show warning message
             messagebox.showwarning("Warning", "No value has been designated")
             entry_value = None
-        
+
         else:
             try:
                 number = float(entry_value)  # Convertir a float
-                print(f"Converted number: {number}")  # Verificar que la conversión sea correcta
+                # Verificar que la conversión sea correcta
+                print(f"Converted number: {number}")
                 prediction = self._linear_regression.make_prediction(number)
-                
-                messagebox.showinfo("", f"The predicted value of {target} for this entry is {prediction}")
-            
+
+                messagebox.showinfo(
+                    "", f"The predicted value of {target} for this entry is {prediction}")
+
             except ValueError:
                 messagebox.showerror("Error", "Please enter a numeric value")
-
-
-        
-
 
 
 # Example of direct use of LinearRegressionInterface in a Tkinter window
