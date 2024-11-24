@@ -1,4 +1,3 @@
-# linear_regression.py
 import statsmodels.api as sm
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,11 +32,25 @@ class LinearRegression:
         Args:
             feature (pd.Series): The independent variable series
             target (pd.Series): The dependent variable series
+            
+        Raises:
+            TypeError: If the input data contains non-numeric values
+            ValueError: If the input data is empty or lengths don't match
         """
+        # Validate input data
+        if len(feature) != len(target):
+            raise ValueError("Feature and target must have the same length")
+        
+        if len(feature) == 0:
+            raise ValueError("Input data cannot be empty")
+            
+        # Check for non-numeric data
+        if not np.issubdtype(feature.dtype, np.number) or not np.issubdtype(target.dtype, np.number):
+            raise TypeError("Feature and target must contain only numeric values")
+
         # Store the data series from selected columns
         self._feature_name = feature.name
         self._feature = feature
-
         self._target_name = target.name
         self._target = target
 
@@ -59,7 +72,7 @@ class LinearRegression:
 
     @property
     def predictions(self):
-        return self._predictions
+        return np.array(self._predictions)
 
     @property
     def intercept(self):
@@ -71,7 +84,7 @@ class LinearRegression:
 
     @property
     def r_squared(self):
-        return self._r_squared
+        return self._r_squared if not np.isnan(self._r_squared) else 0.0
 
     @property
     def mse(self):
@@ -101,15 +114,18 @@ class LinearRegression:
 
         # Get intercept and slope coefficients
         self._intercept, self._slope = modelofin.params
-        self._r_squared = modelofin.rsquared
+        
+        # Handle constant target case
+        if np.var(target) == 0:
+            self._r_squared = 0.0
+        else:
+            self._r_squared = modelofin.rsquared
 
-        # Generate model predictions
-        self._predictions = modelofin.predict(feature_with_intercept)
+        # Generate model predictions and convert to numpy array
+        self._predictions = np.array(modelofin.predict(feature_with_intercept))
 
         # Calculate MSE (Mean Squared Error)
         self._mse = np.mean((np.array(target) - self._predictions) ** 2)
-
-
     
 
         
