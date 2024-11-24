@@ -88,29 +88,6 @@ class LinearRegressionInterface:
                              self._linear_regression.slope, self._linear_regression.r_squared,
                              self._linear_regression.mse, None)
 
-        self.predictions()
-
-    def predictions(self):
-
-        predictions_frame = tk.Frame(self._frame, height=250, bg='#d0d7f2')
-        predictions_frame.pack(side='top')
-
-        entry_frame = tk.Frame(predictions_frame, bg='#d0d7f2')
-        entry_frame.pack(side='left')
-
-        # Model predictions
-        label = tk.Label(entry_frame, text='Enter a value to predict its output', fg='#4d598a', bg='#d0d7f2',
-                         font=("DejaVu Sans Mono", 11, 'bold'))
-        label.pack(side='top', padx=(10, 20), pady=5)
-
-        self._prediction_frame = tk.Entry(entry_frame, width=10)
-        self._prediction_frame.pack(side='top', padx=20, pady=5)
-
-        prediction_button = tk.Button(predictions_frame, text="Predict", font=("Arial", 12, 'bold'),
-                                      fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6", activeforeground="#FAF8F9",
-                                      cursor="hand2", command=self.predict)
-        prediction_button.pack(side='left', padx=10)
-
         self.comment()
 
     def comment(self):
@@ -180,31 +157,6 @@ class LinearRegressionInterface:
                 "Success", f"File saved as {extension} correctly.")
         except Exception as e:
             messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
-
-    def predict(self):
-        entry_value = self._prediction_frame.get()
-        # Para ver qué estás obteniendo exactamente
-        print(f"Raw entry_value: '{entry_value}'")
-        target = self._linear_regression.target_name
-
-        if not entry_value:
-            # Show warning message
-            messagebox.showwarning("Warning", "No value has been designated")
-            entry_value = None
-
-        else:
-            try:
-                number = float(entry_value)  # Convertir a float
-                # Verificar que la conversión sea correcta
-                print(f"Converted number: {number}")
-                prediction = self._linear_regression.make_prediction(number)
-
-                messagebox.showinfo(
-                    "", f"The predicted value of {target} for this entry is {prediction}")
-
-            except ValueError:
-                messagebox.showerror("Error", "Please enter a numeric value")
-
 
 # Example of direct use of LinearRegressionInterface in a Tkinter window
 if __name__ == "__main__":
