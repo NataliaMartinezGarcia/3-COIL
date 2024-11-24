@@ -109,24 +109,6 @@ class LinearRegression:
         # Calculate MSE (Mean Squared Error)
         self._mse = np.mean((np.array(target) - self._predictions) ** 2)
 
-    def make_prediction(self, entry_value):
-        """
-        Make a prediction using the trained model.
-
-        Args:
-            entry_value (float): The value of the feature to make the prediction for
-
-        Returns:
-            float: The predicted value of the target variable
-        """
-        # Ensure that the entry_value is a valid input for the model (should be a single numeric value)
-        if not isinstance(entry_value, float):
-            raise ValueError("The entry_value must be a numeric value.")
-        
-        # Make the prediction based on the model's intercept and slope
-        prediction = self._intercept + self._slope * entry_value
-        
-        return prediction
 
     
 
