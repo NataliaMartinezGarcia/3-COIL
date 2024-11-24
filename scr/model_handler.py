@@ -95,9 +95,6 @@ def open_model(file_path):
     """
     Open a saved model from either a pickle or joblib file.
 
-    This function determines the appropriate method to load the model based on
-    the file extension and validates the file existence and format before loading.
-
     Args:
         file_path (str): Path to the model file (.pkl or .joblib)
 
@@ -108,10 +105,6 @@ def open_model(file_path):
         FileNotFoundError: If the specified file does not exist.
         AssertionError: If the file format is not supported (.pkl or .joblib).
     """
-    # Check if file exists first
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"The file '{file_path}' does not exist.")
-
     EXTENSIONS = ('.pkl', '.joblib')  # Possible extensions
     # Map extensions to their corresponding opening functions
     EXTENSION_MAP = {'.pkl': open_pkl, '.joblib': open_joblib}
@@ -119,7 +112,12 @@ def open_model(file_path):
     # Extract extension (includes the dot)
     _, extension = os.path.splitext(file_path)
 
-    # Verify valid file format
-    assert extension in EXTENSIONS, "Invalid file format. (Valid: .pkl, .joblib)."
+    # Verify valid file format first
+    if extension not in EXTENSIONS:
+        raise AssertionError("Invalid file format. (Valid: .pkl, .joblib).")
+
+    # Then check if file exists
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file '{file_path}' does not exist.")
 
     return EXTENSION_MAP[extension](file_path)
