@@ -1,7 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox
 
+
 def show(frame, feature_name, target_name, intercept, slope, r_squared, mse, description):
+    show_info(frame, feature_name, target_name, intercept, slope, r_squared, mse, description)
+    show_predictions(frame, intercept, slope, target_name, feature_name)
+
+
+def show_info(frame, feature_name, target_name, intercept, slope, r_squared, mse, description):
     """
     Displays the linear regression model results in a tkinter frame with a styled interface.
     
@@ -73,9 +79,10 @@ def show(frame, feature_name, target_name, intercept, slope, r_squared, mse, des
         description_title.pack(side='left', padx=5)
 
         description_label = tk.Label(description_frame, text=description, fg='#6677B8', bg='#d0d7f2',
-                                     font=('Arial Black', 11, 'bold'), width=55)
+                                     font=('Arial Black', 11, 'bold'))
         description_label.pack(side='right', padx=(10, 20), pady=5)
-
+    
+def show_predictions(frame, intercept, slope, target_name, feature_name):
     # Entry and button for user input to make predictions
     def make_prediction():
         try:
@@ -84,25 +91,38 @@ def show(frame, feature_name, target_name, intercept, slope, r_squared, mse, des
             # Calculate the predicted target value (Y) using the linear regression formula
             predicted_value = intercept + slope * feature_value
             result_label.config(text=f"Predicted {target_name}: {predicted_value:.2f}")
+            result_label.pack(side='top', pady=(0,20))
+
         except ValueError:
             messagebox.showerror("Invalid Input", "Please enter a valid numeric value for the feature.")
 
     # Frame for user input
-    prediction_frame = tk.Frame(info_labels, bg='#d0d7f2')
-    prediction_frame.pack(side='top', fill='x', pady=10)
+    predictions_border = tk.Frame(frame, bg='#6677B8')
+    predictions_border.pack(side='top', pady=40)
 
-    input_label = tk.Label(prediction_frame, text=f"Enter {feature_name} value:", fg='#4d598a', bg='#d0d7f2', 
-                           font=('Arial Black', 11, 'bold'))
+    predictions_labels = tk.Frame(predictions_border, bg='#d0d7f2')
+    predictions_labels.pack(fill=tk.BOTH, padx=3, pady=3)
+
+    title = tk.Label(predictions_labels, text='PREDICT A VALUE', fg='#4d598a', bg='#d0d7f2',
+                         font=('Arial Black', 12, 'bold'))
+    title.pack(side='top', pady= 10)
+
+    input_frame =  tk.Frame(predictions_labels, bg='#d0d7f2')
+    input_frame.pack(side = 'top', pady = (0,20), padx = 5)
+
+    input_label = tk.Label(input_frame, text=f"Enter {feature_name} value:", fg='#4d598a', bg='#d0d7f2', 
+                            font=('Arial Black', 11, 'bold'))
     input_label.pack(side='left', padx=5)
 
-    entry = tk.Entry(prediction_frame, font=('Arial', 12), width=10)
+    entry = tk.Entry(input_frame, font=('Arial', 12), width=5)
     entry.pack(side='left', padx=5)
 
     # Button to make the prediction
-    predict_button = tk.Button(prediction_frame, text="Predict", command=make_prediction, 
-                               fg='#ffffff', bg='#4d598a', font=('Arial Black', 12))
+    predict_button = tk.Button(input_frame, text="Predict", command=make_prediction, font=('Arial Black', 10),
+                                fg="#FAF8F9",bg='#6677B8', activebackground="#808ec6",activeforeground="#FAF8F9",
+                                cursor="hand2")
     predict_button.pack(side='left', padx=5)
 
     # Label to show the prediction result
-    result_label = tk.Label(info_labels, text="", fg='#4d598a', bg='#d0d7f2', font=('Arial', 12))
-    result_label.pack(side='top', pady=10)
+    result_label = tk.Label(predictions_labels, text="", fg='#6677B8', bg='#d0d7f2', font=('Arial Black', 11, 'bold'))
+    result_label.pack_forget()
