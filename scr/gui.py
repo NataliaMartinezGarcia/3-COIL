@@ -28,7 +28,7 @@ class ScrollApp:
         Initialize the ScrollApp with a main window.
 
         Parameters:
-            - window (tk.Tk): The main Tkinter window object
+            - window: The main Tkinter window object
         """
         self._file = None
         self._file_path = tk.StringVar()  # Stores the current file path for display

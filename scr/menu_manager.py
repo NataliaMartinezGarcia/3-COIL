@@ -6,6 +6,7 @@ from linear_regression_interface import LinearRegressionInterface
 from column_menu import ColumnMenu
 from method_menu import MethodMenu
 
+
 class MenuManager:
     """
     Coordinates column selection and NaN handling interfaces.
@@ -77,7 +78,7 @@ class MenuManager:
             - pd.DataFrame: Processed DataFrame or None if not processed
         """
         return self._new_df
-    
+
     def _reset_chart_and_controls(self):
         """
         Resets the chart and disables relevant controls.
@@ -134,7 +135,7 @@ class MenuManager:
             activeforeground="#FAF8F9",
             cursor="hand2"
         )
-        self._regression_button.pack(side = 'top', pady = (20,30))
+        self._regression_button.pack(side='top', pady=(20, 30))
 
         self._create_separator()
 
@@ -143,7 +144,6 @@ class MenuManager:
         # Create horizontal line separator
         separator = tk.Frame(self._frame, bg='#6677B8', height=3)
         separator.pack(fill=tk.X, side='top')
-
 
     def enable_regression_button(self):
         """Enable regression model creation."""
@@ -246,7 +246,7 @@ class MenuManager:
         """
         # Get selected method
         method = self._method_menu.method_var.get()
-        
+
         # Only validate constant value if the selected method requires it
         constant_value = None
         if method == "Fill with a Constant Value":
@@ -287,7 +287,6 @@ class MenuManager:
                 "The constant value must be a number."
             )
             return None
-
 
     def _show_preprocessing_success(self):
         """Show success message after preprocessing."""

@@ -27,7 +27,7 @@ class ScrollTable(ttk.Treeview):
         Initialize the ScrollTable widget.
 
         Parameters
-        frame (ttk.Frame): The parent frame to contain the table and scrollbars.
+            - frame: The parent frame to contain the table and scrollbars.
         """
         super().__init__(frame, columns=[], show="headings")
         self._frame = frame
@@ -64,7 +64,7 @@ class ScrollTable(ttk.Treeview):
         Configure table columns and insert data from a DataFrame.
 
         Parameters:
-            df (pandas.DataFrame): The DataFrame to display in the table.
+            - df: The DataFrame to display in the table.
         """
         self._data = df
         self['columns'] = list(df.columns)
@@ -89,7 +89,7 @@ class ScrollTable(ttk.Treeview):
         Get the names of columns containing numeric data.
 
         Returns:
-            pandas.Index: Names of columns with numeric data types.
+            - pandas.Index: Names of columns with numeric data types.
         """
         return self._data.select_dtypes(include=['number']).columns
 

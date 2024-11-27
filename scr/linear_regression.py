@@ -13,7 +13,8 @@ class LinearRegression:
     calculating the relationship between a single feature (independent variable)
     and a target (dependent variable).
 
-    Attributes:
+    Parameters:
+
         _feature_name (str): Name of the feature/independent variable
         _feature (pd.Series): Data series containing the feature values
         _target_name (str): Name of the target/dependent variable
@@ -29,24 +30,26 @@ class LinearRegression:
         """
         Initialize the LinearRegression model with feature and target data.
 
-        Args:
-            feature (pd.Series): The independent variable series
-            target (pd.Series): The dependent variable series
-            
+        Parameters:
+
+            - feature: The independent variable series
+            - target: The dependent variable series
+
         Raises:
-            TypeError: If the input data contains non-numeric values
-            ValueError: If the input data is empty or lengths don't match
+            - TypeError: If the input data contains non-numeric values
+            - ValueError: If the input data is empty or lengths don't match
         """
         # Validate input data
         if len(feature) != len(target):
             raise ValueError("Feature and target must have the same length")
-        
+
         if len(feature) == 0:
             raise ValueError("Input data cannot be empty")
-            
+
         # Check for non-numeric data
         if not np.issubdtype(feature.dtype, np.number) or not np.issubdtype(target.dtype, np.number):
-            raise TypeError("Feature and target must contain only numeric values")
+            raise TypeError(
+                "Feature and target must contain only numeric values")
 
         # Store the data series from selected columns
         self._feature_name = feature.name
@@ -59,7 +62,7 @@ class LinearRegression:
         self._slope = None
         self._r_squared = None
         self._mse = None
-        
+
         self.create_regression(self._feature, self._target)
 
     @property
@@ -101,9 +104,10 @@ class LinearRegression:
         4. Generates predictions
         5. Calculates mean squared error
 
-        Args:
-            feature (pd.Series): The independent variable
-            target (pd.Series): The dependent variable
+        Parameters:
+
+            - feature: The independent variable
+            - target: The dependent variable
         """
         # Add a column of ones for the intercept term
         feature_with_intercept = sm.add_constant(feature)
@@ -114,7 +118,7 @@ class LinearRegression:
 
         # Get intercept and slope coefficients
         self._intercept, self._slope = modelofin.params
-        
+
         # Handle constant target case
         if np.var(target) == 0:
             self._r_squared = 0.0
@@ -126,9 +130,3 @@ class LinearRegression:
 
         # Calculate MSE (Mean Squared Error)
         self._mse = np.mean((np.array(target) - self._predictions) ** 2)
-    
-
-        
-        
-
-

@@ -13,7 +13,7 @@ class NaNHandler:
     This class provides methods to detect and handle missing values in specified columns
     of a pandas DataFrame using various strategies like deletion or imputation.
 
-    Attributes:
+    Parameters:
         _df (pandas.DataFrame): The original DataFrame to process.
         _selected_columns (list): List of valid columns of the DataFrame to process.
     """
@@ -23,8 +23,8 @@ class NaNHandler:
         Initialize the NaNHandler with a DataFrame and selected columns.
 
         Parameters:
-            df (pandas.DataFrame): The DataFrame to process.
-            selected_columns (list): List of valid column names of the DataFrame to process.
+            - df: The DataFrame to process.
+            - selected_columns: List of valid column names of the DataFrame to process.
         """
         self._df = df
         self._selected_columns = list(set(selected_columns))
@@ -34,7 +34,7 @@ class NaNHandler:
         Verify if there are NaN values in the selected columns.
 
         Returns:
-            tuple: A boolean indicating if there are missing values and an informative message.
+            - tuple: A boolean indicating if there are missing values and an informative message.
         """
         missing_info = self._df[self._selected_columns].isnull().sum()
         missing_columns = missing_info[missing_info > 0]
@@ -52,10 +52,10 @@ class NaNHandler:
         Remove rows with missing data from the DataFrame.
 
         Parameters:
-            columns (list): List of columns where rows with NaN will be removed.
+           - columns (list): List of columns where rows with NaN will be removed.
 
         Returns:
-            pandas.DataFrame: DataFrame without rows that contained NaN in specified columns.
+           - pandas.DataFrame: DataFrame without rows that contained NaN in specified columns.
         """
         return self._df[columns].dropna(subset=columns).copy()
 
@@ -64,10 +64,10 @@ class NaNHandler:
         Replace missing data in DataFrame columns with their mean values.
 
         Parameters:
-            columns (list): List of columns where NaN will be filled with mean values.
+            - columns (list): List of columns where NaN will be filled with mean values.
 
         Returns:
-            pandas.DataFrame: DataFrame with NaN values filled with column means.
+            - pandas.DataFrame: DataFrame with NaN values filled with column means.
         """
         return self._df[columns].fillna(self._df[columns].mean())
 
@@ -76,10 +76,10 @@ class NaNHandler:
         Replace missing data in DataFrame columns with their median values.
 
         Parameters:
-            columns (list): List of columns where NaN will be filled with median values.
+            - columns (list): List of columns where NaN will be filled with median values.
 
         Returns:
-            pandas.DataFrame: DataFrame with NaN values filled with column medians.
+            - pandas.DataFrame: DataFrame with NaN values filled with column medians.
         """
         return self._df[columns].fillna(self._df[columns].median())
 
@@ -88,11 +88,11 @@ class NaNHandler:
         Replace missing data in DataFrame columns with a constant value.
 
         Parameters:
-            columns (list): List of columns where NaN will be filled with a constant value.
-            constant_value (float): Constant value to fill NaN values with.
+            - columns (list): List of columns where NaN will be filled with a constant value.
+            - constant_value (float): Constant value to fill NaN values with.
 
         Returns:
-            pandas.DataFrame: DataFrame with NaN values filled with the constant value.
+            - pandas.DataFrame: DataFrame with NaN values filled with the constant value.
         """
         return self._df[columns].fillna(constant_value)
 
@@ -101,21 +101,20 @@ class NaNHandler:
         Return a preprocessed copy of the selected columns using the specified method.
 
         Parameters:
-            method : str
+            - method : str
                 Preprocessing method to use.
                 Valid values:
                 - "Delete rows"
                 - "Fill with Mean"
                 - "Fill with Median"
                 - "Fill with a Constant Value"
-            constant_value (float, optional):
-                Value to use when filling NaN values if method is "Fill with a Constant Value".
+            - constant_value (float, optional): Value to use when filling NaN values if method is "Fill with a Constant Value".
 
         Returns:
-            pandas.DataFrame: Preprocessed copy of the selected columns.
+            - pandas.DataFrame: Preprocessed copy of the selected columns.
 
         Raises:
-            ConstantValueError: If method is "Fill with a Constant Value" and no constant value is provided.
+            - ConstantValueError: If method is "Fill with a Constant Value" and no constant value is provided.
         """
         # Methods and their corresponding functions
         METHOD_FUNCTIONS = {
@@ -170,7 +169,6 @@ if __name__ == "__main__":
 
     print("\ndf after the pre-processing")
     print(df)
-
 
     new_df = nan.preprocess("Fill with Median")
 
