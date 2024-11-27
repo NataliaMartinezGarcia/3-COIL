@@ -28,10 +28,10 @@ class LinearRegressionInterface:
         """
         Initialize the LinearRegressionInterface with the provided data.
 
-        Args:
-            frame (tk.Frame): The main frame to contain the interface elements
-            feature (pd.Series): The independent variable data
-            target (pd.Series): The dependent variable data
+        Parameters:
+            - frame: The main frame to contain the interface elements
+            - feature: The independent variable data
+            - target: The dependent variable data
         """
         self._frame = frame   # Main frame of the interface
         self._feature = feature  # Will be passed to the calculation class
@@ -55,10 +55,10 @@ class LinearRegressionInterface:
         - Axis labels and legend
         - Model statistics display
         """
-       
+
         title = tk.Label(self._frame, text='MODEL INFORMATION', fg='#4d598a', bg='#d0d7f2',
                          font=('Arial Black', 12, 'bold'))
-        title.pack(side='top', pady= (10,0))
+        title.pack(side='top', pady=(10, 0))
 
         # Extract the necessary data for the plot
         predictions = self._linear_regression.predictions
@@ -157,6 +157,7 @@ class LinearRegressionInterface:
                 "Success", f"File saved as {extension} correctly.")
         except Exception as e:
             messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
+
 
 # Example of direct use of LinearRegressionInterface in a Tkinter window
 if __name__ == "__main__":

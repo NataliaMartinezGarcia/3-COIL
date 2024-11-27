@@ -21,14 +21,14 @@ def check_dataframe_empty(df, source):
     Verify if a DataFrame is empty.
 
     Parameters:
-        df (pandas.DataFrame): DataFrame to check.
-        source (str): Description of the data source for error messages.
+        - df (pandas.DataFrame): DataFrame to check.
+        - source (str): Description of the data source for error messages.
 
     Returns:
-        pandas.DataFrame: The input DataFrame if not empty.
+        - pandas.DataFrame: The input DataFrame if not empty.
 
     Raises:
-        EmptyDataError: If the DataFrame is empty.
+        - EmptyDataError: If the DataFrame is empty.
     """
     if df.empty:
         raise EmptyDataError(f"The {source} does not contain data.")
@@ -40,13 +40,13 @@ def open_csv(file_path):
     Open and read a CSV file into a DataFrame.
 
     Parameters
-        file_path (str): Path to the CSV file.
+        - file_path (str): Path to the CSV file.
 
     Returns:
-        pandas.DataFrame: DataFrame containing the CSV data.
+        - pandas.DataFrame: DataFrame containing the CSV data.
 
     Raises:
-        EmptyDataError: If the CSV file is empty.
+        - EmptyDataError: If the CSV file is empty.
     """
     try:
         return pd.read_csv(file_path)
@@ -59,13 +59,13 @@ def open_excel(file_path):
     Open and read an Excel file into a DataFrame.
 
     Parameters:
-        file_path (str):Path to the Excel file.
+        - file_path (str):Path to the Excel file.
 
     Returns
-        pandas.DataFrame: DataFrame containing the Excel data.
+        - pandas.DataFrame: DataFrame containing the Excel data.
 
     Raises:
-        EmptyDataError: If the Excel file is empty.
+        - EmptyDataError: If the Excel file is empty.
     """
     df = pd.read_excel(file_path)
     return check_dataframe_empty(df, "Excel file")
@@ -75,13 +75,13 @@ def open_sql(file_path):
     """Open and read a SQLite database table into a DataFrame.
 
     Parameters:
-        file_path (str): Path to the SQLite database file.
+        - file_path (str): Path to the SQLite database file.
 
     Returns:
-        pandas.DataFrame: DataFrame containing the database table data.
+        - pandas.DataFrame: DataFrame containing the database table data.
 
     Raises:
-        EmptyDataError: If the database has no tables or if the table is empty.
+        - EmptyDataError: If the database has no tables or if the table is empty.
     """
     conn = sqlite3.connect(file_path)  # Creates a conexion with the database
     cur = conn.cursor()  # Create a cursor to execute SQL statements
@@ -112,15 +112,15 @@ def open_file(file_path):
     Supports CSV, Excel (.xlsx, .xls), and SQLite (.db, .sqlite) files.
 
     Parameters:
-        file_path (str):Path to the file to open.
+        - file_path (str):Path to the file to open.
 
     Returns
-        pandas.DataFrame: DataFrame containing the file data.
+        - pandas.DataFrame: DataFrame containing the file data.
 
     Raises:
-        FileNotFoundError: If the file does not exist.
-        FileFormatError: If the file format is not supported.
-        EmptyDataError: If the file or database table is empty.
+        - FileNotFoundError: If the file does not exist.
+        - FileFormatError: If the file format is not supported.
+        - EmptyDataError: If the file or database table is empty.
     """
     # First check if the file exists
     if not os.path.exists(file_path):

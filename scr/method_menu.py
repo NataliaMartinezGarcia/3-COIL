@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class MethodMenu:
     """
     A menu for selecting and applying methods to handle NaN values in data.
@@ -58,7 +59,7 @@ class MethodMenu:
             - str: Current value in constant input field
         """
         return self._constant_value_input.get()
-    
+
     def apply_button_disable(self):
         """Disables the button that applies the method selection."""
         self._apply_button.config(state="disabled")
@@ -86,7 +87,7 @@ class MethodMenu:
             bg='#d0d7f2',
             font=("DejaVu Sans Mono", 10, 'bold')
         )
-        label.pack(side = 'top',pady = (10,0))
+        label.pack(side='top', pady=(10, 0))
 
     def _create_method_dropdown(self):
         """Create dropdown for method selection."""
@@ -99,8 +100,8 @@ class MethodMenu:
             values=self.METHODS
         )
         self._method_dropdown.pack(
-           side = 'top', 
-           pady = 5
+            side='top',
+            pady=5
         )
         # Bind selection event to input toggle
         self._method_dropdown.bind(
@@ -153,23 +154,23 @@ class MethodMenu:
     def _show_constant_input(self):
         """Show and enable constant value input."""
         # Position and show constant value components
-        self._constant_label.pack(side = 'left')
-        self._constant_value_input.pack(side = 'left')
-        self._apply_button.pack(side = 'bottom', pady = 10)
+        self._constant_label.pack(side='left')
+        self._constant_value_input.pack(side='left')
+        self._apply_button.pack(side='bottom', pady=10)
 
         # Enable input and bind key events
         self._constant_value_input.config(state="normal")
         self._constant_value_input.bind(
             "<KeyRelease>",
             self._manager.on_dropdown_select
-        )        
+        )
 
     def hide_constant_input(self):
         """Hide and clear constant value input."""
         # Hide input components
         self._constant_label.pack_forget()
         self._constant_value_input.pack_forget()
-        self._apply_button.pack(side = 'top')
+        self._apply_button.pack(side='top')
 
         # Clear and disable input field
         self._constant_value_input.delete(0, "end")
@@ -195,7 +196,7 @@ class MethodMenu:
             activeforeground="#FAF8F9",
             cursor="hand2"
         )
-        apply_button.pack(side = 'top', pady = (10,20))
+        apply_button.pack(side='top', pady=(10, 20))
         return apply_button
 
     def enable_selector(self):
