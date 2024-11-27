@@ -158,7 +158,7 @@ class ScrollApp:
             textvariable=self._file_path,
             fg="#FAF8F9",
             bg='#6677B8',
-            font=("DejaVu Sans Mono", 11),
+            font=("Calibri", 13),
             width=52
         )
         path_label.pack(side='left', padx=(20, 0), pady=5)
