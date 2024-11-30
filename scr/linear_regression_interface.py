@@ -153,8 +153,9 @@ class LinearRegressionInterface:
 
         try:
             extension = save_model(self._linear_regression, description)
-            messagebox.showinfo(
-                "Success", f"File saved as {extension} correctly.")
+            if extension is not None:
+                messagebox.showinfo(
+                    "Success", f"File saved as {extension} correctly.")
         except Exception as e:
             messagebox.showerror("Error", f"Fail to save the file: {str(e)}")
 
