@@ -180,6 +180,13 @@ class MenuManager:
         Returns:
             - bool: True if selection is valid, False otherwise
         """
+        if not self._column_menu.selected_features and not self._column_menu.selected_target:
+            messagebox.showerror(
+                "Error",
+                "You must select the input (feature) and output (target) columns."
+            )
+            return False
+        
         # Check feature selection
         if not self._column_menu.selected_features:
             messagebox.showerror(
