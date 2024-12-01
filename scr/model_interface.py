@@ -2,13 +2,12 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-def show(frame, feature_name, target_name, intercept, slope, r_squared, mse, description):
-    show_info(frame, feature_name, target_name, intercept,
+def show(frame, feature_name, target_name, intercept, slope, r_squared, mse, description = None):
+    _show_info(frame, feature_name, target_name, intercept,
               slope, r_squared, mse, description)
-    show_predictions(frame, intercept, slope, target_name, feature_name)
+    _show_predictions(frame, intercept, slope, target_name, feature_name)
 
-
-def show_info(frame, feature_name, target_name, intercept, slope, r_squared, mse, description):
+def _show_info(frame, feature_name, target_name, intercept, slope, r_squared, mse, description):
     """
     Displays the linear regression model results in a tkinter frame with a styled interface.
 
@@ -24,6 +23,7 @@ def show_info(frame, feature_name, target_name, intercept, slope, r_squared, mse
         - r_squared (float): R-squared value of the model (coefficient of determination)
         - mse (float): Mean Square Error of the model
         - description (str, optional): Additional description or interpretation of the model
+        - app ()
     """
 
     # Create a border effect
@@ -84,7 +84,7 @@ def show_info(frame, feature_name, target_name, intercept, slope, r_squared, mse
         description_label.pack(side='right', padx=(10, 20), pady=5)
 
 
-def show_predictions(frame, intercept, slope, target_name, feature_name):
+def _show_predictions(frame, intercept, slope, target_name, feature_name):
     """
     Creates and displays the prediction interface for the linear regression model.
 
@@ -99,7 +99,7 @@ def show_predictions(frame, intercept, slope, target_name, feature_name):
         - feature_name (str): Name of the independent variable
     """
     # Entry and button for user input to make predictions
-    def make_prediction():
+    def _make_prediction():
         """
         Calculates and displays the predicted value based on user input.
 
@@ -145,7 +145,7 @@ def show_predictions(frame, intercept, slope, target_name, feature_name):
     entry.pack(side='left', padx=5)
 
     # Button to make the prediction
-    predict_button = tk.Button(input_frame, text="Predict", command=make_prediction, font=('Arial Black', 10),
+    predict_button = tk.Button(input_frame, text="Predict", command=_make_prediction, font=('Arial Black', 10),
                                fg="#FAF8F9", bg='#6677B8', activebackground="#808ec6", activeforeground="#FAF8F9",
                                cursor="hand2")
     predict_button.pack(side='left', padx=5)
