@@ -260,10 +260,9 @@ class ScrollApp:
             self._app.show_prepared_data()
 
         except FileNotFoundError as e:
-            messagebox.showerror(
-                "Error", f"The file could not be found: {str(e)}")
+            messagebox.showerror("Error", str(e))
         except FileFormatError as e:
-            messagebox.showerror("Error", f"Invalid format: {str(e)}")
+            messagebox.showerror("Error", str(e))
         except EmptyDataError as e:
             messagebox.showwarning("Error", str(e))
         except Exception as e:
@@ -321,10 +320,11 @@ class ScrollApp:
             self._app.show_prepared_model()
 
         except FileNotFoundError as e:
-            messagebox.showerror(
-                "Error", f"The file could not be found: {str(e)}")
+            messagebox.showerror("Error", str(e))
         except AssertionError as e:
-            messagebox.showerror("Error", f"Invalid format: {str(e)}")
+            messagebox.showerror("Error", str(e))
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
         except Exception as e:
             messagebox.showerror(
                 "Error", f"The file could not be loaded: {str(e)}")
@@ -399,7 +399,7 @@ class App:
         self._canvas = canvas
         self._scroll_window = scroll_window
         # Bind window resize handler
-        self._scroll_window.window.bind("<Configure>", self.on_window_resize)
+        # self._scroll_window.window.bind("<Configure>", self.on_window_resize)
 
         self._table = None
         self._file = None
@@ -444,7 +444,6 @@ class App:
 
         # Create new table instance and populate with data
         self._table = ScrollTable(self._table_frame)
-        self._table.empty_table()  # Clear any existing data
         self._table.create_from_df(self._data)  # Fill with new data
 
     def show_prepared_data(self):
