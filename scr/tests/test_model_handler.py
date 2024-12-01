@@ -218,3 +218,51 @@ def test_save_model_different_formats(tmp_path, sample_model, extension, monkeyp
     assert loaded_data["feature_name"] == sample_model.feature_name
     assert loaded_data["target_name"] == sample_model.target_name
     assert loaded_data["intercept"] == pytest.approx(sample_model.intercept)
+
+# -------------------------------------------------
+# Tests for corrupted or invalid model files
+# -------------------------------------------------
+
+def test_open_model_corrupted_file(tmp_path):
+    """
+    Test opening a corrupted model file.
+    Verifies that an appropriate error is raised when the file is corrupted.
+    """
+    # Create a corrupted file
+    corrupted_file = tmp_path / "corrupted_model.pkl"
+    with open(corrupted_file, "wb") as f:
+        f.write(b"This is not a valid pickle or joblib file.")
+
+    # Verify that an exception is raised
+    with pytest.raises((pickle.UnpicklingError, EOFError, joblib.externals.loky.process_executor.TerminatedWorkerError)):
+        open_model(str(corrupted_file))
+
+
+def test_open_model_invalid_format_data(temp_pkl_file):
+    """
+    Test opening a file with invalid model data format.
+    Verifies that an error is raised when the data does not match the expected format.
+    """
+    # Modify the contents of the pickle file to contain invalid data
+    invalid_data = {"unexpected_key": "unexpected_value"}
+    with open(temp_pkl_file, "wb") as f:
+        pickle.dump(invalid_data, f)
+
+    # Verify that an exception is raised when the data format is incorrect
+    with pytest.raises(ValueError, match="Invalid model data format. Missing required keys."):
+        open_model(temp_pkl_file)
+
+
+def test_open_model_missing_keys(temp_pkl_file):
+    """
+    Test opening a file missing required keys.
+    Verifies that an error is raised when the data is incomplete.
+    """
+    # Modify the contents of the pickle file to remove required keys
+    incomplete_data = {"intercept": 10.5, "slope": 2.3}  # Missing other keys
+    with open(temp_pkl_file, "wb") as f:
+        pickle.dump(incomplete_data, f)
+
+    # Verify that an exception is raised when required keys are missing
+    with pytest.raises(ValueError, match="Invalid model data format. Missing required keys."):
+        open_model(temp_pkl_file)

@@ -55,10 +55,6 @@ class ScrollTable(ttk.Treeview):
     def data(self):
         return self._data
 
-    def empty_table(self):
-        """Remove all items from the existing table."""
-        self.delete(*self.get_children())
-
     def create_from_df(self, df):
         """
         Configure table columns and insert data from a DataFrame.

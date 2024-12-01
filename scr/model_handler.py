@@ -104,8 +104,11 @@ def open_model(file_path):
     Raises:
         - FileNotFoundError: If the specified file does not exist.
         - AssertionError: If the file format is not supported (.pkl or .joblib).
+        - ValueError: If the file contains invalid or incomplete data.
     """
     EXTENSIONS = ('.pkl', '.joblib')  # Possible extensions
+    REQUIRED_KEYS = {"intercept", "slope", "r_squared", "mse", "feature_name", "target_name", "description"}
+
     # Map extensions to their corresponding opening functions
     EXTENSION_MAP = {'.pkl': open_pkl, '.joblib': open_joblib}
 
@@ -120,4 +123,12 @@ def open_model(file_path):
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")
 
-    return EXTENSION_MAP[extension](file_path)
+    # Load the data using the appropriate function
+    loaded_data = EXTENSION_MAP[extension](file_path)
+    print(loaded_data)
+
+    # Verify the data contains all required keys
+    if not isinstance(loaded_data, dict) or not REQUIRED_KEYS.issubset(loaded_data.keys()):
+        raise ValueError("Invalid model data format. Missing required keys.")
+
+    return loaded_data
