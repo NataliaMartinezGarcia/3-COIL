@@ -41,13 +41,13 @@ The raw data is displayed along with two lists. The items in the lists correspon
 
 After a model has been created, it will be displayed in the application window, as shown in Figure 2.3.
 
-![The Linear Regression Application window with a model loaded and displayed.](https://i.ibb.co/7QYBNcN/Model-Maker-Model.png)
+![The Linear Regression Application window with a model loaded and displayed.](https://i.ibb.co/MfmczPW/Model-Maker-Model.png)
 
 *Figure 2.3: ModelMaker view after a model has been created*
 
 Figure 2.4 shows the equations used to calculate the model, including the predicted equation used to create the model, the R-squared value, and the Mean Square Error value.
 
-![Math equations after generating a model in ModelMaker](https://i.ibb.co/GsXnhmR/Model-Maker-Math.png)
+![Math equations after generating a model in ModelMaker](https://i.ibb.co/3sqPKvr/Model-Maker-Math.png)
 
 *Figure 2.4: Formulas generated after creating a model in ModelMaker*
 
@@ -167,9 +167,7 @@ After you've saved a model, you might want to load it again in the application l
 **To load a model**
 1. Select **Load**.
 
-&ensp;&ensp;&ensp;&ensp;A file explorer window appears. By default, it opens to the same location you opened the application from (your downloads
-
-&ensp;&ensp;&ensp;&ensp;folder, for example).
+&ensp;&ensp;&ensp;&ensp;A file explorer window appears. By default, it opens to the same location you opened the application from (your downloads folder, for example).
 
 2. Select your saved model.
 
