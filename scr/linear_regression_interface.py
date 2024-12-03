@@ -129,7 +129,11 @@ class LinearRegressionInterface:
         download_frame.pack(side='top', pady=20)
 
         separator = tk.Frame(self._frame, bg='#6677B8', height=3)
-        separator.pack(fill=tk.X, side=tk.TOP, anchor="center")
+        separator.pack(fill=tk.X, side= 'top', anchor="center")
+
+        # To adjust the screen when it expands
+        filling_frame= tk.Frame(self._frame, height = 70, bg='#d0d7f2')
+        filling_frame.pack(side = 'bottom')
 
     def save_all(self):
         """
