@@ -49,7 +49,7 @@ class ScrollApp:
         """
         # Set up window close handler
         self._window.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self._window.title("Linear Regression App")
+        self._window.title("ModelMaker")
 
         # Fixed window size
         self._width = 768
