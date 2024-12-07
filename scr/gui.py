@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
-from open_files import open_file, FileFormatError, EmptyDataError, FileNotSelectedError
+# from open_files import open_file, FileFormatError, EmptyDataError, FileNotSelectedError
+from open_files import open_file, EmptyDataError
 from scroll_table import ScrollTable
 from menu_manager import MenuManager
 from model_handler import open_model
 import model_interface
 from progress_bar import run_with_loading
+from exceptions import FileNotSelectedError, FileFormatError
+
 
 
 class ScrollApp:
@@ -231,11 +234,6 @@ class ScrollApp:
             filetypes=filetypes
         )
 
-        """if not self._file:
-            messagebox.showwarning(
-                "Warning", "You haven't selected any files.")
-            return"""
-
         try:
             # Wrap file loading process in a function for progress bar
             def full_load_process():
@@ -252,10 +250,6 @@ class ScrollApp:
             )
 
             self._update_interface_with_file()
-            """# Update file path display with shortened path
-            text = self._shorten_route_text(self._file)
-            self._file_path.set(text)
-            messagebox.showinfo("Success", "The file has been read correctly.")"""
 
             # Display the processed data in the UI
             self._app.show_prepared_data()
@@ -294,11 +288,6 @@ class ScrollApp:
             filetypes=filetypes
         )
 
-        if not self._file:
-            messagebox.showwarning(
-                "Warning", "You haven't selected any files.")
-            return
-
         try:
             def full_load_process():
                 # Load and preprocess the model
@@ -315,13 +304,13 @@ class ScrollApp:
             )
 
             # Update the interface and show success message
-            text = self._shorten_route_text(self._file)
-            self._file_path.set(text)
-            messagebox.showinfo("Success", "The file has been read correctly.")
+            self._update_interface_with_file()
 
             # Show the prepared model
             self._app.show_prepared_model()
 
+        except FileNotSelectedError as e:
+            messagebox.showwarning("Warning", e)
         except FileNotFoundError as e:
             messagebox.showerror("Error", str(e))
         except AssertionError as e:

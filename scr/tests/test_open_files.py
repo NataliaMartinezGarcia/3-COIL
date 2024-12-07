@@ -2,7 +2,8 @@ import pytest
 import pandas as pd
 import sqlite3
 import os
-from open_files import open_file, FileFormatError, EmptyDataError
+from open_files import open_file
+from exceptions import FileFormatError, EmptyDataError
 
 @pytest.fixture
 def setup_temp_files(tmp_path):

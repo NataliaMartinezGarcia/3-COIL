@@ -5,6 +5,7 @@ import pickle
 import joblib
 from linear_regression import LinearRegression
 from model_handler import save_model, open_model, open_pkl, open_joblib
+from exceptions import FileFormatError
 
 @pytest.fixture
 def sample_model():
@@ -134,7 +135,7 @@ def test_open_model_invalid_extension(tmp_path):
     invalid_file = tmp_path / "model.txt"
     invalid_file.touch()  # Create the file
     
-    with pytest.raises(AssertionError):
+    with pytest.raises(FileFormatError):
         open_model(str(invalid_file))
 
 # -------------------------------------------------

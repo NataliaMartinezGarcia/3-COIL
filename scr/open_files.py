@@ -2,24 +2,10 @@ import pandas as pd
 import sqlite3
 from sqlalchemy import create_engine
 import os
+from exceptions import FileNotSelectedError, FileFormatError, EmptyDataError
 
-
-class FileNotSelectedError(Exception):
-    """Exception for non selected files."""
-    pass
-
-class FileFormatError(Exception):
-    """Exception for invalid file formats."""
-    pass
-
-
-class EmptyDataError(Exception):
-    """Exception for empty files or non-existent tables."""
-    pass
 
 # Common function to check if different types of files are empty
-
-
 def check_dataframe_empty(df, source):
     """
     Verify if a DataFrame is empty.
@@ -130,7 +116,7 @@ def open_file(file_path):
     # Check if there is a filepath
     if file_path == "":
         raise FileNotSelectedError("You haven't selected any files.")
-
+    
     # Check if the file exists
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")

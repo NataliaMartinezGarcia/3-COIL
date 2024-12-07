@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 import os
 from tkinter import messagebox, filedialog, ttk
 from linear_regression import LinearRegression
+from exceptions import FileNotSelectedError, FileFormatError
 
 
 def save_model(model, description=None):
@@ -114,10 +115,14 @@ def open_model(file_path):
 
     # Extract extension (includes the dot)
     _, extension = os.path.splitext(file_path)
-
+    
+    # Check if there is a filepath
+    if file_path == "":
+        raise FileNotSelectedError("You haven't selected any files.")
+    
     # Verify valid file format first
     if extension not in EXTENSIONS:
-        raise AssertionError("Invalid file format. (Valid: .pkl, .joblib).")
+        raise FileFormatError("Invalid file format. (Valid: .pkl, .joblib).")
 
     # Then check if file exists
     if not os.path.exists(file_path):
