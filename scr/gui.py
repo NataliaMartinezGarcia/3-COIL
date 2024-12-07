@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
-from open_files import open_file, FileFormatError, EmptyDataError
+from open_files import open_file, FileFormatError, EmptyDataError, FileNotSelectedError
 from scroll_table import ScrollTable
 from menu_manager import MenuManager
 from model_handler import open_model
@@ -45,7 +45,7 @@ class ScrollApp:
     def _setup_window(self):
         """
         Configure main window properties.
-        Calculates window dimensions based on screen size and centers the window.
+        Sets window dimensions and centers the window.
         """
         # Set up window close handler
         self._window.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -231,10 +231,10 @@ class ScrollApp:
             filetypes=filetypes
         )
 
-        if not self._file:
+        """if not self._file:
             messagebox.showwarning(
                 "Warning", "You haven't selected any files.")
-            return
+            return"""
 
         try:
             # Wrap file loading process in a function for progress bar
@@ -244,21 +244,24 @@ class ScrollApp:
                 self._app.prepare_data_display()  # Prepare UI
                 return self._data
 
-             # Display loading progress while processing file
+            # Display loading progress while processing file
             run_with_loading(
                 self._window,
                 full_load_process,
                 "Reading and opening file..."
             )
 
-            # Update file path display with shortened path
+            self._update_interface_with_file()
+            """# Update file path display with shortened path
             text = self._shorten_route_text(self._file)
             self._file_path.set(text)
-            messagebox.showinfo("Success", "The file has been read correctly.")
+            messagebox.showinfo("Success", "The file has been read correctly.")"""
 
             # Display the processed data in the UI
             self._app.show_prepared_data()
 
+        except FileNotSelectedError as e:
+            messagebox.showwarning("Warning", e)
         except FileNotFoundError as e:
             messagebox.showerror("Error", str(e))
         except FileFormatError as e:
@@ -304,14 +307,14 @@ class ScrollApp:
                 self._app.prepare_model_display()
                 return self._data
 
-           # Run loading process with progress indicator
+            # Run loading process with progress indicator
             run_with_loading(
                 self._window,
                 full_load_process,
                 "Loading and processing model..."
             )
 
-           # Update the interface and show success message
+            # Update the interface and show success message
             text = self._shorten_route_text(self._file)
             self._file_path.set(text)
             messagebox.showinfo("Success", "The file has been read correctly.")
