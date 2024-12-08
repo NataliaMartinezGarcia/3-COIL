@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
-from open_files import open_file, FileFormatError, EmptyDataError
+from open_files import open_file, EmptyDataError
 from scroll_table import ScrollTable
 from menu_manager import MenuManager
 from model_handler import open_model
 import model_interface
 from progress_bar import run_with_loading
+from exceptions import FileNotSelectedError, FileFormatError
+
 
 
 class ScrollApp:
@@ -45,7 +47,7 @@ class ScrollApp:
     def _setup_window(self):
         """
         Configure main window properties.
-        Calculates window dimensions based on screen size and centers the window.
+        Sets window dimensions and centers the window.
         """
         # Set up window close handler
         self._window.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -231,11 +233,6 @@ class ScrollApp:
             filetypes=filetypes
         )
 
-        if not self._file:
-            messagebox.showwarning(
-                "Warning", "You haven't selected any files.")
-            return
-
         try:
             # Wrap file loading process in a function for progress bar
             def full_load_process():
@@ -244,21 +241,20 @@ class ScrollApp:
                 self._app.prepare_data_display()  # Prepare UI
                 return self._data
 
-             # Display loading progress while processing file
+            # Display loading progress while processing file
             run_with_loading(
                 self._window,
                 full_load_process,
                 "Reading and opening file..."
             )
 
-            # Update file path display with shortened path
-            text = self._shorten_route_text(self._file)
-            self._file_path.set(text)
-            messagebox.showinfo("Success", "The file has been read correctly.")
+            self._update_interface_with_file()
 
             # Display the processed data in the UI
             self._app.show_prepared_data()
 
+        except FileNotSelectedError as e:
+            messagebox.showwarning("Warning", e)
         except FileNotFoundError as e:
             messagebox.showerror("Error", str(e))
         except FileFormatError as e:
@@ -291,11 +287,6 @@ class ScrollApp:
             filetypes=filetypes
         )
 
-        if not self._file:
-            messagebox.showwarning(
-                "Warning", "You haven't selected any files.")
-            return
-
         try:
             def full_load_process():
                 # Load and preprocess the model
@@ -304,21 +295,21 @@ class ScrollApp:
                 self._app.prepare_model_display()
                 return self._data
 
-           # Run loading process with progress indicator
+            # Run loading process with progress indicator
             run_with_loading(
                 self._window,
                 full_load_process,
                 "Loading and processing model..."
             )
 
-           # Update the interface and show success message
-            text = self._shorten_route_text(self._file)
-            self._file_path.set(text)
-            messagebox.showinfo("Success", "The file has been read correctly.")
+            # Update the interface and show success message
+            self._update_interface_with_file()
 
             # Show the prepared model
             self._app.show_prepared_model()
 
+        except FileNotSelectedError as e:
+            messagebox.showwarning("Warning", e)
         except FileNotFoundError as e:
             messagebox.showerror("Error", str(e))
         except AssertionError as e:
@@ -398,8 +389,6 @@ class App:
         self._frame = frame
         self._canvas = canvas
         self._scroll_window = scroll_window
-        # Bind window resize handler
-        # self._scroll_window.window.bind("<Configure>", self.on_window_resize)
 
         self._table = None
         self._file = None
@@ -604,18 +593,6 @@ class App:
         """Remove all widgets from main frame."""
         for widget in self._frame.winfo_children():
             widget.destroy()
-
-    def on_window_resize(self, event):
-        """
-        Handle window resize events
-
-        Parameters:
-            - event: Window resize event object
-        """
-        if hasattr(self, '_table_frame') and self._table_frame.winfo_exists():
-            self._table_frame.config(
-                width=self._scroll_window.window.winfo_width() - 15
-            )
 
 
 def main():

@@ -1,11 +1,9 @@
-import pandas as pd
 import joblib
 import pickle
-import sqlite3
-from sqlalchemy import create_engine
 import os
-from tkinter import messagebox, filedialog, ttk
+from tkinter import filedialog
 from linear_regression import LinearRegression
+from exceptions import FileNotSelectedError, FileFormatError
 
 
 def save_model(model, description=None):
@@ -102,6 +100,7 @@ def open_model(file_path):
         - dict: The loaded model data containing model parameters and metadata.
 
     Raises:
+        - FileNotSelectedError: If the file path is empty.
         - FileNotFoundError: If the specified file does not exist.
         - AssertionError: If the file format is not supported (.pkl or .joblib).
         - ValueError: If the file contains invalid or incomplete data.
@@ -114,10 +113,14 @@ def open_model(file_path):
 
     # Extract extension (includes the dot)
     _, extension = os.path.splitext(file_path)
-
+    
+    # Check if there is a filepath
+    if file_path == "":
+        raise FileNotSelectedError("You haven't selected any model.")
+    
     # Verify valid file format first
     if extension not in EXTENSIONS:
-        raise AssertionError("Invalid file format. (Valid: .pkl, .joblib).")
+        raise FileFormatError("Invalid file format. (Valid: .pkl, .joblib).")
 
     # Then check if file exists
     if not os.path.exists(file_path):
@@ -125,10 +128,23 @@ def open_model(file_path):
 
     # Load the data using the appropriate function
     loaded_data = EXTENSION_MAP[extension](file_path)
-    print(loaded_data)
 
     # Verify the data contains all required keys
-    if not isinstance(loaded_data, dict) or not REQUIRED_KEYS.issubset(loaded_data.keys()):
-        raise ValueError("Invalid model data format. Missing required keys.")
+    if not isinstance(loaded_data, dict):
+        raise ValueError("Invalid model data format. The data is not a dictionary.")
+
+    # Determine the keys that are missing from the loaded data
+    missing_keys = REQUIRED_KEYS - loaded_data.keys()
+    # Determine the keys that are present but not expected
+    extra_keys = loaded_data.keys() - REQUIRED_KEYS
+
+    # If there are missing or extra keys, generate a detailed error message
+    if missing_keys or extra_keys:
+        error_message = []
+        if missing_keys:
+            error_message.append(f"Missing required keys: {', '.join(missing_keys)}.")
+        if extra_keys:
+            error_message.append(f"Unexpected extra keys: {', '.join(extra_keys)}.")
+        raise ValueError(" ".join(error_message))
 
     return loaded_data

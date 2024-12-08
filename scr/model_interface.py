@@ -23,7 +23,6 @@ def _show_info(frame, feature_name, target_name, intercept, slope, r_squared, ms
         - r_squared (float): R-squared value of the model (coefficient of determination)
         - mse (float): Mean Square Error of the model
         - description (str, optional): Additional description or interpretation of the model
-        - app ()
     """
 
     # Create a border effect

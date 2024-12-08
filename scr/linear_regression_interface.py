@@ -39,11 +39,21 @@ class LinearRegressionInterface:
         self._comment = None
         self._prediction_frame = None  # Will be used to make predictions based on the model
 
-        # Create linear regression object for calculations and results
-        self._linear_regression = LinearRegression(feature, target)
+        try:
+            # Try creating the linear regression object
+            self._linear_regression = LinearRegression(feature, target)
+            # Create and display the plot in the interface if successful
+            self.create_plot()
+        except ValueError as ve:
+            # Handle ValueError if lengths don't match or input is empty
+            messagebox.showerror("Error", f"Value Error: {str(ve)}")
+        except TypeError as te:
+            # Handle TypeError if the input data is non-numeric
+            messagebox.showerror("Error", f"Type Error: {str(te)}")
+        except Exception as e:
+            # Handle any other unforeseen errors
+            messagebox.showerror("Error", f"An unexpected error occurred: {str(e)}")
 
-        # Create and display the plot in the interface
-        self.create_plot()
 
     def create_plot(self):
         """

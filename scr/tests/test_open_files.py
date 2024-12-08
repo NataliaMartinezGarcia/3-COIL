@@ -2,7 +2,8 @@ import pytest
 import pandas as pd
 import sqlite3
 import os
-from open_files import open_file, FileFormatError, EmptyDataError
+from open_files import open_file
+from exceptions import FileFormatError, EmptyDataError, FileNotSelectedError
 
 @pytest.fixture
 def setup_temp_files(tmp_path):
@@ -128,3 +129,11 @@ def test_open_file_non_existent_invalid_extension(setup_temp_files):
     non_existent_invalid = setup_temp_files["non_existent"].with_suffix(".txt")
     with pytest.raises(FileNotFoundError, match="The file '.*' does not exist."):
         open_file(non_existent_invalid)
+
+def test_open_file_no_file_selected():
+    """
+    Test that the FileNotSelectedError is raised when no file is selected.
+    """
+    # Simulate that the user does not select any file (empty file path)
+    with pytest.raises(FileNotSelectedError, match="You haven't selected any files."):
+        open_file("")

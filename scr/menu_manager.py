@@ -54,9 +54,9 @@ class MenuManager:
     def _init_debug_print(self):
         """Print initial debug information."""
         # Print original and processed DataFrames
-        print("df Before pre-processing")
+        print("df Before pre-processing:")
         print(self._df)
-        print("new_df Before pre-processing")
+        print("new_df Before pre-processing:")
         print(self._new_df)
 
     @property
@@ -210,6 +210,10 @@ class MenuManager:
         # Format column names for display
         f_cols = ', '.join(self._column_menu.selected_features)
         t_col = ', '.join(self._column_menu.selected_target)
+        
+        # Cleans preprocessed DataFrame
+        self._new_df = None
+
         # Show selection confirmation
         messagebox.showinfo(
             "Success",
@@ -321,7 +325,7 @@ class MenuManager:
         # Validate prerequisites
         if not self._validate_model_prerequisites():
             return
-        # Use processed DataFrame if available, otherwise use original
+        # Use processed DataFrame if available, otherwise use original        
         df_to_use = self._new_df if self._new_df is not None else self._df
         # Get selected feature and target columns
         feature = df_to_use[self._column_menu.selected_features[0]]

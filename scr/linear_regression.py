@@ -1,8 +1,6 @@
 import statsmodels.api as sm
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-import tkinter as tk
 
 
 class LinearRegression:

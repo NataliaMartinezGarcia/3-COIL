@@ -6,7 +6,6 @@ from tkinter import font
 
 # Class to manage data table with slider bars.
 
-
 class ScrollTable(ttk.Treeview):
     """
     A scrollable table widget that displays pandas DataFrame data.
@@ -49,8 +48,6 @@ class ScrollTable(ttk.Treeview):
         self._scroll_x.config(command=self.xview)
         self._scroll_y.config(command=self.yview)
 
-        # self._frame.pack_propagate(True)
-
     @property  # DataFrame that the table shows
     def data(self):
         return self._data
@@ -78,7 +75,7 @@ class ScrollTable(ttk.Treeview):
         # Vertical bar on the right
         self._scroll_y.pack(side=tk.LEFT, fill=tk.Y)
         self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)  # Table
-        self.adjust_width()
+        self._adjust_width()
 
     def numeric_columns(self):
         """
@@ -89,7 +86,7 @@ class ScrollTable(ttk.Treeview):
         """
         return self._data.select_dtypes(include=['number']).columns
 
-    def adjust_width(self):
+    def _adjust_width(self):
         """Adjust the width of each column based on content and header text."""
         for col in self["columns"]:
             # Obtain the header text
