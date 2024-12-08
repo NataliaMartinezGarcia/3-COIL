@@ -239,21 +239,6 @@ def test_open_model_corrupted_file(tmp_path):
         open_model(str(corrupted_file))
 
 
-def test_open_model_invalid_format_data(temp_pkl_file):
-    """
-    Test opening a file with invalid model data format.
-    Verifies that an error is raised when the data does not match the expected format.
-    """
-    # Modify the contents of the pickle file to contain invalid data
-    invalid_data = {"unexpected_key": "unexpected_value"}
-    with open(temp_pkl_file, "wb") as f:
-        pickle.dump(invalid_data, f)
-
-    # Verify that an exception is raised when the data format is incorrect
-    with pytest.raises(ValueError, match="Invalid model data format. Missing required keys."):
-        open_model(temp_pkl_file)
-
-
 def test_open_model_missing_keys(temp_pkl_file):
     """
     Test opening a file missing required keys.
@@ -264,6 +249,94 @@ def test_open_model_missing_keys(temp_pkl_file):
     with open(temp_pkl_file, "wb") as f:
         pickle.dump(incomplete_data, f)
 
-    # Verify that an exception is raised when required keys are missing
-    with pytest.raises(ValueError, match="Invalid model data format. Missing required keys."):
+    # Verify that an exception is raised with a message containing the missing keys
+    with pytest.raises(ValueError) as excinfo:
         open_model(temp_pkl_file)
+
+    error_message = str(excinfo.value)
+
+    # Validate that the error message includes all missing keys
+    expected_missing_keys = {"r_squared", "mse", "feature_name", "target_name", "description"}
+
+    # Split the error message and ensure all missing keys are reported
+    assert all(key in error_message for key in expected_missing_keys), \
+        f"Missing keys not reported correctly. Error message: {error_message}"
+    
+    # Validate that the message indicates missing keys
+    assert "Missing required keys" in error_message, \
+        f"Error message does not indicate missing keys. Error message: {error_message}"
+
+def test_open_model_extra_keys(temp_pkl_file):
+    """
+    Test opening a file with extra keys.
+    Verifies that an error is raised when the data contains unexpected keys.
+    """
+    # Modify the contents of the pickle file to include extra keys
+    extra_data = {
+        "intercept": 10.5,
+        "slope": 2.3,
+        "r_squared": 0.99,
+        "mse": 0.01,
+        "feature_name": "Temperature",
+        "target_name": "Sales",
+        "description": "Test model",
+        "extra_key1": "unexpected_value1",
+        "extra_key2": "unexpected_value2"
+    }
+    with open(temp_pkl_file, "wb") as f:
+        pickle.dump(extra_data, f)
+
+    # Verify that an exception is raised with the correct error message
+    with pytest.raises(ValueError) as excinfo:
+        open_model(temp_pkl_file)
+
+    error_message = str(excinfo.value)
+
+    # Define the extra keys that should appear in the error message
+    unexpected_keys = {"extra_key1", "extra_key2"}
+
+    # Validate that the error message includes all extra keys
+    assert all(key in error_message for key in unexpected_keys), \
+        f"Extra keys not reported correctly. Error message: {error_message}"
+
+    # Validate that the message indicates unexpected keys
+    assert "Unexpected extra keys" in error_message, \
+        f"Error message does not indicate unexpected keys. Error message: {error_message}"
+
+
+def test_open_model_missing_and_extra_keys(temp_pkl_file):
+    """
+    Test opening a file with missing and extra keys.
+    Verifies that an error is raised with a detailed message for both issues.
+    """
+    # Modify the contents of the pickle file to contain missing and extra keys
+    incorrect_data = {
+        "intercept": 10.5,
+        "slope": 2.3,
+        "extra_key": "unexpected_value"
+    }  # Missing most required keys and includes an extra key
+    with open(temp_pkl_file, "wb") as f:
+        pickle.dump(incorrect_data, f)
+
+    # Verify that an exception is raised with a message containing both missing and extra keys
+    with pytest.raises(ValueError) as excinfo:
+        open_model(temp_pkl_file)
+
+    error_message = str(excinfo.value)
+
+    # Validate that the error message includes all missing and extra keys
+    expected_missing_keys = {"r_squared", "mse", "feature_name", "target_name", "description"}
+    expected_extra_keys = {"extra_key"}
+
+    # Check for missing keys in the error message
+    assert all(key in error_message for key in expected_missing_keys), \
+        f"Missing keys not reported correctly. Error message: {error_message}"
+    
+    # Check for extra keys in the error message
+    assert all(key in error_message for key in expected_extra_keys), \
+        f"Extra keys not reported correctly. Error message: {error_message}"
+
+    assert "Unexpected extra keys" in error_message, \
+        f"Error message does not indicate unexpected keys. Error message: {error_message}"
+    assert "Missing required keys" in error_message, \
+        f"Error message does not indicate unexpected keys. Error message: {error_message}"
