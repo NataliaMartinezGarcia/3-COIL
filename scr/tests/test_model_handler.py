@@ -5,7 +5,7 @@ import pickle
 import joblib
 from linear_regression import LinearRegression
 from model_handler import save_model, open_model, open_pkl, open_joblib
-from exceptions import FileFormatError
+from exceptions import FileFormatError, FileNotSelectedError
 
 @pytest.fixture
 def sample_model():
@@ -340,3 +340,11 @@ def test_open_model_missing_and_extra_keys(temp_pkl_file):
         f"Error message does not indicate unexpected keys. Error message: {error_message}"
     assert "Missing required keys" in error_message, \
         f"Error message does not indicate unexpected keys. Error message: {error_message}"
+    
+def test_open_model_no_file_selected():
+    """
+    Test that the FileNotSelectedError is raised when no file is selected.
+    """
+    # Simulate that the user does not select any file (empty file path)
+    with pytest.raises(FileNotSelectedError, match="You haven't selected any model."):
+        open_model("")
