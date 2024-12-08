@@ -1,10 +1,7 @@
-import pandas as pd
 import joblib
 import pickle
-import sqlite3
-from sqlalchemy import create_engine
 import os
-from tkinter import messagebox, filedialog, ttk
+from tkinter import filedialog
 from linear_regression import LinearRegression
 from exceptions import FileNotSelectedError, FileFormatError
 
