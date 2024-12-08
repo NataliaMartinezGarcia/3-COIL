@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
-# from open_files import open_file, FileFormatError, EmptyDataError, FileNotSelectedError
 from open_files import open_file, EmptyDataError
 from scroll_table import ScrollTable
 from menu_manager import MenuManager
@@ -390,8 +389,6 @@ class App:
         self._frame = frame
         self._canvas = canvas
         self._scroll_window = scroll_window
-        # Bind window resize handler
-        # self._scroll_window.window.bind("<Configure>", self.on_window_resize)
 
         self._table = None
         self._file = None
@@ -596,18 +593,6 @@ class App:
         """Remove all widgets from main frame."""
         for widget in self._frame.winfo_children():
             widget.destroy()
-
-    def on_window_resize(self, event):
-        """
-        Handle window resize events
-
-        Parameters:
-            - event: Window resize event object
-        """
-        if hasattr(self, '_table_frame') and self._table_frame.winfo_exists():
-            self._table_frame.config(
-                width=self._scroll_window.window.winfo_width() - 15
-            )
 
 
 def main():

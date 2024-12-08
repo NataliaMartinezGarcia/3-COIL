@@ -25,10 +25,10 @@ class LoadingIndicator:
         Parameters:
             - parent: Parent window for the loading popup
         """
-        self.parent = parent
-        self.popup: Optional[tk.Toplevel] = None
-        self.progress: Optional[ttk.Progressbar] = None
-        self.label: Optional[tk.Label] = None
+        self._parent = parent
+        self._popup: Optional[tk.Toplevel] = None
+        self._progress: Optional[ttk.Progressbar] = None
+        self._label: Optional[tk.Label] = None
 
     def start(self, message: str = "Loading...") -> None:
         """Display loading indicator popup.
@@ -44,38 +44,38 @@ class LoadingIndicator:
 
     def _create_popup_window(self) -> None:
         """Create and configure the popup window."""
-        self.popup = tk.Toplevel(self.parent)
-        self.popup.title("Loading")
-        self.popup.geometry(self.WINDOW_SIZE)
-        self.popup.resizable(False, False)
-        self.popup.transient(self.parent)
-        self.popup.grab_set()
-        self.popup.config(bg=self.STYLES['BACKGROUND'])
+        self._popup = tk.Toplevel(self._parent)
+        self._popup.title("Loading")
+        self._popup.geometry(self.WINDOW_SIZE)
+        self._popup.resizable(False, False)
+        self._popup.transient(self._parent)
+        self._popup.grab_set()
+        self._popup.config(bg=self.STYLES['BACKGROUND'])
 
     def _center_popup(self) -> None:
         """Center popup window relative to parent."""
-        self.popup.update_idletasks()
+        self._popup.update_idletasks()
 
         # Calculate center position
         x = (
-            self.parent.winfo_x() +
-            (self.parent.winfo_width() - self.popup.winfo_width()) // 2
+            self._parent.winfo_x() +
+            (self._parent.winfo_width() - self._popup.winfo_width()) // 2
         )
         y = (
-            self.parent.winfo_y() +
-            (self.parent.winfo_height() - self.popup.winfo_height()) // 2
+            self._parent.winfo_y() +
+            (self._parent.winfo_height() - self._popup.winfo_height()) // 2
         )
 
-        self.popup.geometry(f"+{x}+{y}")
+        self._popup.geometry(f"+{x}+{y}")
 
     def _create_progress_bar(self) -> None:
         """Create and configure the progress bar."""
-        self.progress = ttk.Progressbar(
-            self.popup,
+        self._progress = ttk.Progressbar(
+            self._popup,
             mode='indeterminate',
             length=self.STYLES['PROGRESS_LENGTH']
         )
-        self.progress.pack(pady=self.STYLES['PADDING'])
+        self._progress.pack(pady=self.STYLES['PADDING'])
 
     def _create_message_label(self, message: str) -> None:
         """Create label with loading message.
@@ -83,33 +83,33 @@ class LoadingIndicator:
         Parameters:
             - message: Text to display
         """
-        self.label = tk.Label(
-            self.popup,
+        self._label = tk.Label(
+            self._popup,
             text=message,
             bg=self.STYLES['BACKGROUND'],
             fg=self.STYLES['TEXT_COLOR'],
             font=self.STYLES['FONT']
         )
-        self.label.pack(pady=self.STYLES['TEXT_PADDING'])
+        self._label.pack(pady=self.STYLES['TEXT_PADDING'])
 
     def _start_animation(self) -> None:
         """Start progress bar animation and update display."""
-        if self.progress:
-            self.progress.start(self.STYLES['PROGRESS_SPEED'])
-        if self.popup:
-            self.popup.update()
+        if self._progress:
+            self._progress.start(self.STYLES['PROGRESS_SPEED'])
+        if self._popup:
+            self._popup.update()
 
     def stop(self) -> None:
         """Stop and destroy the loading indicator."""
-        if self.progress:
-            self.progress.stop()
+        if self._progress:
+            self._progress.stop()
 
-        if self.popup:
-            self.popup.grab_release()
-            self.popup.destroy()
-            self.popup = None
-            self.progress = None
-            self.label = None
+        if self._popup:
+            self._popup.grab_release()
+            self._popup.destroy()
+            self._popup = None
+            self._progress = None
+            self._label = None
 
 
 def run_with_loading(
