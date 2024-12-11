@@ -7,6 +7,7 @@ from model_handler import open_model
 import model_interface
 from progress_bar import run_with_loading
 from exceptions import FileNotSelectedError, FileFormatError
+from os import path
 
 
 
@@ -49,6 +50,12 @@ class ScrollApp:
         Configure main window properties.
         Sets window dimensions and centers the window.
         """
+
+        # Uses relative path to show logo.ico 
+        dir_path = path.dirname(__file__)
+        logo_path = path.join(dir_path, "logo.ico")
+        self._window.iconbitmap(logo_path)
+
         # Set up window close handler
         self._window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self._window.title("ModelMaker")
