@@ -37,7 +37,6 @@ class LinearRegressionInterface:
         self._feature = feature  # Will be passed to the calculation class
         self._target = target
         self._comment = None
-        self._prediction_frame = None  # Will be used to make predictions based on the model
 
         try:
             # Try creating the linear regression object
