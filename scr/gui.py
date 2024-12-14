@@ -61,16 +61,16 @@ class ScrollApp:
         self._window.title("ModelMaker")
 
         # Fixed window size
-        self._width = 768
-        self._height = 576
+        width = 768
+        height = 576
 
         # Calculate position to center window
-        self._x = (self._window.winfo_screenwidth() - self._width) // 2
-        self._y = (self._window.winfo_screenheight() - self._height) // 2
+        x = (self._window.winfo_screenwidth() - width) // 2
+        y = (self._window.winfo_screenheight() - height) // 2
 
         # Apply geometry settings
         self._window.geometry(
-            f"{self._width}x{self._height}+{self._x}+{self._y}")
+            f"{width}x{height}+{x}+{y}")
         self._window.resizable(False, False)
 
     def _create_frames(self):
@@ -112,7 +112,7 @@ class ScrollApp:
 
     def _create_app(self):
         """Create main application instance."""
-        self._app = App(self._second_frame, self._my_canvas, self)
+        self._app = App(self._second_frame, self)
 
     def _create_header(self):
         """Create application header with file controls."""
@@ -376,30 +376,25 @@ class App:
 
     Parameters:
         - frame: Main application frame
-        - canvas: Scrollable canvas for content
         - scroll_window: Parent ScrollApp instance
 
     Returns:
         - App: Instance of the App class
     """
 
-    def __init__(self, frame: tk.Frame, canvas: tk.Canvas, scroll_window: ScrollApp):
+    def __init__(self, frame: tk.Frame, scroll_window: ScrollApp):
         """
         Initialize App with necessary frames and canvas.
 
         Parameters:
             - frame: Main application frame
-            - canvas: Scrollable canvas for content
             - scroll_window: Parent ScrollApp instance
         """
         self._table_frame = tk.Frame()
         self._frame = frame
-        self._canvas = canvas
         self._scroll_window = scroll_window
 
         self._table = None
-        self._file = None
-        self._file_path = tk.StringVar()
         self._data = None
         self._processed_data = None
 
@@ -409,9 +404,9 @@ class App:
         return self._data
 
     @data.setter
-    def data(self, df):
+    def data(self, dt):
         """Set current data."""
-        self._data = df
+        self._data = dt
 
     @property
     def scroll_window(self):
