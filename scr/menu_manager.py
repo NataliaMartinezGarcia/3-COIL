@@ -42,7 +42,6 @@ class MenuManager:
         self._chart_frame = chart_frame
 
         self._init_components()
-        self._init_debug_print()
 
     def _init_components(self):
         """Initialize menu components."""
@@ -50,14 +49,6 @@ class MenuManager:
         self._method_menu = MethodMenu(self._frame, self)
         self.create_regression_button()
         self._app.scroll_window.update()
-
-    def _init_debug_print(self):
-        """Print initial debug information."""
-        # Print original and processed DataFrames
-        print("df Before pre-processing:")
-        print(self._df)
-        print("new_df Before pre-processing:")
-        print(self._new_df)
 
     @property
     def df(self) -> pd.DataFrame:
@@ -301,11 +292,6 @@ class MenuManager:
 
     def _show_preprocessing_success(self):
         """Show success message after preprocessing."""
-        # Print debug information
-        print("\ndf After pre-processing")
-        print(self._df)
-        print("\nnew_df After pre-processing")
-        print(self._new_df)
         # Show success message
         messagebox.showinfo(
             "Success",
