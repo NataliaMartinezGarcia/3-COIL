@@ -596,13 +596,3 @@ class App:
         for widget in self._frame.winfo_children():
             widget.destroy()
 
-
-def main():
-    """Main application entry point."""
-    window = tk.Tk()
-    app = ScrollApp(window)
-    window.mainloop()
-
-
-if __name__ == "__main__":
-    main()
